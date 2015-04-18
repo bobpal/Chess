@@ -1,0 +1,13 @@
+C:\Users\Robert\Documents\GitHub\Chess\Chess\bin\Release\Chess.exe.config
+C:\Users\Robert\Documents\GitHub\Chess\Chess\bin\Release\Chess.exe
+C:\Users\Robert\Documents\GitHub\Chess\Chess\bin\Release\Chess.pdb
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\MainWindow.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\MainWindow.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\App.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess_MarkupCompile.cache
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.g.resources
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.Properties.Resources.resources
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.csproj.GenerateResource.Cache
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.exe
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.pdb
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.csprojResolveAssemblyReference.cache
