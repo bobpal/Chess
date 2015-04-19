@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -45,6 +47,8 @@ namespace Chess
         public Image dKnight;
         public Image dRook;
         private Image dPawn;
+        private BitmapImage bmpTo = new BitmapImage(new Uri("to.png", UriKind.Relative));
+        private BitmapImage bmpFrom = new BitmapImage(new Uri("from.png", UriKind.Relative));
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private List<move> possible = new List<move>();                 //list of all possible moves
         public bool gameOverExit = false;                               //Did player exit from game over screen?
@@ -179,6 +183,8 @@ namespace Chess
         public void createDisplayArray()
         {
             //Creates array that handles all visuals
+
+            displayArray = new display[8, 8];
 
             for (int y = 0; y < 8; y++)
             {
@@ -1162,9 +1168,8 @@ namespace Chess
                         if (lastMove == true)
                         {
                             clearToAndFrom();
-                            displayArray[curTurn.pieceSpot.x, curTurn.pieceSpot.y].bottom.Source = Resources.from;
-                            coordinateToDisplay(curTurn.pieceSpot).BackgroundImage = Resources.from;
-                            coordinateToDisplay(curTurn.moveSpot).BackgroundImage = Resources.to;
+                            displayArray[curTurn.pieceSpot.x, curTurn.pieceSpot.y].bottom.Source = bmpFrom;
+                            displayArray[curTurn.moveSpot.x, curTurn.moveSpot.y].bottom.Source = bmpTo;
                             toCoor = curTurn.moveSpot;
                             fromCoor = curTurn.pieceSpot;
                         }
@@ -1274,19 +1279,19 @@ namespace Chess
                     {
                         case 0:
                             pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                            coordinateToDisplay(newSpot).Image = dQueen;
+                            displayArray[newSpot.x, newSpot.y].top = dQueen;
                             break;
                         case 1:
                             pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                            coordinateToDisplay(newSpot).Image = dRook;
+                            displayArray[newSpot.x, newSpot.y].top = dRook;
                             break;
                         case 2:
                             pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                            coordinateToDisplay(newSpot).Image = dBishop;
+                            displayArray[newSpot.x, newSpot.y].top = dBishop;
                             break;
                         case 3:
                             pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                            coordinateToDisplay(newSpot).Image = dKnight;
+                            displayArray[newSpot.x, newSpot.y].top = dKnight;
                             break;
                         default:
                             break;
@@ -1298,19 +1303,19 @@ namespace Chess
                     {
                         case 0:
                             pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                            coordinateToDisplay(newSpot).Image = lQueen;
+                            displayArray[newSpot.x, newSpot.y].top = lQueen;
                             break;
                         case 1:
                             pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                            coordinateToDisplay(newSpot).Image = lRook;
+                            displayArray[newSpot.x, newSpot.y].top = lRook;
                             break;
                         case 2:
                             pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                            coordinateToDisplay(newSpot).Image = lBishop;
+                            displayArray[newSpot.x, newSpot.y].top = lBishop;
                             break;
                         case 3:
                             pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                            coordinateToDisplay(newSpot).Image = lKnight;
+                            displayArray[newSpot.x, newSpot.y].top = lKnight;
                             break;
                         default:
                             break;
@@ -1329,8 +1334,8 @@ namespace Chess
             if (lastMove == true)
             {
                 clearToAndFrom();
-                coordinateToDisplay(bestMove.pieceSpot).BackgroundImage = Resources.from;
-                coordinateToDisplay(bestMove.moveSpot).BackgroundImage = Resources.to;
+                displayArray[bestMove.pieceSpot.x, bestMove.pieceSpot.y].bottom.Source = bmpFrom;
+                displayArray[bestMove.moveSpot.x, bestMove.moveSpot.y].bottom.Source = bmpTo;
                 toCoor = bestMove.moveSpot;
                 fromCoor = bestMove.pieceSpot;
             }
@@ -1338,6 +1343,35 @@ namespace Chess
             if (pieceArray[newSpot.x, newSpot.y].job == "King")
             {
                 castling(bestMove);//check if move is a castling
+            }
+        }
+
+        private void timer_Tick(object sender, EventArgs e)
+        {
+            //rotates board in rings
+            //called 42 times for each full board rotation
+
+            tick++;
+
+            if (tick % 3 == 0)
+            {
+                rotateRing(0);   //outer ring
+                //this.Refresh();
+            }
+            if (tick % 4 == 0)
+            {
+                rotateRing(1);   //2nd ring
+                //this.Refresh();
+            }
+            if (tick % 7 == 0)
+            {
+                rotateRing(2);   //3rd ring
+                //this.Refresh();
+            }
+            if (tick % 21 == 0)
+            {
+                rotateRing(3);   //inner ring
+                //this.Refresh();
             }
         }
 
@@ -1350,13 +1384,16 @@ namespace Chess
                 ready = false;
                 tick = 0;
                 clearToAndFrom();
-                mainForm.timer.Start();
+                DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Send);
+                timer.Tick += new EventHandler(timer_Tick);
+                timer.Interval = new TimeSpan(0, 0, 0, 0, 5);
+                timer.Start();
                 while (tick < 42)
                 {
-                    Application.DoEvents();
+                    //Application.DoEvents();
                 }
 
-                mainForm.timer.Stop();
+                timer.Stop();
                 rotatePieces();
                 rotateToAndFrom();
 
@@ -1395,11 +1432,10 @@ namespace Chess
 
             coordinate temp;
             temp = new coordinate(7 - toCoor.x, 7 - toCoor.y);
-            displayArray[temp.x, temp.y].tile.Background = Resources.to;
-            coordinateToDisplay(temp).BackgroundImage = Resources.to;
+            displayArray[temp.x, temp.y].bottom.Source = bmpTo;
             toCoor = temp;
             temp = new coordinate(7 - fromCoor.x, 7 - fromCoor.y);
-            coordinateToDisplay(temp).BackgroundImage = Resources.from;
+            displayArray[temp.x, temp.y].bottom.Source = bmpFrom;
             fromCoor = temp;
         }
 
@@ -1656,36 +1692,84 @@ namespace Chess
             //sets image variables based on themeIndex
 
             string themeName = themeList[themeIndex].GetName().Name;
+            BitmapImage bmp = new BitmapImage();
 
-            Stream lKingFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".lKing.png");
-            Stream lQueenFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".lQueen.png");
-            Stream lBishopFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".lBishop.png");
-            Stream lKnightFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".lKnight.png");
-            Stream lRookFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".lRook.png");
-            Stream lPawnFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".lPawn.png");
-            Stream dKingFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".dKing.png");
-            Stream dQueenFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".dQueen.png");
-            Stream dBishopFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".dBishop.png");
-            Stream dKnightFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".dKnight.png");
-            Stream dRookFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".dRook.png");
-            Stream dPawnFile = themeList[themeIndex].GetManifestResourceStream(themeName + ".dPawn.png");
+            Stream lKingStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lKing.png");
+            Stream lQueenStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lQueen.png");
+            Stream lBishopStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lBishop.png");
+            Stream lKnightStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lKnight.png");
+            Stream lRookStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lRook.png");
+            Stream lPawnStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lPawn.png");
+            Stream dKingStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dKing.png");
+            Stream dQueenStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dQueen.png");
+            Stream dBishopStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dBishop.png");
+            Stream dKnightStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dKnight.png");
+            Stream dRookStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dRook.png");
+            Stream dPawnStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dPawn.png");
 
             try
             {
-                lKing = Image.FromStream(lKingFile);
-                lQueen = Image.FromStream(lQueenFile);
-                lBishop = Image.FromStream(lBishopFile);
-                lKnight = Image.FromStream(lKnightFile);
-                lRook = Image.FromStream(lRookFile);
-                lPawn = Image.FromStream(lPawnFile);
-                dKing = Image.FromStream(dKingFile);
-                dQueen = Image.FromStream(dQueenFile);
-                dBishop = Image.FromStream(dBishopFile);
-                dKnight = Image.FromStream(dKnightFile);
-                dRook = Image.FromStream(dRookFile);
-                dPawn = Image.FromStream(dPawnFile);
+                bmp.BeginInit();
+                bmp.StreamSource = lKingStream;
+                bmp.EndInit();
+                lKing.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = lQueenStream;
+                bmp.EndInit();
+                lQueen.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = lBishopStream;
+                bmp.EndInit();
+                lBishop.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = lKnightStream;
+                bmp.EndInit();
+                lKnight.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = lRookStream;
+                bmp.EndInit();
+                lRook.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = lPawnStream;
+                bmp.EndInit();
+                lPawn.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = dKingStream;
+                bmp.EndInit();
+                dKing.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = dQueenStream;
+                bmp.EndInit();
+                dQueen.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = dBishopStream;
+                bmp.EndInit();
+                dBishop.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = dKnightStream;
+                bmp.EndInit();
+                dKnight.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = dRookStream;
+                bmp.EndInit();
+                dRook.Source = bmp;
+
+                bmp.BeginInit();
+                bmp.StreamSource = dPawnStream;
+                bmp.EndInit();
+                dPawn.Source = bmp;
             }
-            catch (ArgumentException)
+            catch (InvalidOperationException)
             {
                 themeList.RemoveAt(themeIndex);
             }
@@ -1940,7 +2024,7 @@ namespace Chess
         {
             //call newGame window
 
-            NewGame play = new NewGame(this, mainForm);
+            NewGame play = new NewGame(this, mWindow);
             play.ShowDialog();
         }
 
