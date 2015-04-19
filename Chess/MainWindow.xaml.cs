@@ -23,17 +23,17 @@ namespace Chess
         {
             InitializeComponent();
             game = new Logic(this);
-            //game.tryDlls();
+            game.tryDlls();
             this.Show();
 
             if (System.IO.File.Exists(game.filePath))
             {
-                //game.loadState();
+                game.loadState();
             }
 
             else
             {
-                //game.newGame();
+                game.newGame();
             }
         }
     }

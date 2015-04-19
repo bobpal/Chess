@@ -264,18 +264,18 @@
         </UniformGrid>
         <Menu HorizontalAlignment="Left" Height="18" Margin="0" VerticalAlignment="Top" Width="720">
             <MenuItem Header="Game" VerticalContentAlignment="Stretch" HorizontalAlignment="Left">
-                <MenuItem Header="New Game"/>
-                <MenuItem Header="Undo"/>
+                <MenuItem Header="New Game" InputGestureText="F2"/>
+                <MenuItem Header="Undo" Name="undoMenu" InputGestureText="Ctrl+Z"/>
                 <Separator/>
-                <MenuItem Header="Exit"/>
+                <MenuItem Header="Exit" InputGestureText="Alt+F4"/>
             </MenuItem>
             <MenuItem Header="Options">
-                <MenuItem Header="Change Theme"/>
-                <MenuItem Header="Default Window Size"/>
+                <MenuItem Header="Change Theme" InputGestureText="F3"/>
+                <MenuItem Header="Default Window Size" InputGestureText="F4"/>
                 <Separator/>
-                <MenuItem Header="Show Last Move" IsCheckable="True"/>
-                <MenuItem Header="Rotate Board" IsCheckable="True"/>
-                <MenuItem Header="Save Game on Exit" IsCheckable="True"/>
+                <MenuItem Header="Show Last Move" IsCheckable="True" Name="lastMoveMenu" InputGestureText="F5"/>
+                <MenuItem Header="Rotate Board" IsCheckable="True" Name="rotateMenu" InputGestureText="F6"/>
+                <MenuItem Header="Save Game on Exit" IsCheckable="True" Name="saveMenu" InputGestureText="F7"/>
             </MenuItem>
         </Menu>
     </Grid>

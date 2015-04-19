@@ -1120,7 +1120,7 @@ namespace Chess
                         }
 
                         history.Push(node);
-                        mainForm.undoToolStripMenuItem.Enabled = true;
+                        mWindow.undoMenu.IsEnabled = true;
 
                         if (lastMove == true)
                         {
@@ -1358,6 +1358,7 @@ namespace Chess
 
             coordinate temp;
             temp = new coordinate(7 - toCoor.x, 7 - toCoor.y);
+            displayArray[temp.x, temp.y].tile.Background = Resources.to;
             coordinateToDisplay(temp).BackgroundImage = Resources.to;
             toCoor = temp;
             temp = new coordinate(7 - fromCoor.x, 7 - fromCoor.y);
@@ -1371,7 +1372,7 @@ namespace Chess
 
             int max = 7 - min;
             string direction;
-            Image next = coordinateToDisplay(new coordinate(min, min)).Image; //first image moved
+            Image next = displayArray[min, min].top;    //first image moved
 
             direction = "right";
             for (int x = min; x < max; x++)
@@ -1424,8 +1425,8 @@ namespace Chess
                 toCoor = new coordinate(fromX - 1, fromY);
             }
 
-            replace = coordinateToDisplay(toCoor).Image;
-            coordinateToDisplay(toCoor).Image = overwrite;
+            replace = displayArray[toCoor.x, toCoor.y].top;
+            displayArray[toCoor.x, toCoor.y].top = overwrite;
             return replace;
         }
 
@@ -1443,10 +1444,10 @@ namespace Chess
 
             //overwrite current image
             //take previous piece picture and put it in current cell picture box
-            coordinateToDisplay(newCell).Image = matchPicture(pPiece);
+            displayArray[newCell.x, newCell.y].top = matchPicture(pPiece);
 
             //delete prev image
-            coordinateToDisplay(oldCell).Image = null;
+            displayArray[oldCell.x, oldCell.y].top = null;
 
             movablePieceSelected = false;
             pieceArray[newCell.x, newCell.y].virgin = false;
@@ -1493,13 +1494,13 @@ namespace Chess
                 }
 
                 pieceArray[xPiece, yPiece].job = "Pawn";
-                coordinateToDisplay(new coordinate(xPiece, yPiece)).Image = pawnPic;
+                displayArray[xPiece, yPiece].top = pawnPic;
             }
 
             else
             {
                 pieceArray[xPiece, yPiece].job = to.job;
-                coordinateToDisplay(new coordinate(xPiece, yPiece)).Image = matchPicture(to);
+                displayArray[xPiece, yPiece].top = matchPicture(to);
             }
 
             pieceArray[xPiece, yPiece].color = to.color;
@@ -1507,7 +1508,7 @@ namespace Chess
 
             //put captured piece back
             pieceArray[xMove, yMove].job = node.captured.job;
-            coordinateToDisplay(new coordinate(xMove, yMove)).Image = matchPicture(node.captured);
+            displayArray[xMove, yMove].top = matchPicture(node.captured);
             pieceArray[xMove, yMove].color = node.captured.color;
             pieceArray[xMove, yMove].virgin = node.captured.virgin;
 
@@ -1519,7 +1520,7 @@ namespace Chess
 
             else if (history.Count == 0)    //if stack is empty, disable button; skip and empty stack can't both happen
             {
-                mainForm.undoToolStripMenuItem.Enabled = false;
+                mWindow.undoMenu.IsEnabled = false;
             }
             clearToAndFrom();
             clearSelectedAndPossible();
@@ -1659,11 +1660,18 @@ namespace Chess
 
             bool dllsFound = false;
             int originalSize;
-            DllsMissing ntfs = new DllsMissing(true);
+            MessageBoxResult result;
 
             while (!File.Exists(pwd + "//Trinet.Core.IO.Ntfs.dll"))
             {
-                ntfs.ShowDialog();
+                result = MessageBox.Show(
+                    "Required dll not found.\n\nPlace 'Trinet.Core.IO.Ntfs.dll'\nin directory containing 'Chess.exe'\n\nTry Again?",
+                    "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+                if(result == MessageBoxResult.No)
+                {
+                    Environment.Exit(1);
+                }
             }
 
             while (dllsFound == false)
@@ -1679,9 +1687,16 @@ namespace Chess
 
                 if (themeList.Count < 1)
                 {
-                    DllsMissing none = new DllsMissing(false);
-                    none.ShowDialog();
+                    result = MessageBox.Show(
+                        "No themes found.\n\nPlace theme dll in directory containing 'Chess.exe'\n\nTry Again?",
+                        "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+                    if(result == MessageBoxResult.No)
+                    {
+                        Environment.Exit(1);
+                    }
                 }
+
                 else
                 {
                     dllsFound = true;
@@ -1738,8 +1753,14 @@ namespace Chess
                     //if 0 bad files <OR> bad files = total dll files
                     if (ignore.Count < 1 || ignore.Count == dllFilePathArray.Count())
                     {
-                        DllsMissing none = new DllsMissing(false);
-                        none.ShowDialog();
+                        MessageBoxResult result = MessageBox.Show(
+                        "No themes found.\n\nPlace theme dll in directory containing 'Chess.exe'\n\nTry Again?",
+                        "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+
+                        if (result == MessageBoxResult.No)
+                        {
+                            Environment.Exit(1);
+                        }
                         ignore.Clear();
                     }
                 }
@@ -1783,9 +1804,9 @@ namespace Chess
 
                 //load preferences regardless of whether saveGame was enabled
                 lastMove = lData.sLastMove;
-                mainForm.showLastMoveToolStripMenuItem.Checked = lastMove;
+                mWindow.lastMoveMenu.IsChecked = lastMove;
                 rotate = lData.sRotate;
-                mainForm.rotateBoardToolStripMenuItem.Checked = rotate;
+                mWindow.rotateMenu.IsChecked = rotate;
                 string theme = lData.sTheme;
 
                 if (lData.sSaveGame == true)
@@ -1815,7 +1836,7 @@ namespace Chess
                         if (onePlayer == true)
                         {
                             baseOnBottom = offensiveTeam;
-                            mainForm.rotateBoardToolStripMenuItem.Enabled = false;
+                            mWindow.rotateMenu.IsEnabled = false;
                         }
                         else
                         {
@@ -1827,7 +1848,7 @@ namespace Chess
                             {
                                 baseOnBottom = goodTeam;
                             }
-                            mainForm.rotateBoardToolStripMenuItem.Enabled = true;
+                            mWindow.rotateMenu.IsEnabled = true;
                         }
                     }
                     else    //Exit on Game Over
@@ -1838,7 +1859,7 @@ namespace Chess
                 else    //Exit with saveGame set to false
                 {
                     saveGame = false;
-                    mainForm.saveGameOnExitToolStripMenuItem.Checked = false;
+                    mWindow.saveMenu.IsChecked = false;
                     newGame();
                 }
 
@@ -1875,7 +1896,7 @@ namespace Chess
                     clearToAndFrom();
                 }
             }
-            rotate = mainForm.rotateBoardToolStripMenuItem.Checked;
+            rotate = mWindow.rotateMenu.IsChecked;
         }
 
         public void newGame()
