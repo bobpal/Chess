@@ -23,6 +23,7 @@ namespace Chess
         {
             InitializeComponent();
             game = new Logic(this);
+            game.createDisplayArray();
             game.tryDlls();
             this.Show();
 

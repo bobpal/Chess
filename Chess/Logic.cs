@@ -176,96 +176,7 @@ namespace Chess
             this.mWindow = mw;
         }
 
-        public void setBoardForNewGame()
-        {
-            //Sets arrays in starting position
-
-            string defensiveTeam;
-            pieceArray = new piece[8, 8];
-
-            if (offensiveTeam == "light")
-            {
-                defensiveTeam = "dark";
-            }
-            else
-            {
-                defensiveTeam = "light";
-            }
-
-            for (int y = 0; y < 8; y++)
-            {
-                for (int x = 0; x < 8; x++)
-                {
-                    if (y == 0)
-                    {
-                        pieceArray[x, 0].color = offensiveTeam;
-                    }
-
-                    else if (y == 1)
-                    {
-                        pieceArray[x, 1].color = offensiveTeam;
-                        pieceArray[x, 1].job = "Pawn";
-                        pieceArray[x, 1].virgin = true;
-                        displayArray[x, 1].top = matchPicture(pieceArray[x, 1]);
-                    }
-
-                    else if (y == 6)
-                    {
-                        pieceArray[x, 6].color = defensiveTeam;
-                        pieceArray[x, 6].job = "Pawn";
-                        pieceArray[x, 6].virgin = true;
-                        displayArray[x, 6].top = matchPicture(pieceArray[x, 6]);
-                    }
-
-                    else if (y == 7)
-                    {
-                        pieceArray[x, 7].color = defensiveTeam;
-                    }
-                }
-            }
-            pieceArray[0, 0].virgin = true;
-            pieceArray[4, 0].virgin = true;
-            pieceArray[7, 0].virgin = true;
-            pieceArray[0, 7].virgin = true;
-            pieceArray[4, 7].virgin = true;
-            pieceArray[7, 7].virgin = true;
-
-            pieceArray[0, 0].job = "Rook";
-            pieceArray[1, 0].job = "Knight";
-            pieceArray[2, 0].job = "Bishop";
-            pieceArray[3, 0].job = "Queen";
-            pieceArray[4, 0].job = "King";
-            pieceArray[5, 0].job = "Bishop";
-            pieceArray[6, 0].job = "Knight";
-            pieceArray[7, 0].job = "Rook";
-            pieceArray[0, 7].job = "Rook";
-            pieceArray[1, 7].job = "Knight";
-            pieceArray[2, 7].job = "Bishop";
-            pieceArray[3, 7].job = "Queen";
-            pieceArray[4, 7].job = "King";
-            pieceArray[5, 7].job = "Bishop";
-            pieceArray[6, 7].job = "Knight";
-            pieceArray[7, 7].job = "Rook";
-
-            displayArray[0, 0].top = matchPicture(pieceArray[0, 0]);
-            displayArray[1, 0].top = matchPicture(pieceArray[1, 0]);
-            displayArray[2, 0].top = matchPicture(pieceArray[2, 0]);
-            displayArray[3, 0].top = matchPicture(pieceArray[3, 0]);
-            displayArray[4, 0].top = matchPicture(pieceArray[4, 0]);
-            displayArray[5, 0].top = matchPicture(pieceArray[5, 0]);
-            displayArray[6, 0].top = matchPicture(pieceArray[6, 0]);
-            displayArray[7, 0].top = matchPicture(pieceArray[7, 0]);
-            displayArray[0, 7].top = matchPicture(pieceArray[0, 7]);
-            displayArray[1, 7].top = matchPicture(pieceArray[1, 7]);
-            displayArray[2, 7].top = matchPicture(pieceArray[2, 7]);
-            displayArray[3, 7].top = matchPicture(pieceArray[3, 7]);
-            displayArray[4, 7].top = matchPicture(pieceArray[4, 7]);
-            displayArray[5, 7].top = matchPicture(pieceArray[5, 7]);
-            displayArray[6, 7].top = matchPicture(pieceArray[6, 7]);
-            displayArray[7, 7].top = matchPicture(pieceArray[7, 7]);
-        }
-
-        private void createDisplayArray()
+        public void createDisplayArray()
         {
             //Creates array that handles all visuals
 
@@ -510,6 +421,95 @@ namespace Chess
                     }
                 }
             }
+        }
+
+        public void setBoardForNewGame()
+        {
+            //Sets arrays in starting position
+
+            string defensiveTeam;
+            pieceArray = new piece[8, 8];
+
+            if (offensiveTeam == "light")
+            {
+                defensiveTeam = "dark";
+            }
+            else
+            {
+                defensiveTeam = "light";
+            }
+
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    if (y == 0)
+                    {
+                        pieceArray[x, 0].color = offensiveTeam;
+                    }
+
+                    else if (y == 1)
+                    {
+                        pieceArray[x, 1].color = offensiveTeam;
+                        pieceArray[x, 1].job = "Pawn";
+                        pieceArray[x, 1].virgin = true;
+                        displayArray[x, 1].top = matchPicture(pieceArray[x, 1]);
+                    }
+
+                    else if (y == 6)
+                    {
+                        pieceArray[x, 6].color = defensiveTeam;
+                        pieceArray[x, 6].job = "Pawn";
+                        pieceArray[x, 6].virgin = true;
+                        displayArray[x, 6].top = matchPicture(pieceArray[x, 6]);
+                    }
+
+                    else if (y == 7)
+                    {
+                        pieceArray[x, 7].color = defensiveTeam;
+                    }
+                }
+            }
+            pieceArray[0, 0].virgin = true;
+            pieceArray[4, 0].virgin = true;
+            pieceArray[7, 0].virgin = true;
+            pieceArray[0, 7].virgin = true;
+            pieceArray[4, 7].virgin = true;
+            pieceArray[7, 7].virgin = true;
+
+            pieceArray[0, 0].job = "Rook";
+            pieceArray[1, 0].job = "Knight";
+            pieceArray[2, 0].job = "Bishop";
+            pieceArray[3, 0].job = "Queen";
+            pieceArray[4, 0].job = "King";
+            pieceArray[5, 0].job = "Bishop";
+            pieceArray[6, 0].job = "Knight";
+            pieceArray[7, 0].job = "Rook";
+            pieceArray[0, 7].job = "Rook";
+            pieceArray[1, 7].job = "Knight";
+            pieceArray[2, 7].job = "Bishop";
+            pieceArray[3, 7].job = "Queen";
+            pieceArray[4, 7].job = "King";
+            pieceArray[5, 7].job = "Bishop";
+            pieceArray[6, 7].job = "Knight";
+            pieceArray[7, 7].job = "Rook";
+
+            displayArray[0, 0].top = matchPicture(pieceArray[0, 0]);
+            displayArray[1, 0].top = matchPicture(pieceArray[1, 0]);
+            displayArray[2, 0].top = matchPicture(pieceArray[2, 0]);
+            displayArray[3, 0].top = matchPicture(pieceArray[3, 0]);
+            displayArray[4, 0].top = matchPicture(pieceArray[4, 0]);
+            displayArray[5, 0].top = matchPicture(pieceArray[5, 0]);
+            displayArray[6, 0].top = matchPicture(pieceArray[6, 0]);
+            displayArray[7, 0].top = matchPicture(pieceArray[7, 0]);
+            displayArray[0, 7].top = matchPicture(pieceArray[0, 7]);
+            displayArray[1, 7].top = matchPicture(pieceArray[1, 7]);
+            displayArray[2, 7].top = matchPicture(pieceArray[2, 7]);
+            displayArray[3, 7].top = matchPicture(pieceArray[3, 7]);
+            displayArray[4, 7].top = matchPicture(pieceArray[4, 7]);
+            displayArray[5, 7].top = matchPicture(pieceArray[5, 7]);
+            displayArray[6, 7].top = matchPicture(pieceArray[6, 7]);
+            displayArray[7, 7].top = matchPicture(pieceArray[7, 7]);
         }
 
         private List<coordinate> getDarkPieces()
@@ -961,8 +961,45 @@ namespace Chess
 
             if (possibleWithoutCheck.Count == 0)//if no moves available that don't go into check
             {
-                GameOver gameEnd = new GameOver(this, teamInQuestion);
-                gameEnd.ShowDialog();
+                string message;
+
+                if (onePlayer == false)
+                {
+                    string winningTeam;
+
+                    if (teamInQuestion == "light")
+                    {
+                        winningTeam = "dark";
+                    }
+
+                    else
+                    {
+                        winningTeam = "light";
+                    }
+
+                    message = "The " + winningTeam + " army has slain the " + teamInQuestion + " army's king in battle";
+                }
+
+                else
+                {
+                    if (teamInQuestion == opponent)
+                    {
+                        message = "Congratulations!\n\nYou have slain the evil king\n and saved the princess!";
+                    }
+
+                    else
+                    {
+                        message = "Sorry\n\nYou gave a valiant effort,\nbut you have been bested in battle by the enemy army";
+                    }
+                }
+
+                MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
+                        MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
+
+                if (result == MessageBoxResult.Yes)
+                {
+                    newGame();
+                }
                 return true;
             }
             return false;
