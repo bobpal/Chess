@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using Chess.Properties;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Trinet.Core.IO.Ntfs;
 
 namespace Chess
@@ -32,21 +29,22 @@ namespace Chess
         private coordinate prevSelected;    //where the cursor clicked previously
         private coordinate toCoor;          //where to.png is located
         private coordinate fromCoor;        //where from.png is located
-        public List<Assembly> themeList;    //list of themes
+        public List<string> themeList;      //list of themes
         public int themeIndex;              //which theme is currently in use
         public int tick;                    //timestep for board rotation
-        public Image lKing;
-        public Image lQueen;
-        public Image lBishop;
-        public Image lKnight;
-        public Image lRook;
-        private Image lPawn;
-        private Image dKing;
-        public Image dQueen;
-        public Image dBishop;
-        public Image dKnight;
-        public Image dRook;
-        private Image dPawn;
+        private List<string> ignore = new List<string>();
+        public Image lKing = new Image();
+        public Image lQueen = new Image();
+        public Image lBishop = new Image();
+        public Image lKnight = new Image();
+        public Image lRook = new Image();
+        private Image lPawn = new Image();
+        private Image dKing = new Image();
+        public Image dQueen = new Image();
+        public Image dBishop = new Image();
+        public Image dKnight = new Image();
+        public Image dRook = new Image();
+        private Image dPawn = new Image();
         private BitmapImage bmpTo = new BitmapImage(new Uri("to.png", UriKind.Relative));
         private BitmapImage bmpFrom = new BitmapImage(new Uri("from.png", UriKind.Relative));
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
@@ -1691,96 +1689,46 @@ namespace Chess
         {
             //sets image variables based on themeIndex
 
-            string themeName = themeList[themeIndex].GetName().Name;
-            BitmapImage bmp = new BitmapImage();
-
-            Stream lKingStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lKing.png");
-            Stream lQueenStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lQueen.png");
-            Stream lBishopStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lBishop.png");
-            Stream lKnightStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lKnight.png");
-            Stream lRookStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lRook.png");
-            Stream lPawnStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".lPawn.png");
-            Stream dKingStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dKing.png");
-            Stream dQueenStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dQueen.png");
-            Stream dBishopStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dBishop.png");
-            Stream dKnightStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dKnight.png");
-            Stream dRookStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dRook.png");
-            Stream dPawnStream = themeList[themeIndex].GetManifestResourceStream(themeName + ".dPawn.png");
-
+            string themeName = themeList[themeIndex];
             try
             {
-                bmp.BeginInit();
-                bmp.StreamSource = lKingStream;
-                bmp.EndInit();
-                lKing.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = lQueenStream;
-                bmp.EndInit();
-                lQueen.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = lBishopStream;
-                bmp.EndInit();
-                lBishop.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = lKnightStream;
-                bmp.EndInit();
-                lKnight.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = lRookStream;
-                bmp.EndInit();
-                lRook.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = lPawnStream;
-                bmp.EndInit();
-                lPawn.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = dKingStream;
-                bmp.EndInit();
-                dKing.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = dQueenStream;
-                bmp.EndInit();
-                dQueen.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = dBishopStream;
-                bmp.EndInit();
-                dBishop.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = dKnightStream;
-                bmp.EndInit();
-                dKnight.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = dRookStream;
-                bmp.EndInit();
-                dRook.Source = bmp;
-
-                bmp.BeginInit();
-                bmp.StreamSource = dPawnStream;
-                bmp.EndInit();
-                dPawn.Source = bmp;
+                BitmapImage lKingbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKing.png"));
+                BitmapImage lQueenbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lQueen.png"));
+                BitmapImage lBishopbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lBishop.png"));
+                BitmapImage lKnightbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKnight.png"));
+                BitmapImage lRookbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lRook.png"));
+                BitmapImage lPawnbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lPawn.png"));
+                BitmapImage dKingbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKing.png"));
+                BitmapImage dQueenbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dQueen.png"));
+                BitmapImage dBishopbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dBishop.png"));
+                BitmapImage dKnightbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKnight.png"));
+                BitmapImage dRookbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dRook.png"));
+                BitmapImage dPawnbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dPawn.png"));
+                
+                lKing.Source = lKingbmp;
+                lQueen.Source = lQueenbmp;
+                lBishop.Source = lBishopbmp;
+                lKnight.Source = lKnightbmp;
+                lRook.Source = lRookbmp;
+                lPawn.Source = lPawnbmp;
+                dKing.Source = dKingbmp;
+                dQueen.Source = dQueenbmp;
+                dBishop.Source = dBishopbmp;
+                dKnight.Source = dKnightbmp;
+                dRook.Source = dRookbmp;
+                dPawn.Source = dPawnbmp;
             }
             catch (InvalidOperationException)
             {
-                themeList.RemoveAt(themeIndex);
+                ignore.Add(pwd + "\\" + themeName);
+                themeList.Clear();
             }
         }
 
-        public void tryDlls()
+        public void initializeDlls()
         {
-            //calls loadDlls() and setTheme() till found all dlls
+            //Initializes all dlls
 
-            bool dllsFound = false;
-            int originalSize;
             MessageBoxResult result;
 
             while (!File.Exists(pwd + "//Trinet.Core.IO.Ntfs.dll"))
@@ -1795,36 +1743,10 @@ namespace Chess
                 }
             }
 
-            while (dllsFound == false)
-            {
-                loadDlls();
-                originalSize = themeList.Count;
+            addDllsToList();
 
-                for (int i = 0; i < originalSize; i++)
-                {
-                    themeIndex = originalSize - i - 1;
-                    changeThemeInternally();
-                }
-
-                if (themeList.Count < 1)
-                {
-                    result = MessageBox.Show(
-                        "No themes found.\n\nPlace theme dll in directory containing 'Chess.exe'\n\nTry Again?",
-                        "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
-
-                    if(result == MessageBoxResult.No)
-                    {
-                        Environment.Exit(1);
-                    }
-                }
-
-                else
-                {
-                    dllsFound = true;
-                }
-            }
             //find default theme
-            themeIndex = themeList.FindIndex(x => x.GetName().Name == "Figure");
+            themeIndex = themeList.FindIndex(x => x == "Figure");
 
             if (themeIndex == -1)    //if can't find default
             {
@@ -1833,15 +1755,15 @@ namespace Chess
             changeThemeInternally();
         }
 
-        private void loadDlls()
+        private void addDllsToList()
         {
-            //searches dlls in working directory and loads themes
+            //searches dlls in working directory and puts in themeList
 
             AssemblyName an;
-            Assembly assembly;
-            themeList = new List<Assembly>();
+            FileInfo file;
+            string name;
+            themeList = new List<string>();
             string[] dllFilePathArray = null;
-            List<string> ignore = new List<string>();
             bool themesFound = false;
 
             while (themesFound == false)
@@ -1852,14 +1774,16 @@ namespace Chess
 
                     foreach (string dllFilePath in dllFilePathArray.Except(ignore))
                     {
-                        FileInfo file = new FileInfo(dllFilePath);
+                        file = new FileInfo(dllFilePath);
                         file.DeleteAlternateDataStream("Zone.Identifier");
                         an = AssemblyName.GetAssemblyName(dllFilePath);
-                        assembly = Assembly.Load(an);
+                        name = an.Name;
+                        Assembly.Load(an);
 
-                        if (!themeList.Contains(assembly))
+                        if (!themeList.Contains(name))  //check for duplicates
                         {
-                            themeList.Add(assembly);
+                            themeList.Add(name);
+                            changeThemeInternally();    //check to see if can set to variable
                         }
                     }
                 }
@@ -1883,6 +1807,7 @@ namespace Chess
                             Environment.Exit(1);
                         }
                         ignore.Clear();
+                        themeList.Clear();
                     }
                 }
                 else
@@ -1899,7 +1824,7 @@ namespace Chess
 
             if (ready == true)   //if a game is being or has been played
             {
-                string theme = themeList[themeIndex].GetName().Name;
+                string theme = themeList[themeIndex];
                 saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, medMode, hardMode,
                     lastMove, saveGame, gameOverExit, rotate);
 
@@ -1986,7 +1911,7 @@ namespace Chess
 
                 for (int i = 0; i < themeList.Count(); i++)
                 {
-                    if (themeList[i].GetName().Name == theme)
+                    if (themeList[i] == theme)
                     {
                         themeIndex = i;
                     }

@@ -24,7 +24,7 @@ namespace Chess
             InitializeComponent();
             game = new Logic(this);
             game.createDisplayArray();
-            game.tryDlls();
+            game.initializeDlls();
             this.Show();
 
             if (System.IO.File.Exists(game.filePath))

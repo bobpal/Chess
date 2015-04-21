@@ -262,7 +262,7 @@
                 <Image x:Name="top_zero_seven" Height="80" Width="80"/>
             </Canvas>
         </UniformGrid>
-        <Menu HorizontalAlignment="Left" Height="18" Margin="0" VerticalAlignment="Top" Width="720">
+        <Menu Height="18" Margin="0" VerticalAlignment="Top">
             <MenuItem Header="Game" VerticalContentAlignment="Stretch" HorizontalAlignment="Left">
                 <MenuItem Header="New Game" InputGestureText="F2"/>
                 <MenuItem Header="Undo" Name="undoMenu" InputGestureText="Ctrl+Z"/>

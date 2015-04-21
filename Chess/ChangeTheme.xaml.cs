@@ -33,11 +33,11 @@ namespace Chess
 
             for (int i = 0; i < game.themeList.Count(); i++)
             {
-                themeBox.Items.Add(game.themeList[i].GetName().Name);
+                themeBox.Items.Add(game.themeList[i]);
 
                 if (i == index)
                 {
-                    themeBox.Text = game.themeList[i].GetName().Name;
+                    themeBox.Text = game.themeList[i];
                 }
             }
         }
