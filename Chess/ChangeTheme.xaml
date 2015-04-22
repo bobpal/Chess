@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Change Theme" Height="300" Width="350" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Topmost="True" ShowInTaskbar="False">
     <Grid>
-        <ComboBox Name="themeBox" HorizontalAlignment="Left" Height="25" Margin="36,55,0,0" VerticalAlignment="Top" Width="120"/>
+        <ComboBox Name="themeBox" HorizontalAlignment="Left" Height="25" Margin="36,55,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_Changed"/>
         <Label Content="Choose Theme" HorizontalAlignment="Left" Height="28" Margin="36,20,0,0" VerticalAlignment="Top" Width="120"/>
         <Label Content="Preview" HorizontalAlignment="Right" Height="28" Margin="0,20,36,0" VerticalAlignment="Top" Width="80"/>
         <Image Name="previewBox" Height="80" Margin="0,55,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80"/>

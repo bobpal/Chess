@@ -18,7 +18,7 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Logic game;
-
+        
         public MainWindow()
         {
             InitializeComponent();
@@ -36,6 +36,61 @@ namespace Chess
             {
                 game.newGame();
             }
+        }
+
+        private void newGameMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void undoMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void exitMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void themeMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void sizeMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void lastMoveMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void rotateMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void saveMenu_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cell_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cell_MouseMove(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Board_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
         }
     }
 }

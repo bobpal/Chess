@@ -18,3 +18,4 @@ C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\PawnTransformation.baml
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\ChangeTheme.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\NewGame.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\PawnTransformation.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Chess_MarkupCompile.lref

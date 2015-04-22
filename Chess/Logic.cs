@@ -1718,7 +1718,7 @@ namespace Chess
                 dRook.Source = dRookbmp;
                 dPawn.Source = dPawnbmp;
             }
-            catch (InvalidOperationException)
+            catch (IOException)
             {
                 ignore.Add(pwd + "\\" + themeName);
                 themeList.Clear();

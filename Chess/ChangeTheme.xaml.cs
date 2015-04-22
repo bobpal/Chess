@@ -42,6 +42,12 @@ namespace Chess
             }
         }
 
+        private void ComboBox_Changed(object sender, SelectionChangedEventArgs args)
+        {
+            index = themeBox.SelectedIndex;
+            previewBox.Source = new BitmapImage(new Uri("pack://application:,,,/" + themeBox.SelectedItem.ToString() + ";component/lKing.png"));
+        }
+
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
             game.themeIndex = index;
