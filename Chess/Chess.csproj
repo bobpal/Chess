@@ -127,13 +127,13 @@
     <None Include="Resources\Palagano.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\from.png" />
+    <Resource Include="Resources\from.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\logo.png" />
+    <Resource Include="Resources\logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\to.png" />
+    <Resource Include="Resources\to.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
