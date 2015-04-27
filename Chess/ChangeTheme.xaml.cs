@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Chess
 {
@@ -29,8 +21,6 @@ namespace Chess
 
         private void populate()
         {
-            previewBox = game.lKing;
-
             for (int i = 0; i < game.themeList.Count(); i++)
             {
                 themeBox.Items.Add(game.themeList[i]);
@@ -40,6 +30,7 @@ namespace Chess
                     themeBox.Text = game.themeList[i];
                 }
             }
+            previewBox.Source = game.lKing;
         }
 
         private void ComboBox_Changed(object sender, SelectionChangedEventArgs args)

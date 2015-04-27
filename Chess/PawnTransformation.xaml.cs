@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace Chess
 {
@@ -30,11 +18,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top = game.lQueen;
+                game.displayArray[spot.x, spot.y].top.Source = game.lQueen;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top = game.dQueen;
+                game.displayArray[spot.x, spot.y].top.Source = game.dQueen;
             }
             game.pieceArray[spot.x, spot.y].job = "Queen";
             this.Close();
@@ -44,11 +32,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top = game.lRook;
+                game.displayArray[spot.x, spot.y].top.Source = game.lRook;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top = game.dRook;
+                game.displayArray[spot.x, spot.y].top.Source = game.dRook;
             }
             game.pieceArray[spot.x, spot.y].job = "Queen";
             this.Close();
@@ -58,11 +46,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top = game.lBishop;
+                game.displayArray[spot.x, spot.y].top.Source = game.lBishop;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top = game.dBishop;
+                game.displayArray[spot.x, spot.y].top.Source = game.dBishop;
             }
             game.pieceArray[spot.x, spot.y].job = "Queen";
             this.Close();
@@ -72,11 +60,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top = game.lKnight;
+                game.displayArray[spot.x, spot.y].top.Source = game.lKnight;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top = game.dKnight;
+                game.displayArray[spot.x, spot.y].top.Source = game.dKnight;
             }
             game.pieceArray[spot.x, spot.y].job = "Queen";
             this.Close();

@@ -33,20 +33,20 @@ namespace Chess
         public int themeIndex;              //which theme is currently in use
         public int tick;                    //timestep for board rotation
         private List<string> ignore = new List<string>();
-        public Image lKing = new Image();
-        public Image lQueen = new Image();
-        public Image lBishop = new Image();
-        public Image lKnight = new Image();
-        public Image lRook = new Image();
-        private Image lPawn = new Image();
-        private Image dKing = new Image();
-        public Image dQueen = new Image();
-        public Image dBishop = new Image();
-        public Image dKnight = new Image();
-        public Image dRook = new Image();
-        private Image dPawn = new Image();
-        private BitmapImage bmpTo = new BitmapImage(new Uri("to.png", UriKind.Relative));
-        private BitmapImage bmpFrom = new BitmapImage(new Uri("from.png", UriKind.Relative));
+        public BitmapImage lKing;
+        public BitmapImage lQueen;
+        public BitmapImage lBishop;
+        public BitmapImage lKnight;
+        public BitmapImage lRook;
+        private BitmapImage lPawn;
+        private BitmapImage dKing;
+        public BitmapImage dQueen;
+        public BitmapImage dBishop;
+        public BitmapImage dKnight;
+        public BitmapImage dRook;
+        private BitmapImage dPawn;
+        private BitmapImage bmpTo = new BitmapImage(new Uri("pack://application:,,,/Resources/to.png"));
+        private BitmapImage bmpFrom = new BitmapImage(new Uri("pack://application:,,,/Resources/from.png"));
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private List<move> possible = new List<move>();                 //list of all possible moves
         public bool gameOverExit = false;                               //Did player exit from game over screen?
@@ -457,7 +457,7 @@ namespace Chess
                         pieceArray[x, 1].color = offensiveTeam;
                         pieceArray[x, 1].job = "Pawn";
                         pieceArray[x, 1].virgin = true;
-                        displayArray[x, 1].top = matchPicture(pieceArray[x, 1]);
+                        displayArray[x, 1].top.Source = matchPicture(pieceArray[x, 1]);
                     }
 
                     else if (y == 6)
@@ -465,7 +465,7 @@ namespace Chess
                         pieceArray[x, 6].color = defensiveTeam;
                         pieceArray[x, 6].job = "Pawn";
                         pieceArray[x, 6].virgin = true;
-                        displayArray[x, 6].top = matchPicture(pieceArray[x, 6]);
+                        displayArray[x, 6].top.Source = matchPicture(pieceArray[x, 6]);
                     }
 
                     else if (y == 7)
@@ -498,22 +498,22 @@ namespace Chess
             pieceArray[6, 7].job = "Knight";
             pieceArray[7, 7].job = "Rook";
 
-            displayArray[0, 0].top = matchPicture(pieceArray[0, 0]);
-            displayArray[1, 0].top = matchPicture(pieceArray[1, 0]);
-            displayArray[2, 0].top = matchPicture(pieceArray[2, 0]);
-            displayArray[3, 0].top = matchPicture(pieceArray[3, 0]);
-            displayArray[4, 0].top = matchPicture(pieceArray[4, 0]);
-            displayArray[5, 0].top = matchPicture(pieceArray[5, 0]);
-            displayArray[6, 0].top = matchPicture(pieceArray[6, 0]);
-            displayArray[7, 0].top = matchPicture(pieceArray[7, 0]);
-            displayArray[0, 7].top = matchPicture(pieceArray[0, 7]);
-            displayArray[1, 7].top = matchPicture(pieceArray[1, 7]);
-            displayArray[2, 7].top = matchPicture(pieceArray[2, 7]);
-            displayArray[3, 7].top = matchPicture(pieceArray[3, 7]);
-            displayArray[4, 7].top = matchPicture(pieceArray[4, 7]);
-            displayArray[5, 7].top = matchPicture(pieceArray[5, 7]);
-            displayArray[6, 7].top = matchPicture(pieceArray[6, 7]);
-            displayArray[7, 7].top = matchPicture(pieceArray[7, 7]);
+            displayArray[0, 0].top.Source = matchPicture(pieceArray[0, 0]);
+            displayArray[1, 0].top.Source = matchPicture(pieceArray[1, 0]);
+            displayArray[2, 0].top.Source = matchPicture(pieceArray[2, 0]);
+            displayArray[3, 0].top.Source = matchPicture(pieceArray[3, 0]);
+            displayArray[4, 0].top.Source = matchPicture(pieceArray[4, 0]);
+            displayArray[5, 0].top.Source = matchPicture(pieceArray[5, 0]);
+            displayArray[6, 0].top.Source = matchPicture(pieceArray[6, 0]);
+            displayArray[7, 0].top.Source = matchPicture(pieceArray[7, 0]);
+            displayArray[0, 7].top.Source = matchPicture(pieceArray[0, 7]);
+            displayArray[1, 7].top.Source = matchPicture(pieceArray[1, 7]);
+            displayArray[2, 7].top.Source = matchPicture(pieceArray[2, 7]);
+            displayArray[3, 7].top.Source = matchPicture(pieceArray[3, 7]);
+            displayArray[4, 7].top.Source = matchPicture(pieceArray[4, 7]);
+            displayArray[5, 7].top.Source = matchPicture(pieceArray[5, 7]);
+            displayArray[6, 7].top.Source = matchPicture(pieceArray[6, 7]);
+            displayArray[7, 7].top.Source = matchPicture(pieceArray[7, 7]);
         }
 
         private List<coordinate> getDarkPieces()
@@ -1277,19 +1277,19 @@ namespace Chess
                     {
                         case 0:
                             pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                            displayArray[newSpot.x, newSpot.y].top = dQueen;
+                            displayArray[newSpot.x, newSpot.y].top.Source = dQueen;
                             break;
                         case 1:
                             pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                            displayArray[newSpot.x, newSpot.y].top = dRook;
+                            displayArray[newSpot.x, newSpot.y].top.Source = dRook;
                             break;
                         case 2:
                             pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                            displayArray[newSpot.x, newSpot.y].top = dBishop;
+                            displayArray[newSpot.x, newSpot.y].top.Source = dBishop;
                             break;
                         case 3:
                             pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                            displayArray[newSpot.x, newSpot.y].top = dKnight;
+                            displayArray[newSpot.x, newSpot.y].top.Source = dKnight;
                             break;
                         default:
                             break;
@@ -1301,19 +1301,19 @@ namespace Chess
                     {
                         case 0:
                             pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                            displayArray[newSpot.x, newSpot.y].top = lQueen;
+                            displayArray[newSpot.x, newSpot.y].top.Source = lQueen;
                             break;
                         case 1:
                             pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                            displayArray[newSpot.x, newSpot.y].top = lRook;
+                            displayArray[newSpot.x, newSpot.y].top.Source = lRook;
                             break;
                         case 2:
                             pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                            displayArray[newSpot.x, newSpot.y].top = lBishop;
+                            displayArray[newSpot.x, newSpot.y].top.Source = lBishop;
                             break;
                         case 3:
                             pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                            displayArray[newSpot.x, newSpot.y].top = lKnight;
+                            displayArray[newSpot.x, newSpot.y].top.Source = lKnight;
                             break;
                         default:
                             break;
@@ -1515,10 +1515,10 @@ namespace Chess
 
             //overwrite current image
             //take previous piece picture and put it in current cell picture box
-            displayArray[newCell.x, newCell.y].top = matchPicture(pPiece);
+            displayArray[newCell.x, newCell.y].top.Source = matchPicture(pPiece);
 
             //delete prev image
-            displayArray[oldCell.x, oldCell.y].top = null;
+            displayArray[oldCell.x, oldCell.y].top.Source = null;
 
             movablePieceSelected = false;
             pieceArray[newCell.x, newCell.y].virgin = false;
@@ -1528,7 +1528,7 @@ namespace Chess
         {
             //completely undo previous move
 
-            Image pawnPic;
+            Image pawnPic = new Image();
             piece to;
             piece from;
             int xMove;
@@ -1556,12 +1556,12 @@ namespace Chess
             {
                 if (to.color == "light")
                 {
-                    pawnPic = lPawn;
+                    pawnPic.Source = lPawn;
                 }
 
                 else
                 {
-                    pawnPic = dPawn;
+                    pawnPic.Source = dPawn;
                 }
 
                 pieceArray[xPiece, yPiece].job = "Pawn";
@@ -1571,7 +1571,7 @@ namespace Chess
             else
             {
                 pieceArray[xPiece, yPiece].job = to.job;
-                displayArray[xPiece, yPiece].top = matchPicture(to);
+                displayArray[xPiece, yPiece].top.Source = matchPicture(to);
             }
 
             pieceArray[xPiece, yPiece].color = to.color;
@@ -1579,7 +1579,7 @@ namespace Chess
 
             //put captured piece back
             pieceArray[xMove, yMove].job = node.captured.job;
-            displayArray[xMove, yMove].top = matchPicture(node.captured);
+            displayArray[xMove, yMove].top.Source = matchPicture(node.captured);
             pieceArray[xMove, yMove].color = node.captured.color;
             pieceArray[xMove, yMove].virgin = node.captured.virgin;
 
@@ -1597,7 +1597,7 @@ namespace Chess
             clearSelectedAndPossible();
         }
 
-        private Image matchPicture(piece figure)
+        private BitmapImage matchPicture(piece figure)
         {
             //returns image based on what piece it is
 
@@ -1671,8 +1671,8 @@ namespace Chess
         {
             //clears last move indicators from board
 
-            displayArray[toCoor.x, toCoor.y].bottom = null;
-            displayArray[fromCoor.x, fromCoor.y].bottom = null;
+            displayArray[toCoor.x, toCoor.y].bottom.Source = null;
+            displayArray[fromCoor.x, fromCoor.y].bottom.Source = null;
         }
 
         public void changeThemeVisually()
@@ -1681,7 +1681,7 @@ namespace Chess
 
             foreach (coordinate spot in getAllPieces())
             {
-                displayArray[spot.x, spot.y].top = matchPicture(pieceArray[spot.x, spot.y]);
+                displayArray[spot.x, spot.y].top.Source = matchPicture(pieceArray[spot.x, spot.y]);
             }
         }
 
@@ -1692,31 +1692,18 @@ namespace Chess
             string themeName = themeList[themeIndex];
             try
             {
-                BitmapImage lKingbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKing.png"));
-                BitmapImage lQueenbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lQueen.png"));
-                BitmapImage lBishopbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lBishop.png"));
-                BitmapImage lKnightbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKnight.png"));
-                BitmapImage lRookbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lRook.png"));
-                BitmapImage lPawnbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lPawn.png"));
-                BitmapImage dKingbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKing.png"));
-                BitmapImage dQueenbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dQueen.png"));
-                BitmapImage dBishopbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dBishop.png"));
-                BitmapImage dKnightbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKnight.png"));
-                BitmapImage dRookbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dRook.png"));
-                BitmapImage dPawnbmp = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dPawn.png"));
-                
-                lKing.Source = lKingbmp;
-                lQueen.Source = lQueenbmp;
-                lBishop.Source = lBishopbmp;
-                lKnight.Source = lKnightbmp;
-                lRook.Source = lRookbmp;
-                lPawn.Source = lPawnbmp;
-                dKing.Source = dKingbmp;
-                dQueen.Source = dQueenbmp;
-                dBishop.Source = dBishopbmp;
-                dKnight.Source = dKnightbmp;
-                dRook.Source = dRookbmp;
-                dPawn.Source = dPawnbmp;
+                lKing = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKing.png"));
+                lQueen = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lQueen.png"));
+                lBishop = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lBishop.png"));
+                lKnight = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKnight.png"));
+                lRook = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lRook.png"));
+                lPawn = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lPawn.png"));
+                dKing = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKing.png"));
+                dQueen = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dQueen.png"));
+                dBishop = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dBishop.png"));
+                dKnight = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKnight.png"));
+                dRook = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dRook.png"));
+                dPawn = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dPawn.png"));
             }
             catch (IOException)
             {
