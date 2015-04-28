@@ -183,7 +183,7 @@ namespace Chess
             //Creates array that handles all visuals
 
             displayArray = new display[8, 8];
-
+            
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
@@ -471,6 +471,11 @@ namespace Chess
                     else if (y == 7)
                     {
                         pieceArray[x, 7].color = defensiveTeam;
+                    }
+
+                    else
+                    {
+                        displayArray[x, y].top.Source = matchPicture(pieceArray[x, y]);
                     }
                 }
             }
@@ -1656,7 +1661,7 @@ namespace Chess
                     sum = x + y;
                     if(sum % 2 == 0)    //if even number
                     {
-                        displayArray[x, y].tile.Background = Brushes.Black;
+                        displayArray[x, y].tile.Background = Brushes.DarkGray;
                     }
 
                     else

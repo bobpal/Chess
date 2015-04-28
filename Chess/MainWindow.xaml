@@ -7,305 +7,533 @@
         Closing="Board_Closing">
     <Grid Background="#FFA08214">
         <UniformGrid Name="uGrid" Margin="40,30,40,20" Background="#FFE21A1A">
-            <Canvas Grid.Column="0" Grid.Row="7" Background="White" Name="zero_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_seven" Height="80" Width="80"/>
-                <Image x:Name="top_zero_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="7" Background="Black" Name="one_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_seven" Height="80" Width="80"/>
-                <Image x:Name="top_one_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="7" Background="White" Name="two_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_seven" Height="80" Width="80"/>
-                <Image x:Name="top_two_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="7" Background="Black" Name="three_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_seven" Height="80" Width="80"/>
-                <Image x:Name="top_three_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="7" Background="White" Name="four_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_seven" Height="80" Width="80"/>
-                <Image x:Name="top_four_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="7" Background="Black" Name="five_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_seven" Height="80" Width="80"/>
-                <Image x:Name="top_five_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="7" Background="White" Name="six_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_seven" Height="80" Width="80"/>
-                <Image x:Name="top_six_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="7" Background="Black" Name="seven_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_seven" Height="80" Width="80"/>
-                <Image x:Name="top_seven_seven" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="6" Background="Black" Name="zero_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_six" Height="80" Width="80"/>
-                <Image x:Name="top_zero_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="6" Background="White" Name="one_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_six" Height="80" Width="80"/>
-                <Image x:Name="top_one_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="6" Background="Black" Name="two_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_six" Height="80" Width="80"/>
-                <Image x:Name="top_two_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="6" Background="White" Name="three_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_six" Height="80" Width="80"/>
-                <Image x:Name="top_three_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="6" Background="Black" Name="four_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_six" Height="80" Width="80"/>
-                <Image x:Name="top_four_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="6" Background="White" Name="five_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_six" Height="80" Width="80"/>
-                <Image x:Name="top_five_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="6" Background="Black" Name="six_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_six" Height="80" Width="80"/>
-                <Image x:Name="top_six_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="6" Background="White" Name="seven_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_six" Height="80" Width="80"/>
-                <Image x:Name="top_seven_six" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="5" Background="White" Name="zero_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_five" Height="80" Width="80"/>
-                <Image x:Name="top_zero_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="5" Background="Black" Name="one_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_five" Height="80" Width="80"/>
-                <Image x:Name="top_one_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="5" Background="White" Name="two_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_five" Height="80" Width="80"/>
-                <Image x:Name="top_two_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="5" Background="Black" Name="three_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_five" Height="80" Width="80"/>
-                <Image x:Name="top_three_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="5" Background="White" Name="four_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_five" Height="80" Width="80"/>
-                <Image x:Name="top_four_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="5" Background="Black" Name="five_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_five" Height="80" Width="80"/>
-                <Image x:Name="top_five_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="5" Background="White" Name="six_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_five" Height="80" Width="80"/>
-                <Image x:Name="top_six_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="5" Background="Black" Name="seven_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_five" Height="80" Width="80"/>
-                <Image x:Name="top_seven_five" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="4" Background="Black" Name="zero_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_four" Height="80" Width="80"/>
-                <Image x:Name="top_zero_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="4" Background="White" Name="one_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_four" Height="80" Width="80"/>
-                <Image x:Name="top_one_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="4" Background="Black" Name="two_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_four" Height="80" Width="80"/>
-                <Image x:Name="top_two_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="4" Background="White" Name="three_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_four" Height="80" Width="80"/>
-                <Image x:Name="top_three_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="4" Background="Black" Name="four_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_four" Height="80" Width="80"/>
-                <Image x:Name="top_four_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="4" Background="White" Name="five_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_four" Height="80" Width="80"/>
-                <Image x:Name="top_five_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="4" Background="Black" Name="six_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_four" Height="80" Width="80"/>
-                <Image x:Name="top_six_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="4" Background="White" Name="seven_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_four" Height="80" Width="80"/>
-                <Image x:Name="top_seven_four" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="3" Background="White" Name="zero_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_three" Height="80" Width="80"/>
-                <Image x:Name="top_zero_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="3" Background="Black" Name="one_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_three" Height="80" Width="80"/>
-                <Image x:Name="top_one_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="3" Background="White" Name="two_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_three" Height="80" Width="80"/>
-                <Image x:Name="top_two_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="3" Background="Black" Name="three_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_three" Height="80" Width="80"/>
-                <Image x:Name="top_three_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="3" Background="White" Name="four_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_three" Height="80" Width="80"/>
-                <Image x:Name="top_four_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="3" Background="Black" Name="five_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_three" Height="80" Width="80"/>
-                <Image x:Name="top_five_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="3" Background="White" Name="six_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_three" Height="80" Width="80"/>
-                <Image x:Name="top_six_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="3" Background="Black" Name="seven_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_three" Height="80" Width="80"/>
-                <Image x:Name="top_seven_three" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="2" Background="Black" Name="zero_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_two" Height="80" Width="80"/>
-                <Image x:Name="top_zero_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="2" Background="White" Name="one_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_two" Height="80" Width="80"/>
-                <Image x:Name="top_one_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="2" Background="Black" Name="two_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_two" Height="80" Width="80"/>
-                <Image x:Name="top_two_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="2" Background="White" Name="three_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_two" Height="80" Width="80"/>
-                <Image x:Name="top_three_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="2" Background="Black" Name="four_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_two" Height="80" Width="80"/>
-                <Image x:Name="top_four_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="2" Background="White" Name="five_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_two" Height="80" Width="80"/>
-                <Image x:Name="top_five_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="2" Background="Black" Name="six_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_two" Height="80" Width="80"/>
-                <Image x:Name="top_six_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="2" Background="White" Name="seven_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_two" Height="80" Width="80"/>
-                <Image x:Name="top_seven_two" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="1" Background="White" Name="zero_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_one" Height="80" Width="80"/>
-                <Image x:Name="top_zero_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="1" Background="Black" Name="one_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_one" Height="80" Width="80"/>
-                <Image x:Name="top_one_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="1" Background="White" Name="two_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_one" Height="80" Width="80"/>
-                <Image x:Name="top_two_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="1" Background="Black" Name="three_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_one" Height="80" Width="80"/>
-                <Image x:Name="top_three_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="1" Background="White" Name="four_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_one" Height="80" Width="80"/>
-                <Image x:Name="top_four_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="1" Background="Black" Name="five_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_one" Height="80" Width="80"/>
-                <Image x:Name="top_five_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="1" Background="White" Name="six_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_one" Height="80" Width="80"/>
-                <Image x:Name="top_six_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="1" Background="Black" Name="seven_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_one" Height="80" Width="80"/>
-                <Image x:Name="top_seven_one" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="0" Grid.Row="0" Background="Black" Name="zero_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_zero_zero" Height="80" Width="80"/>
-                <Image x:Name="top_zero_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="1" Grid.Row="0" Background="White" Name="one_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_one_zero" Height="80" Width="80"/>
-                <Image x:Name="top_one_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="2" Grid.Row="0" Background="Black" Name="two_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_two_zero" Height="80" Width="80"/>
-                <Image x:Name="top_two_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="3" Grid.Row="0" Background="White" Name="three_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_three_zero" Height="80" Width="80"/>
-                <Image x:Name="top_three_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="4" Grid.Row="0" Background="Black" Name="four_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_four_zero" Height="80" Width="80"/>
-                <Image x:Name="top_four_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="5" Grid.Row="0" Background="White" Name="five_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_five_zero" Height="80" Width="80"/>
-                <Image x:Name="top_five_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="6" Grid.Row="0" Background="Black" Name="six_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_six_zero" Height="80" Width="80"/>
-                <Image x:Name="top_six_zero" Height="80" Width="80"/>
-            </Canvas>
-            <Canvas Grid.Column="7" Grid.Row="0" Background="White" Name="seven_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
-                <Image x:Name="bottom_seven_zero" Height="80" Width="80"/>
-                <Image x:Name="top_seven_zero" Height="80" Width="80"/>
-            </Canvas>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="7" Background="White" Name="zero_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="7" Background="DarkGray" Name="one_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_one_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="7" Background="White" Name="two_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_two_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="7" Background="DarkGray" Name="three_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_three_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="7" Background="White" Name="four_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_four_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="7" Background="DarkGray" Name="five_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_five_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="7" Background="White" Name="six_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_six_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="7" Background="DarkGray" Name="seven_seven" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_seven" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_seven" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="6" Background="DarkGray" Name="zero_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_six" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="6" Background="White" Name="one_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_six" Height="80" Width="80"/>
+                        <Image x:Name="top_one_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="6" Background="DarkGray" Name="two_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_six" Height="80" Width="80"/>
+                        <Image x:Name="top_two_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="6" Background="White" Name="three_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_six" Height="80" Width="80"/>
+                        <Image x:Name="top_three_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="6" Background="DarkGray" Name="four_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_six" Height="80" Width="80"/>
+                        <Image x:Name="top_four_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="6" Background="White" Name="five_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_six" Height="80" Width="80"/>
+                        <Image x:Name="top_five_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="6" Background="DarkGray" Name="six_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_six" Height="80" Width="80"/>
+                        <Image x:Name="top_six_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="6" Background="White" Name="seven_six" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_six" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_six" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="5" Background="White" Name="zero_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_five" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="5" Background="DarkGray" Name="one_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_five" Height="80" Width="80"/>
+                        <Image x:Name="top_one_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="5" Background="White" Name="two_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_five" Height="80" Width="80"/>
+                        <Image x:Name="top_two_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="5" Background="DarkGray" Name="three_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_five" Height="80" Width="80"/>
+                        <Image x:Name="top_three_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="5" Background="White" Name="four_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_five" Height="80" Width="80"/>
+                        <Image x:Name="top_four_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="5" Background="DarkGray" Name="five_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_five" Height="80" Width="80"/>
+                        <Image x:Name="top_five_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="5" Background="White" Name="six_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_five" Height="80" Width="80"/>
+                        <Image x:Name="top_six_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="5" Background="DarkGray" Name="seven_five" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_five" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_five" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="4" Background="DarkGray" Name="zero_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_four" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="4" Background="White" Name="one_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_four" Height="80" Width="80"/>
+                        <Image x:Name="top_one_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="4" Background="DarkGray" Name="two_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_four" Height="80" Width="80"/>
+                        <Image x:Name="top_two_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="4" Background="White" Name="three_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_four" Height="80" Width="80"/>
+                        <Image x:Name="top_three_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="4" Background="DarkGray" Name="four_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_four" Height="80" Width="80"/>
+                        <Image x:Name="top_four_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="4" Background="White" Name="five_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_four" Height="80" Width="80"/>
+                        <Image x:Name="top_five_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="4" Background="DarkGray" Name="six_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_four" Height="80" Width="80"/>
+                        <Image x:Name="top_six_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="4" Background="White" Name="seven_four" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_four" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_four" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="3" Background="White" Name="zero_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_three" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="3" Background="DarkGray" Name="one_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_three" Height="80" Width="80"/>
+                        <Image x:Name="top_one_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="3" Background="White" Name="two_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_three" Height="80" Width="80"/>
+                        <Image x:Name="top_two_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="3" Background="DarkGray" Name="three_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_three" Height="80" Width="80"/>
+                        <Image x:Name="top_three_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="3" Background="White" Name="four_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_three" Height="80" Width="80"/>
+                        <Image x:Name="top_four_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="3" Background="DarkGray" Name="five_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_three" Height="80" Width="80"/>
+                        <Image x:Name="top_five_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="3" Background="White" Name="six_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_three" Height="80" Width="80"/>
+                        <Image x:Name="top_six_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="3" Background="DarkGray" Name="seven_three" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_three" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_three" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="2" Background="DarkGray" Name="zero_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_two" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="2" Background="White" Name="one_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_two" Height="80" Width="80"/>
+                        <Image x:Name="top_one_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="2" Background="DarkGray" Name="two_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_two" Height="80" Width="80"/>
+                        <Image x:Name="top_two_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="2" Background="White" Name="three_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_two" Height="80" Width="80"/>
+                        <Image x:Name="top_three_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="2" Background="DarkGray" Name="four_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_two" Height="80" Width="80"/>
+                        <Image x:Name="top_four_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="2" Background="White" Name="five_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_two" Height="80" Width="80"/>
+                        <Image x:Name="top_five_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="2" Background="DarkGray" Name="six_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_two" Height="80" Width="80"/>
+                        <Image x:Name="top_six_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="2" Background="White" Name="seven_two" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_two" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_two" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="1" Background="White" Name="zero_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_one" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="1" Background="DarkGray" Name="one_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_one" Height="80" Width="80"/>
+                        <Image x:Name="top_one_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="1" Background="White" Name="two_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_one" Height="80" Width="80"/>
+                        <Image x:Name="top_two_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="1" Background="DarkGray" Name="three_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_one" Height="80" Width="80"/>
+                        <Image x:Name="top_three_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="1" Background="White" Name="four_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_one" Height="80" Width="80"/>
+                        <Image x:Name="top_four_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="1" Background="DarkGray" Name="five_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_one" Height="80" Width="80"/>
+                        <Image x:Name="top_five_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="1" Background="White" Name="six_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_one" Height="80" Width="80"/>
+                        <Image x:Name="top_six_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="1" Background="DarkGray" Name="seven_one" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_one" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_one" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="0" Grid.Row="0" Background="DarkGray" Name="zero_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_zero_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_zero_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="1" Grid.Row="0" Background="White" Name="one_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_one_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_one_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="2" Grid.Row="0" Background="DarkGray" Name="two_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_two_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_two_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="3" Grid.Row="0" Background="White" Name="three_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_three_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_three_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="4" Grid.Row="0" Background="DarkGray" Name="four_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_four_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_four_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="5" Grid.Row="0" Background="White" Name="five_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_five_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_five_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="6" Grid.Row="0" Background="DarkGray" Name="six_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_six_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_six_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
+            <Viewbox Stretch="Fill">
+                <Border BorderBrush="Black" BorderThickness="1" Height="80" Width="80">
+                    <Canvas Grid.Column="7" Grid.Row="0" Background="White" Name="seven_zero" MouseMove="cell_MouseMove" MouseLeftButtonDown="cell_Click">
+                        <Image x:Name="bottom_seven_zero" Height="80" Width="80"/>
+                        <Image x:Name="top_seven_zero" Height="80" Width="80"/>
+                    </Canvas>
+                </Border>
+            </Viewbox>
         </UniformGrid>
         <Menu Height="18" Margin="0" VerticalAlignment="Top">
             <MenuItem Header="Game" VerticalContentAlignment="Stretch" HorizontalAlignment="Left">
-                <MenuItem Header="New Game" Name="newGameMenu" InputGestureText="F2" Click="newGameMenu_Click">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="F2"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
-                <MenuItem Header="Undo" Name="undoMenu" InputGestureText="Ctrl+Z" Click="undoMenu_Click" IsEnabled="False">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="Z" Modifiers="Control"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
+                <MenuItem Header="New Game" Name="newGameMenu" InputGestureText="F2" Click="newGameMenu_Click"/>
+                <MenuItem Header="Undo" Name="undoMenu" InputGestureText="Ctrl+Z" Click="undoMenu_Click" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem Header="Exit" Name="exitMenu" InputGestureText="Alt+F4" Click="exitMenu_Click"/>
             </MenuItem>
             <MenuItem Header="Options">
-                <MenuItem Header="Change Theme" Name="themeMenu" InputGestureText="F3" Click="themeMenu_Click">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="F3"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
-                <MenuItem Header="Default Window Size" Name="sizeMenu" InputGestureText="F4" Click="sizeMenu_Click">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="F4"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
+                <MenuItem Header="Change Theme" Name="themeMenu" InputGestureText="F3" Click="themeMenu_Click"/>
+                <MenuItem Header="Default Window Size" Name="sizeMenu" InputGestureText="F4" Click="sizeMenu_Click"/>
                 <Separator/>
-                <MenuItem Header="Show Last Move" IsChecked="True" IsCheckable="True" Name="lastMoveMenu" InputGestureText="F5" Click="lastMoveMenu_Click">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="F5"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
-                <MenuItem Header="Rotate Board" IsChecked="True" IsCheckable="True" Name="rotateMenu" InputGestureText="F6" Click="rotateMenu_Click">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="F6"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
-                <MenuItem Header="Save Game on Exit" IsChecked="True" IsCheckable="True" Name="saveMenu" InputGestureText="F7" Click="saveMenu_Click">
-                    <MenuItem.InputBindings>
-                        <KeyBinding Key="F7"></KeyBinding>
-                    </MenuItem.InputBindings>
-                </MenuItem>
+                <MenuItem Header="Show Last Move" IsChecked="True" IsCheckable="True" Name="lastMoveMenu" InputGestureText="F5" Click="lastMoveMenu_Click"/>
+                <MenuItem Header="Rotate Board" IsChecked="True" IsCheckable="True" Name="rotateMenu" InputGestureText="F6" Click="rotateMenu_Click"/>
+                <MenuItem Header="Save Game on Exit" IsChecked="True" IsCheckable="True" Name="saveMenu" InputGestureText="F7" Click="saveMenu_Click"/>
             </MenuItem>
         </Menu>
     </Grid>

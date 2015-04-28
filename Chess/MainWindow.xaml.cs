@@ -8,6 +8,13 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Logic game;
+        public static RoutedCommand newGameCmd = new RoutedCommand();
+        public static RoutedCommand undoCmd = new RoutedCommand();
+        public static RoutedCommand themeCmd = new RoutedCommand();
+        public static RoutedCommand sizeCmd = new RoutedCommand();
+        public static RoutedCommand lastMoveCmd = new RoutedCommand();
+        public static RoutedCommand rotateCmd = new RoutedCommand();
+        public static RoutedCommand saveGameCmd = new RoutedCommand();
         
         public MainWindow()
         {
@@ -15,6 +22,20 @@ namespace Chess
             game = new Logic(this);
             game.createDisplayArray();
             game.initializeDlls();
+            newGameCmd.InputGestures.Add(new KeyGesture(Key.F2));
+            undoCmd.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
+            themeCmd.InputGestures.Add(new KeyGesture(Key.F3));
+            sizeCmd.InputGestures.Add(new KeyGesture(Key.F4));
+            lastMoveCmd.InputGestures.Add(new KeyGesture(Key.F5));
+            rotateCmd.InputGestures.Add(new KeyGesture(Key.F6));
+            saveGameCmd.InputGestures.Add(new KeyGesture(Key.F7));
+            CommandBindings.Add(new CommandBinding(newGameCmd, newGameMenu_Click));
+            CommandBindings.Add(new CommandBinding(undoCmd, undoMenu_Click));
+            CommandBindings.Add(new CommandBinding(themeCmd, themeMenu_Click));
+            CommandBindings.Add(new CommandBinding(sizeCmd, sizeMenu_Click));
+            CommandBindings.Add(new CommandBinding(lastMoveCmd, lastMoveMenu_Click));
+            CommandBindings.Add(new CommandBinding(rotateCmd, rotateMenu_Click));
+            CommandBindings.Add(new CommandBinding(saveGameCmd, saveMenu_Click));
             this.Show();
 
             if (System.IO.File.Exists(game.filePath))
