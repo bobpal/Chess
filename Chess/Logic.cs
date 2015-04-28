@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -49,7 +50,6 @@ namespace Chess
         private BitmapImage bmpFrom = new BitmapImage(new Uri("pack://application:,,,/Resources/from.png"));
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private List<move> possible = new List<move>();                 //list of all possible moves
-        public bool gameOverExit = false;                               //Did player exit from game over screen?
         public bool lastMove = true;                                    //is lastMove menu option checked?
         public bool saveGame = true;                                    //Save game on exit?
         public bool rotate = true;                                      //Rotate board between turns on 2Player mode?
@@ -73,7 +73,7 @@ namespace Chess
             public bool sHardMode { get; private set; }
             public bool sLastMove { get; private set; }
             public bool sSaveGame { get; private set; }
-            public bool sGameOverExit { get; private set; }
+            public bool sReady { get; private set; }
             public bool sRotate { get; private set; }
 
             public saveData(piece[,] p1, string p2, string p3, string p4, bool p5, bool p6, bool p7, bool p8, bool p9, bool p10, bool p11)
@@ -87,7 +87,7 @@ namespace Chess
                 this.sHardMode = p7;
                 this.sLastMove = p8;
                 this.sSaveGame = p9;
-                this.sGameOverExit = p10;
+                this.sReady = p10;
                 this.sRotate = p11;
             }
         }
@@ -971,6 +971,14 @@ namespace Chess
             if (possibleWithoutCheck.Count == 0)//if no moves available that don't go into check
             {
                 string message;
+                ready = false;
+                mWindow.undoMenu.IsEnabled = false;
+                history.Clear();
+                
+                foreach(display d in displayArray)
+                {
+                    d.tile.Cursor = Cursors.Arrow;
+                }
 
                 if (onePlayer == false)
                 {
@@ -1816,18 +1824,15 @@ namespace Chess
             //saves game on exit
             //if save game unchecked, saves preferences, but not game state
 
-            if (ready == true)   //if a game is being or has been played
-            {
-                string theme = themeList[themeIndex];
-                saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, medMode, hardMode,
-                    lastMove, saveGame, gameOverExit, rotate);
+            string theme = themeList[themeIndex];
+            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, medMode, hardMode,
+                lastMove, saveGame, ready, rotate);
 
-                System.IO.Directory.CreateDirectory(dirPath);
-                BinaryFormatter writer = new BinaryFormatter();
-                FileStream saveStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
-                writer.Serialize(saveStream, sData);
-                saveStream.Close();
-            }
+            System.IO.Directory.CreateDirectory(dirPath);
+            BinaryFormatter writer = new BinaryFormatter();
+            FileStream saveStream = new FileStream(filePath, FileMode.Create, FileAccess.Write);
+            writer.Serialize(saveStream, sData);
+            saveStream.Close();
         }
 
         public void loadState()
@@ -1851,10 +1856,10 @@ namespace Chess
 
                 if (lData.sSaveGame == true)
                 {
-                    if (lData.sGameOverExit == false)
+                    if (lData.sReady == true)
                     {
-                        pieceArray = new piece[8, 8];
                         ready = true;
+                        pieceArray = new piece[8, 8];
                         movablePieceSelected = false;
                         pieceArray = lData.sBoard;
                         offensiveTeam = lData.sOffensiveTeam;

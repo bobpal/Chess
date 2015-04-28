@@ -12,9 +12,6 @@ namespace Chess
         public static RoutedCommand undoCmd = new RoutedCommand();
         public static RoutedCommand themeCmd = new RoutedCommand();
         public static RoutedCommand sizeCmd = new RoutedCommand();
-        public static RoutedCommand lastMoveCmd = new RoutedCommand();
-        public static RoutedCommand rotateCmd = new RoutedCommand();
-        public static RoutedCommand saveGameCmd = new RoutedCommand();
         
         public MainWindow()
         {
@@ -26,16 +23,10 @@ namespace Chess
             undoCmd.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             themeCmd.InputGestures.Add(new KeyGesture(Key.F3));
             sizeCmd.InputGestures.Add(new KeyGesture(Key.F4));
-            lastMoveCmd.InputGestures.Add(new KeyGesture(Key.F5));
-            rotateCmd.InputGestures.Add(new KeyGesture(Key.F6));
-            saveGameCmd.InputGestures.Add(new KeyGesture(Key.F7));
             CommandBindings.Add(new CommandBinding(newGameCmd, newGameMenu_Click));
             CommandBindings.Add(new CommandBinding(undoCmd, undoMenu_Click));
             CommandBindings.Add(new CommandBinding(themeCmd, themeMenu_Click));
             CommandBindings.Add(new CommandBinding(sizeCmd, sizeMenu_Click));
-            CommandBindings.Add(new CommandBinding(lastMoveCmd, lastMoveMenu_Click));
-            CommandBindings.Add(new CommandBinding(rotateCmd, rotateMenu_Click));
-            CommandBindings.Add(new CommandBinding(saveGameCmd, saveMenu_Click));
             this.Show();
 
             if (System.IO.File.Exists(game.filePath))
@@ -56,7 +47,10 @@ namespace Chess
 
         private void undoMenu_Click(object sender, RoutedEventArgs e)
         {
-            game.undo();
+            if(undoMenu.IsEnabled == true)
+            {
+                game.undo();
+            }
         }
 
         private void exitMenu_Click(object sender, RoutedEventArgs e)
@@ -105,7 +99,7 @@ namespace Chess
 
         private void cell_MouseMove(object sender, RoutedEventArgs e)
         {
-            if (game.ready == true)  //if a game is being or has been played
+            if (game.ready == true)  //if a game is being played
             {
                 Canvas cell = (sender as Canvas);
                 int row = Grid.GetRow(cell);

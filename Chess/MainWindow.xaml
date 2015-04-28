@@ -531,9 +531,9 @@
                 <MenuItem Header="Change Theme" Name="themeMenu" InputGestureText="F3" Click="themeMenu_Click"/>
                 <MenuItem Header="Default Window Size" Name="sizeMenu" InputGestureText="F4" Click="sizeMenu_Click"/>
                 <Separator/>
-                <MenuItem Header="Show Last Move" IsChecked="True" IsCheckable="True" Name="lastMoveMenu" InputGestureText="F5" Click="lastMoveMenu_Click"/>
-                <MenuItem Header="Rotate Board" IsChecked="True" IsCheckable="True" Name="rotateMenu" InputGestureText="F6" Click="rotateMenu_Click"/>
-                <MenuItem Header="Save Game on Exit" IsChecked="True" IsCheckable="True" Name="saveMenu" InputGestureText="F7" Click="saveMenu_Click"/>
+                <MenuItem Header="Show Last Move" IsChecked="True" IsCheckable="True" Name="lastMoveMenu" Click="lastMoveMenu_Click"/>
+                <MenuItem Header="Rotate Board" IsChecked="True" IsCheckable="True" Name="rotateMenu" Click="rotateMenu_Click"/>
+                <MenuItem Header="Save Game on Exit" IsChecked="True" IsCheckable="True" Name="saveMenu" Click="saveMenu_Click"/>
             </MenuItem>
         </Menu>
     </Grid>
