@@ -4,12 +4,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using Trinet.Core.IO.Ntfs;
 
 namespace Chess
@@ -32,7 +33,6 @@ namespace Chess
         private coordinate fromCoor;        //where from.png is located
         public List<string> themeList;      //list of themes
         public int themeIndex;              //which theme is currently in use
-        public int tick;                    //timestep for board rotation
         private List<string> ignore = new List<string>();
         public BitmapImage lKing;
         public BitmapImage lQueen;
@@ -973,7 +973,6 @@ namespace Chess
                 string message;
                 ready = false;
                 mWindow.undoMenu.IsEnabled = false;
-                history.Clear();
                 
                 foreach(display d in displayArray)
                 {
@@ -1357,64 +1356,31 @@ namespace Chess
             }
         }
 
-        private void timer_Tick(object sender, EventArgs e)
-        {
-            //rotates board in rings
-            //called 42 times for each full board rotation
-
-            tick++;
-
-            if (tick % 3 == 0)
-            {
-                rotateRing(0);   //outer ring
-                //this.Refresh();
-            }
-            if (tick % 4 == 0)
-            {
-                rotateRing(1);   //2nd ring
-                //this.Refresh();
-            }
-            if (tick % 7 == 0)
-            {
-                rotateRing(2);   //3rd ring
-                //this.Refresh();
-            }
-            if (tick % 21 == 0)
-            {
-                rotateRing(3);   //inner ring
-                //this.Refresh();
-            }
-        }
-
-        private void rotateBoard()
+        private async Task rotateBoard()
         {
             //performs rotate animation
 
             if (ready == true)
             {
                 ready = false;
-                tick = 0;
-                clearToAndFrom();
-                DispatcherTimer timer = new DispatcherTimer(DispatcherPriority.Send);
-                timer.Tick += new EventHandler(timer_Tick);
-                timer.Interval = new TimeSpan(0, 0, 0, 0, 5);
-                timer.Start();
-                while (tick < 42)
-                {
-                    //Application.DoEvents();
-                }
+                RotateTransform rt = new RotateTransform();
+                DoubleAnimation anim8 = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
+                Point middle = new Point(.5, .5);
+                ScaleTransform flipTrans = new ScaleTransform();
+                flipTrans.ScaleY = -1;
 
-                timer.Stop();
-                rotatePieces();
-                rotateToAndFrom();
+                //rotate
+                mWindow.uGrid.RenderTransformOrigin = middle;
+                mWindow.uGrid.RenderTransform = rt;
+                rt.BeginAnimation(RotateTransform.AngleProperty, anim8);
 
-                if (baseOnBottom == "light")
+                await Task.Delay(5000);
+
+                //flip
+                foreach(display cell in displayArray)
                 {
-                    baseOnBottom = "dark";
-                }
-                else
-                {
-                    baseOnBottom = "light";
+                    cell.top.RenderTransformOrigin = middle;
+                    cell.top.RenderTransform = flipTrans;
                 }
                 ready = true;
             }
@@ -1448,70 +1414,6 @@ namespace Chess
             temp = new coordinate(7 - fromCoor.x, 7 - fromCoor.y);
             displayArray[temp.x, temp.y].bottom.Source = bmpFrom;
             fromCoor = temp;
-        }
-
-        public void rotateRing(int min)
-        {
-            //takes one ring and rotates all images
-
-            int max = 7 - min;
-            string direction;
-            Image next = displayArray[min, min].top;    //first image moved
-
-            direction = "right";
-            for (int x = min; x < max; x++)
-            {
-                //takes previous image and puts it in next spot while returning next image
-                next = rotateImage(x, min, direction, next);
-            }
-
-            direction = "up";
-            for (int y = min; y < max; y++)
-            {
-                next = rotateImage(max, y, direction, next);
-            }
-
-            direction = "left";
-            for (int x = max; x > min; x--)
-            {
-                next = rotateImage(x, max, direction, next);
-            }
-
-            direction = "down";
-            for (int y = max; y > min; y--)
-            {
-                next = rotateImage(min, y, direction, next);
-            }
-        }
-
-        private Image rotateImage(int fromX, int fromY, string dir, Image overwrite)
-        {
-            //moves one image to next cell for rotate animation
-
-            Image replace;
-            coordinate toCoor;
-            coordinate fromCoor = new coordinate(fromX, fromY);
-
-            if (dir == "down")
-            {
-                toCoor = new coordinate(fromX, fromY - 1);
-            }
-            else if (dir == "right")
-            {
-                toCoor = new coordinate(fromX + 1, fromY);
-            }
-            else if (dir == "up")
-            {
-                toCoor = new coordinate(fromX, fromY + 1);
-            }
-            else//left
-            {
-                toCoor = new coordinate(fromX - 1, fromY);
-            }
-
-            replace = displayArray[toCoor.x, toCoor.y].top;
-            displayArray[toCoor.x, toCoor.y].top = overwrite;
-            return replace;
         }
 
         private void movePiece(coordinate newCell, piece pPiece, coordinate oldCell)
