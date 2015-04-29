@@ -1363,18 +1363,46 @@ namespace Chess
             if (ready == true)
             {
                 ready = false;
-                RotateTransform rt = new RotateTransform();
-                DoubleAnimation anim8 = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
+                double spaceSize;
+                double gridHeight = mWindow.uGrid.ActualHeight;
+                double gridWidth = mWindow.uGrid.ActualWidth;
+                if(mWindow.space.ActualHeight > mWindow.space.ActualWidth)
+                {
+                    spaceSize = mWindow.space.ActualWidth;
+                }
+                else
+                {
+                    spaceSize = mWindow.space.ActualHeight;
+                }
+                spaceSize = spaceSize * .66;
+
                 Point middle = new Point(.5, .5);
+                ScaleTransform st = new ScaleTransform();
+                DoubleAnimation shrinkHeight = new DoubleAnimation(gridHeight, spaceSize, TimeSpan.FromSeconds(.75));
+                DoubleAnimation shrinkWidth = new DoubleAnimation(gridWidth, spaceSize, TimeSpan.FromSeconds(.75));
+                DoubleAnimation expandHeight = new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(.75));
+                DoubleAnimation expandWidth = new DoubleAnimation(spaceSize, gridWidth, TimeSpan.FromSeconds(.75));
+                RotateTransform rt = new RotateTransform();
+                DoubleAnimation rotate = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
                 ScaleTransform flipTrans = new ScaleTransform();
                 flipTrans.ScaleY = -1;
+                mWindow.uGrid.RenderTransformOrigin = middle;
+
+                //shrink
+                mWindow.uGrid.BeginAnimation(Grid.HeightProperty, shrinkHeight);
+                mWindow.uGrid.BeginAnimation(Grid.WidthProperty, shrinkWidth);
 
                 //rotate
-                mWindow.uGrid.RenderTransformOrigin = middle;
                 mWindow.uGrid.RenderTransform = rt;
-                rt.BeginAnimation(RotateTransform.AngleProperty, anim8);
+                rt.BeginAnimation(RotateTransform.AngleProperty, rotate);
 
-                await Task.Delay(5000);
+                await Task.Delay(4250);
+
+                //expand
+                mWindow.uGrid.BeginAnimation(Grid.HeightProperty, expandHeight);
+                mWindow.uGrid.BeginAnimation(Grid.WidthProperty, expandWidth);
+
+                await Task.Delay(750);
 
                 //flip
                 foreach(display cell in displayArray)
