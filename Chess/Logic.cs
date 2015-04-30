@@ -1208,7 +1208,7 @@ namespace Chess
                     }
 
                     compTurn(possibleWithoutCheck);
-                    isInCheckmate("light", getLightPieces()); //did computer turn put player in checkmate?
+                    endOfGame = isInCheckmate("light", getLightPieces()); //did computer turn put player in checkmate?
                     offensiveTeam = "light";
                 }
             }
@@ -1225,14 +1225,14 @@ namespace Chess
                     }
 
                     compTurn(possibleWithoutCheck);
-                    isInCheckmate("dark", getDarkPieces()); //did computer turn put player in checkmate?
+                    endOfGame = isInCheckmate("dark", getDarkPieces()); //did computer turn put player in checkmate?
                     offensiveTeam = "dark";
                 }
             }
 
-            if (onePlayer == false && rotate == true)    //rotate
+            if (onePlayer == false && rotate == true && endOfGame == false)    //rotate
             {
-                rotateBoard(false);
+                rotateBoard(false, 5);
             }
         }
 
@@ -1344,7 +1344,7 @@ namespace Chess
             }
         }
 
-        private async void rotateBoard(bool menuItemToggled)
+        public async void rotateBoard(bool menuItemToggled, double time)
         {
             //performs rotate animation
 
@@ -1372,37 +1372,37 @@ namespace Chess
                 }
 
                 spaceSize = spaceSize * .66;
-                DoubleAnimation shrinkHeight = new DoubleAnimation(gridHeight, spaceSize, TimeSpan.FromSeconds(.75));
-                DoubleAnimation shrinkWidth = new DoubleAnimation(gridWidth, spaceSize, TimeSpan.FromSeconds(.75));
-                DoubleAnimation expandHeight = new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(.75));
-                DoubleAnimation expandWidth = new DoubleAnimation(spaceSize, gridWidth, TimeSpan.FromSeconds(.75));
+                DoubleAnimation shrinkHeight = new DoubleAnimation(gridHeight, spaceSize, TimeSpan.FromSeconds(time * .15));
+                DoubleAnimation shrinkWidth = new DoubleAnimation(gridWidth, spaceSize, TimeSpan.FromSeconds(time * .15));
+                DoubleAnimation expandHeight = new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(time * .15));
+                DoubleAnimation expandWidth = new DoubleAnimation(spaceSize, gridWidth, TimeSpan.FromSeconds(time * .15));
 
                 //turning opponent's turn
                 if (offensiveTeam == opponent && menuItemToggled == false)
                 {
                     //opponent top to bottom
-                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
+                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
                     flipTrans.ScaleY = -1;
                 }
                 //turning firstPlayer's turn
                 else if(offensiveTeam != opponent && menuItemToggled == false)
                 {
                     //opponent bottom to top
-                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(5));
+                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
                     flipTrans.ScaleY = 1;
                 }
                 //toggled off
                 else if(rotate == true && menuItemToggled == true)
                 {
                     //opponent bottom to top
-                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(5));
+                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
                     flipTrans.ScaleY = 1;
                 }
                 //toggled on
                 else
                 {
                     //opponent top to bottom
-                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
+                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
                     flipTrans.ScaleY = -1;
                 }
 
@@ -1414,13 +1414,13 @@ namespace Chess
                 mWindow.uGrid.RenderTransform = rt;
                 rt.BeginAnimation(RotateTransform.AngleProperty, rotation);
 
-                await Task.Delay(4250);
+                await Task.Delay((int)(time * 850));
 
                 //expand
                 mWindow.uGrid.BeginAnimation(Grid.HeightProperty, expandHeight);
                 mWindow.uGrid.BeginAnimation(Grid.WidthProperty, expandWidth);
 
-                await Task.Delay(750);
+                await Task.Delay((int)(time * 150));
 
                 //flip
                 foreach(display cell in displayArray)
@@ -1480,7 +1480,7 @@ namespace Chess
 
             if (rotate == true && onePlayer == false)
             {
-                rotateBoard(false);
+                rotateBoard(false, 5);
             }
 
             if (node.pawnTransform == true)
@@ -1793,6 +1793,11 @@ namespace Chess
                         else
                         {
                             mWindow.rotateMenu.IsEnabled = true;
+
+                            if(rotate == true && offensiveTeam == opponent)
+                            {
+                                rotateBoard(false, 0);
+                            }
                         }
                     }
                     else    //Exit while game not being played
@@ -1834,7 +1839,7 @@ namespace Chess
             if (offensiveTeam == opponent)  //if opponent's turn
             {
                 clearSelectedAndPossible();
-                rotateBoard(true);
+                rotateBoard(true, 5);
                 clearToAndFrom();
             }
             rotate = mWindow.rotateMenu.IsChecked;

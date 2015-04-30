@@ -21,6 +21,12 @@ namespace Chess
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
+            //if going from 2Player game to 1Player game and opponent is on bottom
+            if (game.onePlayer == false && onePlayerBtn.IsChecked.Value == true && game.offensiveTeam == game.opponent && game.rotate == true)
+            {
+                game.rotateBoard(true, 0);
+            }
+
             if (darkBtn.IsChecked == true)
             {
                 game.offensiveTeam = "dark";
