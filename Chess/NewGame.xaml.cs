@@ -24,14 +24,12 @@ namespace Chess
             if (darkBtn.IsChecked == true)
             {
                 game.offensiveTeam = "dark";
-                game.baseOnBottom = "dark";
                 game.opponent = "light";
                 game.setBoardForNewGame();
             }
             else
             {
                 game.offensiveTeam = "light";
-                game.baseOnBottom = "light";
                 game.opponent = "dark";
                 game.setBoardForNewGame();
             }

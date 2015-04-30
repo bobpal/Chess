@@ -24,7 +24,6 @@ namespace Chess
         public bool onePlayer;              //versus computer or human
         public string opponent;             //color of computer or 2nd player
         public string offensiveTeam;        //which side is on the offense
-        public string baseOnBottom;         //which side is currently on bottom, going up
         public bool medMode;                //difficulty level
         public bool hardMode;               //difficulty level
         public bool ready;                  //blocks functionality for unwanted circumstances
@@ -1031,13 +1030,13 @@ namespace Chess
             coordinate toSpot = shift.moveSpot;
             coordinate fromSpot = shift.pieceSpot;
 
-            if (offensiveTeam == baseOnBottom)
+            if (offensiveTeam == opponent)
             {
-                yCoor = 0;
+                yCoor = 7;
             }
             else
             {
-                yCoor = 7;
+                yCoor = 0;
             }
 
             if (fromSpot.x == 4 && fromSpot.y == yCoor)  //if moving from King default position
@@ -1136,25 +1135,14 @@ namespace Chess
 
                         if (pieceArray[currentCell.x, currentCell.y].job == "Pawn")
                         {
-                            string baseOnTop;
-
-                            if (baseOnBottom == "light")
-                            {
-                                baseOnTop = "dark";
-                            }
-                            else
-                            {
-                                baseOnTop = "light";
-                            }
-
-                            if (pieceArray[currentCell.x, currentCell.y].color == baseOnBottom && currentCell.y == 7)
+                            if (pieceArray[currentCell.x, currentCell.y].color == opponent && currentCell.y == 0)
                             {
                                 PawnTransformation transform = new PawnTransformation(currentCell, this);
                                 transform.ShowDialog();
                                 node = new historyNode(curTurn, captured, true, false, false);
                             }
 
-                            else if (pieceArray[currentCell.x, currentCell.y].color == baseOnTop && currentCell.y == 0)
+                            else if (pieceArray[currentCell.x, currentCell.y].color != opponent && currentCell.y == 7)
                             {
                                 PawnTransformation transform = new PawnTransformation(currentCell, this);
                                 transform.ShowDialog();
@@ -1244,7 +1232,7 @@ namespace Chess
 
             if (onePlayer == false && rotate == true)    //rotate
             {
-                rotateBoard();
+                rotateBoard(false);
             }
         }
 
@@ -1356,16 +1344,24 @@ namespace Chess
             }
         }
 
-        private async Task rotateBoard()
+        private async void rotateBoard(bool menuItemToggled)
         {
             //performs rotate animation
 
             if (ready == true)
             {
                 ready = false;
+
+                DoubleAnimation rotation;
                 double spaceSize;
                 double gridHeight = mWindow.uGrid.ActualHeight;
                 double gridWidth = mWindow.uGrid.ActualWidth;
+                Point middle = new Point(.5, .5);
+                ScaleTransform st = new ScaleTransform();
+                RotateTransform rt = new RotateTransform();
+                ScaleTransform flipTrans = new ScaleTransform();
+                mWindow.uGrid.RenderTransformOrigin = middle;
+
                 if(mWindow.space.ActualHeight > mWindow.space.ActualWidth)
                 {
                     spaceSize = mWindow.space.ActualWidth;
@@ -1374,19 +1370,41 @@ namespace Chess
                 {
                     spaceSize = mWindow.space.ActualHeight;
                 }
-                spaceSize = spaceSize * .66;
 
-                Point middle = new Point(.5, .5);
-                ScaleTransform st = new ScaleTransform();
+                spaceSize = spaceSize * .66;
                 DoubleAnimation shrinkHeight = new DoubleAnimation(gridHeight, spaceSize, TimeSpan.FromSeconds(.75));
                 DoubleAnimation shrinkWidth = new DoubleAnimation(gridWidth, spaceSize, TimeSpan.FromSeconds(.75));
                 DoubleAnimation expandHeight = new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(.75));
                 DoubleAnimation expandWidth = new DoubleAnimation(spaceSize, gridWidth, TimeSpan.FromSeconds(.75));
-                RotateTransform rt = new RotateTransform();
-                DoubleAnimation rotate = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
-                ScaleTransform flipTrans = new ScaleTransform();
-                flipTrans.ScaleY = -1;
-                mWindow.uGrid.RenderTransformOrigin = middle;
+
+                //turning opponent's turn
+                if (offensiveTeam == opponent && menuItemToggled == false)
+                {
+                    //opponent top to bottom
+                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
+                    flipTrans.ScaleY = -1;
+                }
+                //turning firstPlayer's turn
+                else if(offensiveTeam != opponent && menuItemToggled == false)
+                {
+                    //opponent bottom to top
+                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(5));
+                    flipTrans.ScaleY = 1;
+                }
+                //toggled off
+                else if(rotate == true && menuItemToggled == true)
+                {
+                    //opponent bottom to top
+                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(5));
+                    flipTrans.ScaleY = 1;
+                }
+                //toggled on
+                else
+                {
+                    //opponent top to bottom
+                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(5));
+                    flipTrans.ScaleY = -1;
+                }
 
                 //shrink
                 mWindow.uGrid.BeginAnimation(Grid.HeightProperty, shrinkHeight);
@@ -1394,7 +1412,7 @@ namespace Chess
 
                 //rotate
                 mWindow.uGrid.RenderTransform = rt;
-                rt.BeginAnimation(RotateTransform.AngleProperty, rotate);
+                rt.BeginAnimation(RotateTransform.AngleProperty, rotation);
 
                 await Task.Delay(4250);
 
@@ -1412,36 +1430,6 @@ namespace Chess
                 }
                 ready = true;
             }
-        }
-
-        private void rotatePieces()
-        {
-            //rotates pieces in array, not pictures
-
-            piece[,] bufferBoard = new piece[8, 8];
-            int newX;
-            int newY;
-
-            foreach (coordinate piece in getAllPieces())
-            {
-                newX = 7 - piece.x;
-                newY = 7 - piece.y;
-                bufferBoard[newX, newY] = pieceArray[piece.x, piece.y];
-            }
-            pieceArray = bufferBoard;
-        }
-
-        private void rotateToAndFrom()
-        {
-            //rotate last move indicators
-
-            coordinate temp;
-            temp = new coordinate(7 - toCoor.x, 7 - toCoor.y);
-            displayArray[temp.x, temp.y].bottom.Source = bmpTo;
-            toCoor = temp;
-            temp = new coordinate(7 - fromCoor.x, 7 - fromCoor.y);
-            displayArray[temp.x, temp.y].bottom.Source = bmpFrom;
-            fromCoor = temp;
         }
 
         private void movePiece(coordinate newCell, piece pPiece, coordinate oldCell)
@@ -1471,7 +1459,7 @@ namespace Chess
         {
             //completely undo previous move
 
-            Image pawnPic = new Image();
+            BitmapImage pawnPic = new BitmapImage();
             piece to;
             piece from;
             int xMove;
@@ -1486,29 +1474,29 @@ namespace Chess
             xPiece = node.step.pieceSpot.x;
             yPiece = node.step.pieceSpot.y;
 
-            if (rotate == true && onePlayer == false)
-            {
-                rotateBoard();
-            }
-
             to = pieceArray[xMove, yMove];
             from = pieceArray[xPiece, yPiece];
             offensiveTeam = to.color;
+
+            if (rotate == true && onePlayer == false)
+            {
+                rotateBoard(false);
+            }
 
             if (node.pawnTransform == true)
             {
                 if (to.color == "light")
                 {
-                    pawnPic.Source = lPawn;
+                    pawnPic = lPawn;
                 }
 
                 else
                 {
-                    pawnPic.Source = dPawn;
+                    pawnPic = dPawn;
                 }
 
                 pieceArray[xPiece, yPiece].job = "Pawn";
-                displayArray[xPiece, yPiece].top = pawnPic;
+                displayArray[xPiece, yPiece].top.Source = pawnPic;
             }
 
             else
@@ -1797,36 +1785,17 @@ namespace Chess
                         onePlayer = lData.sOnePlayer;
                         medMode = lData.sMedMode;
                         hardMode = lData.sHardMode;
-                        string goodTeam;
-
-                        if (opponent == "light")
-                        {
-                            goodTeam = "dark";
-                        }
-                        else
-                        {
-                            goodTeam = "light";
-                        }
 
                         if (onePlayer == true)
                         {
-                            baseOnBottom = offensiveTeam;
                             mWindow.rotateMenu.IsEnabled = false;
                         }
                         else
                         {
-                            if (rotate == true)
-                            {
-                                baseOnBottom = offensiveTeam;
-                            }
-                            else
-                            {
-                                baseOnBottom = goodTeam;
-                            }
                             mWindow.rotateMenu.IsEnabled = true;
                         }
                     }
-                    else    //Exit on Game Over
+                    else    //Exit while game not being played
                     {
                         newGame();
                     }
@@ -1862,14 +1831,11 @@ namespace Chess
         {
             //when rotate option is toggled
 
-            if (onePlayer == false)
+            if (offensiveTeam == opponent)  //if opponent's turn
             {
-                if (offensiveTeam == opponent)  //if opponent's turn
-                {
-                    clearSelectedAndPossible();
-                    rotateBoard();
-                    clearToAndFrom();
-                }
+                clearSelectedAndPossible();
+                rotateBoard(true);
+                clearToAndFrom();
             }
             rotate = mWindow.rotateMenu.IsChecked;
         }
@@ -2445,32 +2411,7 @@ namespace Chess
             //search for castleing opportunity
             if (pieceArray[current.x, current.y].virgin == true)//if king's first move
             {
-                if (pieceColor == baseOnBottom)
-                {
-                    if (pieceArray[0, 0].virgin == true)//if left rook's first move
-                    {
-                        if (pieceArray[1, 0].job == null && pieceArray[2, 0].job == null && pieceArray[3, 0].job == null)
-                        {
-                            moveCoor.x = 2;
-                            moveCoor.y = 0;
-                            availableMove = new move(current, moveCoor, 0);
-                            availableList.Add(availableMove);
-                        }
-                    }
-
-                    if (pieceArray[7, 0].virgin == true)//if right rook's first move
-                    {
-                        if (pieceArray[6, 0].job == null && pieceArray[5, 0].job == null)
-                        {
-                            moveCoor.x = 6;
-                            moveCoor.y = 0;
-                            availableMove = new move(current, moveCoor, 0);
-                            availableList.Add(availableMove);
-                        }
-                    }
-                }
-
-                else
+                if (pieceColor == opponent)
                 {
                     if (pieceArray[0, 7].virgin == true)//if left rook's first move
                     {
@@ -2490,6 +2431,31 @@ namespace Chess
                         {
                             moveCoor.x = 6;
                             moveCoor.y = 7;
+                            availableMove = new move(current, moveCoor, 0);
+                            availableList.Add(availableMove);
+                        }
+                    }
+                }
+
+                else
+                {
+                    if (pieceArray[0, 0].virgin == true)//if left rook's first move
+                    {
+                        if (pieceArray[1, 0].job == null && pieceArray[2, 0].job == null && pieceArray[3, 0].job == null)
+                        {
+                            moveCoor.x = 2;
+                            moveCoor.y = 0;
+                            availableMove = new move(current, moveCoor, 0);
+                            availableList.Add(availableMove);
+                        }
+                    }
+
+                    if (pieceArray[7, 0].virgin == true)//if right rook's first move
+                    {
+                        if (pieceArray[6, 0].job == null && pieceArray[5, 0].job == null)
+                        {
+                            moveCoor.x = 6;
+                            moveCoor.y = 0;
                             availableMove = new move(current, moveCoor, 0);
                             availableList.Add(availableMove);
                         }
@@ -2518,63 +2484,7 @@ namespace Chess
                 oppositeColor = "light";
             }
 
-            if (pieceColor == baseOnBottom)
-            {
-                //search up
-                availableY++;
-                if (availableY < 8)
-                {
-                    if (pieceArray[availableX, availableY].color == null)
-                    {
-                        moveCoor.x = availableX;
-                        moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
-                        availableList.Add(availableMove);
-
-                        //search first move
-                        availableY++;
-                        if (availableY < 8 && pieceArray[current.x, current.y].virgin == true)
-                        {
-                            if (pieceArray[availableX, availableY].color == null)
-                            {
-                                moveCoor.x = availableX;
-                                moveCoor.y = availableY;
-                                availableMove = new move(current, moveCoor, 0);
-                                availableList.Add(availableMove);
-                            }
-                        }
-                        availableY--;
-                    }
-                }
-
-                //search upper right
-                availableX++;
-                if (availableY < 8 && availableX < 8)
-                {
-                    if (pieceArray[availableX, availableY].color == oppositeColor)
-                    {
-                        moveCoor.x = availableX;
-                        moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
-                        availableList.Add(availableMove);
-                    }
-                }
-
-                //search upper left
-                availableX -= 2;
-                if (availableY < 8 && availableX >= 0)
-                {
-                    if (pieceArray[availableX, availableY].color == oppositeColor)
-                    {
-                        moveCoor.x = availableX;
-                        moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
-                        availableList.Add(availableMove);
-                    }
-                }
-            }
-
-            else
+            if (pieceColor == opponent)
             {
                 //search down
                 availableY--;
@@ -2619,6 +2529,62 @@ namespace Chess
                 //search lower left
                 availableX -= 2;
                 if (availableY >= 0 && availableX >= 0)
+                {
+                    if (pieceArray[availableX, availableY].color == oppositeColor)
+                    {
+                        moveCoor.x = availableX;
+                        moveCoor.y = availableY;
+                        availableMove = new move(current, moveCoor, 0);
+                        availableList.Add(availableMove);
+                    }
+                }
+            }
+
+            else
+            {
+                //search up
+                availableY++;
+                if (availableY < 8)
+                {
+                    if (pieceArray[availableX, availableY].color == null)
+                    {
+                        moveCoor.x = availableX;
+                        moveCoor.y = availableY;
+                        availableMove = new move(current, moveCoor, 0);
+                        availableList.Add(availableMove);
+
+                        //search first move
+                        availableY++;
+                        if (availableY < 8 && pieceArray[current.x, current.y].virgin == true)
+                        {
+                            if (pieceArray[availableX, availableY].color == null)
+                            {
+                                moveCoor.x = availableX;
+                                moveCoor.y = availableY;
+                                availableMove = new move(current, moveCoor, 0);
+                                availableList.Add(availableMove);
+                            }
+                        }
+                        availableY--;
+                    }
+                }
+
+                //search upper right
+                availableX++;
+                if (availableY < 8 && availableX < 8)
+                {
+                    if (pieceArray[availableX, availableY].color == oppositeColor)
+                    {
+                        moveCoor.x = availableX;
+                        moveCoor.y = availableY;
+                        availableMove = new move(current, moveCoor, 0);
+                        availableList.Add(availableMove);
+                    }
+                }
+
+                //search upper left
+                availableX -= 2;
+                if (availableY < 8 && availableX >= 0)
                 {
                     if (pieceArray[availableX, availableY].color == oppositeColor)
                     {
