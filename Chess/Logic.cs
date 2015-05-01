@@ -47,6 +47,7 @@ namespace Chess
         private BitmapImage dPawn;
         private BitmapImage bmpTo = new BitmapImage(new Uri("pack://application:,,,/Resources/to.png"));
         private BitmapImage bmpFrom = new BitmapImage(new Uri("pack://application:,,,/Resources/from.png"));
+        public double rotationDuration = 5;                             //how long the rotation animation takes
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private List<move> possible = new List<move>();                 //list of all possible moves
         public bool lastMove = true;                                    //is lastMove menu option checked?
@@ -74,8 +75,10 @@ namespace Chess
             public bool sSaveGame { get; private set; }
             public bool sReady { get; private set; }
             public bool sRotate { get; private set; }
+            public double sRduration { get; private set; }
 
-            public saveData(piece[,] p1, string p2, string p3, string p4, bool p5, bool p6, bool p7, bool p8, bool p9, bool p10, bool p11)
+            public saveData(piece[,] p1, string p2, string p3, string p4, bool p5,
+                bool p6, bool p7, bool p8, bool p9, bool p10, bool p11, double p12)
             {
                 this.sBoard = p1;
                 this.sOffensiveTeam = p2;
@@ -88,6 +91,7 @@ namespace Chess
                 this.sSaveGame = p9;
                 this.sReady = p10;
                 this.sRotate = p11;
+                this.sRduration = p12;
             }
         }
 
@@ -1232,7 +1236,7 @@ namespace Chess
 
             if (onePlayer == false && rotate == true && endOfGame == false)    //rotate
             {
-                rotateBoard(false, 5);
+                rotateBoard(false, rotationDuration);
             }
         }
 
@@ -1344,7 +1348,7 @@ namespace Chess
             }
         }
 
-        public async void rotateBoard(bool menuItemToggled, double time)
+        public async void rotateBoard(bool optionToggled, double time)
         {
             //performs rotate animation
 
@@ -1378,21 +1382,21 @@ namespace Chess
                 DoubleAnimation expandWidth = new DoubleAnimation(spaceSize, gridWidth, TimeSpan.FromSeconds(time * .15));
 
                 //turning opponent's turn
-                if (offensiveTeam == opponent && menuItemToggled == false)
+                if (offensiveTeam == opponent && optionToggled == false)
                 {
                     //opponent top to bottom
                     rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
                     flipTrans.ScaleY = -1;
                 }
                 //turning firstPlayer's turn
-                else if(offensiveTeam != opponent && menuItemToggled == false)
+                else if(offensiveTeam != opponent && optionToggled == false)
                 {
                     //opponent bottom to top
                     rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
                     flipTrans.ScaleY = 1;
                 }
                 //toggled off
-                else if(rotate == true && menuItemToggled == true)
+                else if(rotate == true && optionToggled == true)
                 {
                     //opponent bottom to top
                     rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
@@ -1480,7 +1484,7 @@ namespace Chess
 
             if (rotate == true && onePlayer == false)
             {
-                rotateBoard(false, 5);
+                rotateBoard(false, rotationDuration);
             }
 
             if (node.pawnTransform == true)
@@ -1744,7 +1748,7 @@ namespace Chess
 
             string theme = themeList[themeIndex];
             saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, medMode, hardMode,
-                lastMove, saveGame, ready, rotate);
+                lastMove, saveGame, ready, rotate, rotationDuration);
 
             System.IO.Directory.CreateDirectory(dirPath);
             BinaryFormatter writer = new BinaryFormatter();
@@ -1767,9 +1771,8 @@ namespace Chess
 
                 //load preferences regardless of whether saveGame was enabled
                 lastMove = lData.sLastMove;
-                mWindow.lastMoveMenu.IsChecked = lastMove;
                 rotate = lData.sRotate;
-                mWindow.rotateMenu.IsChecked = rotate;
+                rotationDuration = lData.sRduration;
                 string theme = lData.sTheme;
 
                 if (lData.sSaveGame == true)
@@ -1786,18 +1789,9 @@ namespace Chess
                         medMode = lData.sMedMode;
                         hardMode = lData.sHardMode;
 
-                        if (onePlayer == true)
+                        if(rotate == true && offensiveTeam == opponent && onePlayer == false)
                         {
-                            mWindow.rotateMenu.IsEnabled = false;
-                        }
-                        else
-                        {
-                            mWindow.rotateMenu.IsEnabled = true;
-
-                            if(rotate == true && offensiveTeam == opponent)
-                            {
-                                rotateBoard(false, 0);
-                            }
+                            rotateBoard(false, 0);
                         }
                     }
                     else    //Exit while game not being played
@@ -1808,7 +1802,6 @@ namespace Chess
                 else    //Exit with saveGame set to false
                 {
                     saveGame = false;
-                    mWindow.saveMenu.IsChecked = false;
                     newGame();
                 }
 
@@ -1832,17 +1825,16 @@ namespace Chess
             }
         }
 
-        public void rotateMenuOption()
+        public void rotateOptionToggled()
         {
             //when rotate option is toggled
 
             if (offensiveTeam == opponent)  //if opponent's turn
             {
                 clearSelectedAndPossible();
-                rotateBoard(true, 5);
+                rotateBoard(true, 0);
                 clearToAndFrom();
             }
-            rotate = mWindow.rotateMenu.IsChecked;
         }
 
         public void newGame()

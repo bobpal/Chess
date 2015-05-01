@@ -49,15 +49,6 @@ namespace Chess
             game.movablePieceSelected = false;
             game.history.Clear();
 
-            if (game.onePlayer == true)
-            {
-                tableTop.rotateMenu.IsEnabled = false;
-            }
-            else
-            {
-                tableTop.rotateMenu.IsEnabled = true;
-            }
-
             this.Close();
         }
     }

@@ -61,7 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="ChangeTheme.xaml">
+    <Page Include="Options.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -73,8 +73,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ChangeTheme.xaml.cs">
-      <DependentUpon>ChangeTheme.xaml</DependentUpon>
+    <Compile Include="Options.xaml.cs">
+      <DependentUpon>Options.xaml</DependentUpon>
     </Compile>
     <Compile Include="Logic.cs" />
     <Compile Include="MainWindow.xaml.cs">

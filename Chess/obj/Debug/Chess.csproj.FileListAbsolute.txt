@@ -12,10 +12,10 @@ C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Chess.csproj.GenerateReso
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Chess.exe
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Chess.pdb
 C:\Users\Robert\Documents\GitHub\Chess\Chess\bin\Debug\Trinet.Core.IO.Ntfs.dll
-C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\ChangeTheme.baml
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\NewGame.baml
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\PawnTransformation.baml
-C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\ChangeTheme.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\NewGame.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\PawnTransformation.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Chess_MarkupCompile.lref
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Options.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Options.g.cs

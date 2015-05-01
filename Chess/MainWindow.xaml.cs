@@ -25,7 +25,7 @@ namespace Chess
             sizeCmd.InputGestures.Add(new KeyGesture(Key.F4));
             CommandBindings.Add(new CommandBinding(newGameCmd, newGameMenu_Click));
             CommandBindings.Add(new CommandBinding(undoCmd, undoMenu_Click));
-            CommandBindings.Add(new CommandBinding(themeCmd, themeMenu_Click));
+            CommandBindings.Add(new CommandBinding(themeCmd, optionMenu_Click));
             CommandBindings.Add(new CommandBinding(sizeCmd, sizeMenu_Click));
             this.Show();
 
@@ -58,9 +58,9 @@ namespace Chess
             this.Close();
         }
 
-        private void themeMenu_Click(object sender, RoutedEventArgs e)
+        private void optionMenu_Click(object sender, RoutedEventArgs e)
         {
-            ChangeTheme change = new ChangeTheme(game);
+            Options change = new Options(game);
             change.ShowDialog();
         }
 
@@ -68,25 +68,6 @@ namespace Chess
         {
             this.Height = 721;
             this.Width = 728;
-        }
-
-        private void lastMoveMenu_Click(object sender, RoutedEventArgs e)
-        {
-            if(lastMoveMenu.IsChecked == false)
-            {
-                game.clearToAndFrom();
-            }
-            game.lastMove = lastMoveMenu.IsChecked;
-        }
-
-        private void rotateMenu_Click(object sender, RoutedEventArgs e)
-        {
-            game.rotateMenuOption();
-        }
-
-        private void saveMenu_Click(object sender, RoutedEventArgs e)
-        {
-            game.saveGame = saveMenu.IsChecked;
         }
 
         private void cell_Click(object sender, RoutedEventArgs e)
