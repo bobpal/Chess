@@ -19,3 +19,5 @@ C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\PawnTransformation.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Chess_MarkupCompile.lref
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Options.baml
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Options.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Connecting.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Debug\Connecting.g.cs

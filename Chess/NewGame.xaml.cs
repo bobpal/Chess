@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace Chess
 {
@@ -22,11 +25,6 @@ namespace Chess
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (networkBtn.IsChecked == true)
-            {
-                //show dialog box
-            }
-
             //if going from 2Player game to 1Player game and opponent is on bottom
             if (game.onePlayer == false && onePlayerBtn.IsChecked.Value == true && game.offensiveTeam == game.opponent && game.rotate == true)
             {
@@ -46,18 +44,30 @@ namespace Chess
                 game.setBoardForNewGame();
             }
 
-            game.onePlayer = onePlayerBtn.IsChecked.Value;
-            game.networkGame = networkBtn.IsChecked.Value;
-            game.medMode = mediumBtn.IsChecked.Value;
-            game.hardMode = hardBtn.IsChecked.Value;
-            game.history.Clear();
-            game.clearToAndFrom();
-            game.clearSelectedAndPossible();
-            game.movablePieceSelected = false;
-            game.IP = ipBox.Text;
-            game.port = System.Convert.ToInt32(portBox.Text);
-            game.ready = true;
-            this.Close();
+            if (networkBtn.IsChecked == true)
+            {
+                game.IP = ipBox.Text;
+                game.port = System.Convert.ToInt32(portBox.Text);
+                game.client = new TcpClient(game.IP, game.port);
+                game.nwStream = game.client.GetStream();
+
+                Connecting connect = new Connecting(game);
+                connect.ShowDialog();
+            }
+
+            if (networkBtn.IsChecked == false || game.client.Connected == true)
+            {
+                game.onePlayer = onePlayerBtn.IsChecked.Value;
+                game.networkGame = networkBtn.IsChecked.Value;
+                game.medMode = mediumBtn.IsChecked.Value;
+                game.hardMode = hardBtn.IsChecked.Value;
+                game.history.Clear();
+                game.clearToAndFrom();
+                game.clearSelectedAndPossible();
+                game.movablePieceSelected = false;
+                game.ready = true;
+                this.Close();
+            }
         }
 
         private void portBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

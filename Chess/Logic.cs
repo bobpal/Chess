@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
@@ -25,7 +27,6 @@ namespace Chess
         public bool networkGame;            //playing over a network
         public string opponent;             //color of computer or 2nd player
         public string offensiveTeam;        //which side is on the offense
-        
         public bool medMode;                //difficulty level
         public bool hardMode;               //difficulty level
         public bool ready;                  //blocks functionality for unwanted circumstances
@@ -45,6 +46,10 @@ namespace Chess
         public BitmapImage dKnight;
         public BitmapImage dRook;
         private BitmapImage dPawn;
+        public TcpClient client;
+        public NetworkStream nwStream;
+        public byte[] buffer;
+        public int bytesRead;
         private static Random rnd = new Random();
         public bool rotate = true;                          //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                        //is lastMove menu option checked?
@@ -1322,8 +1327,8 @@ namespace Chess
 
             if(networkGame == true)
             {
-                //send move to server
                 ready = false;
+                //wait for response move
             }
 
             else if (onePlayer == false && rotate == true && endOfGame == false)
