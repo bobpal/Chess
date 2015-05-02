@@ -26,5 +26,6 @@
             <ComboBoxItem Content="4"/>
             <ComboBoxItem Content="5"/>
         </ComboBox>
+        <Border BorderBrush="Black" BorderThickness="1" Height="130" Margin="10,10,10,0" VerticalAlignment="Top"/>
     </Grid>
 </Window>

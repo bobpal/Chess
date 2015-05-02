@@ -32,12 +32,19 @@ namespace Chess
                 }
             }
             previewBox.Source = game.lKing;
-            durationBox.IsEnabled = game.onePlayer == false && game.rotate == true;
-            rotateBtn.IsEnabled = !game.onePlayer;
+            durationBox.IsEnabled = game.onePlayer == false && game.rotate == true && game.networkGame == false;
+            rotateBtn.IsEnabled = game.onePlayer == false && game.networkGame == false;
             rotateBtn.IsChecked = game.rotate;
             lastMoveBtn.IsChecked = game.lastMove;
             saveGameBtn.IsChecked = game.saveGame;
             durationBox.SelectedIndex = (int)game.rotationDuration;
+
+            if(game.networkGame == true)
+            {
+                rotateBtn.IsEnabled = false;
+                saveGameBtn.IsEnabled = false;
+                durationBox.IsEnabled = false;
+            }
         }
 
         private void ThemeBox_Changed(object sender, SelectionChangedEventArgs args)

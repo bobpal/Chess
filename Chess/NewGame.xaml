@@ -4,14 +4,22 @@
         Title="New Game" Height="335" Width="335" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
     <Grid>
         <RadioButton x:Name="onePlayerBtn" Content="1 Player vs. Computer" HorizontalAlignment="Left" Height="20" Margin="15,30,0,0" VerticalAlignment="Top" Width="140" Padding="5,0,0,0" IsChecked="True"/>
-        <RadioButton x:Name="twoPlayerBtn" Content="2 Player Duel" HorizontalAlignment="Left" Height="20" Margin="15,55,0,0" VerticalAlignment="Top" Width="140" Padding="5,0,0,0"/>
+        <RadioButton x:Name="twoPlayerBtn" Content="2 Player Local" HorizontalAlignment="Left" Height="20" Margin="15,55,0,0" VerticalAlignment="Top" Width="140" Padding="5,0,0,0"/>
+        <RadioButton x:Name="networkBtn" Content="2 Player Online" HorizontalAlignment="Left" Height="20" Margin="15,80,0,0" VerticalAlignment="Top" Width="140" Padding="5,0,0,0"/>
         <Image Height="80" Margin="0,22,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Source="pack://application:,,,/Resources/logo.png"/>
         <Border BorderThickness="1" HorizontalAlignment="Left" Height="112" Margin="14,109,0,0" VerticalAlignment="Top" Width="132" BorderBrush="Black"/>
         <Canvas x:Name="Difficulty" HorizontalAlignment="Left" Height="110" Margin="15,110,0,0" VerticalAlignment="Top" Width="130"
-                Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" IsEnabled="{Binding ElementName=onePlayerBtn, Path=IsChecked}">
+                Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" IsEnabled="{Binding ElementName=onePlayerBtn, Path=IsChecked}" Panel.ZIndex="1">
             <RadioButton x:Name="easyBtn" Content="Easy" Height="20" Canvas.Left="10" Canvas.Top="15" Width="110" IsChecked="True" Padding="4,0,0,0"/>
             <RadioButton x:Name="mediumBtn" Content="Medium" Height="20" Canvas.Left="10" Canvas.Top="40" Width="110" Padding="4,0,0,0"/>
             <RadioButton x:Name="hardBtn" Content="Hard" Height="20" Canvas.Left="10" Canvas.Top="65" Width="110" Padding="4,0,0,0"/>
+        </Canvas>
+        <Canvas x:Name="Network" HorizontalAlignment="Left" Height="110" Margin="15,110,0,0" VerticalAlignment="Top" Width="130"
+                Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Panel.ZIndex="{Binding ElementName=networkBtn, Path=IsChecked}">
+            <Label Content="Server IP" Height="20" Canvas.Left="10" Canvas.Top="10" Width="110" Padding="0"/>
+            <TextBox x:Name="ipBox" Height="20" Canvas.Left="10" Canvas.Top="30" Width="110" Padding="0"/>
+            <Label Content="Port" Height="20" Canvas.Left="10" Canvas.Top="55" Width="110" Padding="0"/>
+            <TextBox x:Name="portBox" Height="20" Canvas.Left="10" Canvas.Top="75" Width="110" Padding="0" PreviewTextInput="portBox_PreviewTextInput"/>
         </Canvas>
         <Canvas x:Name="Color" Height="111" Margin="0,110,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="115">
             <RadioButton x:Name="lightBtn" Content="Play as light" Height="20" Canvas.Left="10" Canvas.Top="10" Width="95" IsChecked="True" Padding="4,0,0,0"/>

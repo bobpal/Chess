@@ -21,9 +21,11 @@ namespace Chess
         public piece[,] pieceArray;         //8x8 array of pieces
         public display[,] displayArray;     //8x8 array of display objects
         public MainWindow mWindow;          //window with chess board on it
-        public bool onePlayer;              //versus computer or human
+        public bool onePlayer;              //versus computer
+        public bool networkGame;            //playing over a network
         public string opponent;             //color of computer or 2nd player
         public string offensiveTeam;        //which side is on the offense
+        
         public bool medMode;                //difficulty level
         public bool hardMode;               //difficulty level
         public bool ready;                  //blocks functionality for unwanted circumstances
@@ -44,12 +46,14 @@ namespace Chess
         public BitmapImage dRook;
         private BitmapImage dPawn;
         private static Random rnd = new Random();
-        public bool rotate = true;                                  //Rotate board between turns on 2Player mode?
-        public bool lastMove = true;                                //is lastMove menu option checked?
-        public bool saveGame = true;                                //Save game on exit?
-        public double rotationDuration = 3;                         //how long the rotation animation takes
-        public bool movablePieceSelected = false;                   //if true, the next click will move the selected piece if possible
-        private List<move> possible = new List<move>();             //list of all possible moves
+        public bool rotate = true;                          //Rotate board between turns on 2Player mode?
+        public bool lastMove = true;                        //is lastMove menu option checked?
+        public bool saveGame = true;                        //Save game on exit?
+        public string IP = "127.0.0.1";                     //IP address of server
+        public int port = 54321;                            //port of server
+        public double rotationDuration = 3;                 //how long the rotation animation takes
+        public bool movablePieceSelected = false;           //if true, the next click will move the selected piece if possible
+        private List<move> possible = new List<move>();     //list of all possible moves
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private string pwd = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private BitmapImage bmpTo = new BitmapImage(new Uri("pack://application:,,,/Resources/to.png"));
@@ -67,6 +71,7 @@ namespace Chess
             public string sOpponent { get; private set; }
             public string sTheme { get; private set; }
             public bool sOnePlayer { get; private set; }
+            public bool sNetwork { get; private set; }
             public bool sMedMode { get; private set; }
             public bool sHardMode { get; private set; }
             public bool sLastMove { get; private set; }
@@ -76,20 +81,21 @@ namespace Chess
             public double sRduration { get; private set; }
 
             public saveData(piece[,] p1, string p2, string p3, string p4, bool p5,
-                bool p6, bool p7, bool p8, bool p9, bool p10, bool p11, double p12)
+                bool p6, bool p7, bool p8, bool p9, bool p10, bool p11, bool p12, double p13)
             {
                 this.sBoard = p1;
                 this.sOffensiveTeam = p2;
                 this.sOpponent = p3;
                 this.sTheme = p4;
                 this.sOnePlayer = p5;
-                this.sMedMode = p6;
-                this.sHardMode = p7;
-                this.sLastMove = p8;
-                this.sSaveGame = p9;
-                this.sReady = p10;
-                this.sRotate = p11;
-                this.sRduration = p12;
+                this.sNetwork = p6;
+                this.sMedMode = p7;
+                this.sHardMode = p8;
+                this.sLastMove = p9;
+                this.sSaveGame = p10;
+                this.sReady = p11;
+                this.sRotate = p12;
+                this.sRduration = p13;
             }
         }
 
@@ -1115,8 +1121,13 @@ namespace Chess
                     coordinate oldCastleCoor = new coordinate(0, yCoor);
                     castleMove.moveSpot = newCastleCoor;
                     castleMove.pieceSpot = oldCastleCoor;
-                    node = new historyNode(castleMove, pieceArray[3, yCoor], false, true, true);
-                    history.Push(node);
+
+                    if(networkGame == false)
+                    {
+                        node = new historyNode(castleMove, pieceArray[3, yCoor], false, true, true);
+                        history.Push(node);
+                    }
+                    
                     movePiece(newCastleCoor, pieceArray[0, yCoor], oldCastleCoor);
                 }
 
@@ -1126,8 +1137,13 @@ namespace Chess
                     coordinate oldCastleCoor = new coordinate(7, yCoor);
                     castleMove.moveSpot = newCastleCoor;
                     castleMove.pieceSpot = oldCastleCoor;
-                    node = new historyNode(castleMove, pieceArray[5, yCoor], false, true, true);
-                    history.Push(node);
+
+                    if(networkGame == false)
+                    {
+                        node = new historyNode(castleMove, pieceArray[5, yCoor], false, true, true);
+                        history.Push(node);
+                    }
+                    
                     movePiece(newCastleCoor, pieceArray[7, yCoor], oldCastleCoor);
                 }
             }
@@ -1228,8 +1244,11 @@ namespace Chess
                             node = new historyNode(curTurn, captured, false, false, virginMove);
                         }
 
-                        history.Push(node);
-                        mWindow.undoMenu.IsEnabled = true;
+                        if(networkGame == false)
+                        {
+                            history.Push(node);
+                            mWindow.undoMenu.IsEnabled = true;
+                        }
 
                         if (lastMove == true)
                         {
@@ -1241,6 +1260,11 @@ namespace Chess
                         if (pieceArray[currentCell.x, currentCell.y].job == "King")
                         {
                             castling(curTurn);//check if move is a castling
+                        }
+
+                        foreach (display d in displayArray)
+                        {
+                            d.tile.Cursor = Cursors.Arrow;
                         }
                         betweenTurns();
                     }
@@ -1296,7 +1320,13 @@ namespace Chess
                 }
             }
 
-            if (onePlayer == false && rotate == true && endOfGame == false)    //rotate
+            if(networkGame == true)
+            {
+                //send move to server
+                ready = false;
+            }
+
+            else if (onePlayer == false && rotate == true && endOfGame == false)
             {
                 rotateBoard(false, rotationDuration);
             }
@@ -1393,7 +1423,10 @@ namespace Chess
                 node = new historyNode(bestMove, captured, false, true, virginMove);
             }
 
-            history.Push(node);
+            if(networkGame == false)
+            {
+                history.Push(node);
+            }
 
             if (lastMove == true)
             {
@@ -1540,7 +1573,7 @@ namespace Chess
             from = pieceArray[xPiece, yPiece];
             offensiveTeam = to.color;
 
-            if (rotate == true && onePlayer == false)
+            if (rotate == true && onePlayer == false && networkGame == false)
             {
                 rotateBoard(false, rotationDuration);
             }
@@ -1805,7 +1838,7 @@ namespace Chess
             //if save game unchecked, saves preferences, but not game state
 
             string theme = themeList[themeIndex];
-            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, medMode, hardMode,
+            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, networkGame, medMode, hardMode,
                 lastMove, saveGame, ready, rotate, rotationDuration);
 
             System.IO.Directory.CreateDirectory(dirPath);
@@ -1835,7 +1868,7 @@ namespace Chess
 
                 if (lData.sSaveGame == true)
                 {
-                    if (lData.sReady == true)
+                    if (lData.sReady == true && lData.sNetwork == false)
                     {
                         ready = true;
                         pieceArray = new piece[8, 8];
@@ -1899,7 +1932,7 @@ namespace Chess
         {
             //call newGame window
 
-            NewGame play = new NewGame(this, mWindow);
+            NewGame play = new NewGame(this);
             play.ShowDialog();
         }
 
