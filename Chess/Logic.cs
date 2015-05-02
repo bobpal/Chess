@@ -1418,12 +1418,11 @@ namespace Chess
 
                 DoubleAnimation rotation;
                 double spaceSize;
+                RotateTransform rt = new RotateTransform();
+                ScaleTransform ft = new ScaleTransform();
                 double gridHeight = mWindow.uGrid.ActualHeight;
                 double gridWidth = mWindow.uGrid.ActualWidth;
                 Point middle = new Point(.5, .5);
-                ScaleTransform st = new ScaleTransform();
-                RotateTransform rt = new RotateTransform();
-                ScaleTransform flipTrans = new ScaleTransform();
                 mWindow.uGrid.RenderTransformOrigin = middle;
 
                 if(mWindow.space.ActualHeight > mWindow.space.ActualWidth)
@@ -1435,44 +1434,43 @@ namespace Chess
                     spaceSize = mWindow.space.ActualHeight;
                 }
 
-                spaceSize = spaceSize * .66;
-                DoubleAnimation shrinkHeight = new DoubleAnimation(gridHeight, spaceSize, TimeSpan.FromSeconds(time * .15));
-                DoubleAnimation shrinkWidth = new DoubleAnimation(gridWidth, spaceSize, TimeSpan.FromSeconds(time * .15));
-                DoubleAnimation expandHeight = new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(time * .15));
-                DoubleAnimation expandWidth = new DoubleAnimation(spaceSize, gridWidth, TimeSpan.FromSeconds(time * .15));
+                spaceSize *= .66;
+                DoubleAnimation shrink = new DoubleAnimation(gridHeight, spaceSize, TimeSpan.FromSeconds(time * .15));
+                DoubleAnimation expand =
+                    new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(time * .15), FillBehavior.Stop);
 
                 //turning opponent's turn
                 if (offensiveTeam == opponent && optionToggled == false)
                 {
                     //opponent top to bottom
                     rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
-                    flipTrans.ScaleY = -1;
+                    ft.ScaleY = -1;
                 }
                 //turning firstPlayer's turn
                 else if(offensiveTeam != opponent && optionToggled == false)
                 {
                     //opponent bottom to top
                     rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
-                    flipTrans.ScaleY = 1;
+                    ft.ScaleY = 1;
                 }
                 //toggled off
                 else if(rotate == true && optionToggled == true)
                 {
                     //opponent bottom to top
                     rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
-                    flipTrans.ScaleY = 1;
+                    ft.ScaleY = 1;
                 }
                 //toggled on
                 else
                 {
                     //opponent top to bottom
                     rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
-                    flipTrans.ScaleY = -1;
+                    ft.ScaleY = -1;
                 }
 
                 //shrink
-                mWindow.uGrid.BeginAnimation(Grid.HeightProperty, shrinkHeight);
-                mWindow.uGrid.BeginAnimation(Grid.WidthProperty, shrinkWidth);
+                mWindow.uGrid.BeginAnimation(Grid.HeightProperty, shrink);
+                mWindow.uGrid.BeginAnimation(Grid.WidthProperty, shrink);
 
                 //rotate
                 mWindow.uGrid.RenderTransform = rt;
@@ -1481,8 +1479,8 @@ namespace Chess
                 await Task.Delay((int)(time * 850));
 
                 //expand
-                mWindow.uGrid.BeginAnimation(Grid.HeightProperty, expandHeight);
-                mWindow.uGrid.BeginAnimation(Grid.WidthProperty, expandWidth);
+                mWindow.uGrid.BeginAnimation(Grid.HeightProperty, expand);
+                mWindow.uGrid.BeginAnimation(Grid.WidthProperty, expand);
 
                 await Task.Delay((int)(time * 150));
 
@@ -1490,7 +1488,7 @@ namespace Chess
                 foreach(display cell in displayArray)
                 {
                     cell.top.RenderTransformOrigin = middle;
-                    cell.top.RenderTransform = flipTrans;
+                    cell.top.RenderTransform = ft;
                 }
                 ready = true;
             }
