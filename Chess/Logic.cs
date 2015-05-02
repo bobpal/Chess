@@ -28,11 +28,9 @@ namespace Chess
         public bool hardMode;               //difficulty level
         public bool ready;                  //blocks functionality for unwanted circumstances
         private coordinate prevSelected;    //where the cursor clicked previously
-        private coordinate toCoor;          //where to.png is located
-        private coordinate fromCoor;        //where from.png is located
         public List<string> themeList;      //list of themes
         public int themeIndex;              //which theme is currently in use
-        private List<string> ignore = new List<string>();
+        private List<string> ignore;        //list of which dll files to ignore
         public BitmapImage lKing;
         public BitmapImage lQueen;
         public BitmapImage lBishop;
@@ -45,19 +43,19 @@ namespace Chess
         public BitmapImage dKnight;
         public BitmapImage dRook;
         private BitmapImage dPawn;
+        private static Random rnd = new Random();
+        public bool rotate = true;                                  //Rotate board between turns on 2Player mode?
+        public bool lastMove = true;                                //is lastMove menu option checked?
+        public bool saveGame = true;                                //Save game on exit?
+        public double rotationDuration = 3;                         //how long the rotation animation takes
+        public bool movablePieceSelected = false;                   //if true, the next click will move the selected piece if possible
+        private List<move> possible = new List<move>();             //list of all possible moves
+        public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
+        private string pwd = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private BitmapImage bmpTo = new BitmapImage(new Uri("pack://application:,,,/Resources/to.png"));
         private BitmapImage bmpFrom = new BitmapImage(new Uri("pack://application:,,,/Resources/from.png"));
-        public double rotationDuration = 5;                             //how long the rotation animation takes
-        public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
-        private List<move> possible = new List<move>();                 //list of all possible moves
-        public bool lastMove = true;                                    //is lastMove menu option checked?
-        public bool saveGame = true;                                    //Save game on exit?
-        public bool rotate = true;                                      //Rotate board between turns on 2Player mode?
-        public bool movablePieceSelected = false;                       //if true, the next click will move the selected piece if possible
         private string dirPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Chess";
         public string filePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Chess\\chess.sav";
-        private string pwd = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private static Random rnd = new Random();
 
         [Serializable]
         private class saveData
@@ -197,28 +195,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_zero, mWindow.bottom_zero_zero, mWindow.top_zero_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_zero, mWindow.bottom_zero_zero, mWindow.top_zero_zero);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_zero, mWindow.bottom_one_zero, mWindow.top_one_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_zero, mWindow.bottom_one_zero, mWindow.top_one_zero);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_zero, mWindow.bottom_two_zero, mWindow.top_two_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_zero, mWindow.bottom_two_zero, mWindow.top_two_zero);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_zero, mWindow.bottom_three_zero, mWindow.top_three_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_zero, mWindow.bottom_three_zero, mWindow.top_three_zero);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_zero, mWindow.bottom_four_zero, mWindow.top_four_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_zero, mWindow.bottom_four_zero, mWindow.top_four_zero);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_zero, mWindow.bottom_five_zero, mWindow.top_five_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_zero, mWindow.bottom_five_zero, mWindow.top_five_zero);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_zero, mWindow.bottom_six_zero, mWindow.top_six_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_zero, mWindow.bottom_six_zero, mWindow.top_six_zero);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_zero, mWindow.bottom_seven_zero, mWindow.top_seven_zero);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_zero, mWindow.bottom_seven_zero, mWindow.top_seven_zero);
                                     break;
                             }
                             break;
@@ -226,28 +232,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_one, mWindow.bottom_zero_one, mWindow.top_zero_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_one, mWindow.bottom_zero_one, mWindow.top_zero_one);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_one, mWindow.bottom_one_one, mWindow.top_one_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_one, mWindow.bottom_one_one, mWindow.top_one_one);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_one, mWindow.bottom_two_one, mWindow.top_two_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_one, mWindow.bottom_two_one, mWindow.top_two_one);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_one, mWindow.bottom_three_one, mWindow.top_three_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_one, mWindow.bottom_three_one, mWindow.top_three_one);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_one, mWindow.bottom_four_one, mWindow.top_four_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_one, mWindow.bottom_four_one, mWindow.top_four_one);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_one, mWindow.bottom_five_one, mWindow.top_five_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_one, mWindow.bottom_five_one, mWindow.top_five_one);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_one, mWindow.bottom_six_one, mWindow.top_six_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_one, mWindow.bottom_six_one, mWindow.top_six_one);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_one, mWindow.bottom_seven_one, mWindow.top_seven_one);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_one, mWindow.bottom_seven_one, mWindow.top_seven_one);
                                     break;
                             }
                             break;
@@ -255,28 +269,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_two, mWindow.bottom_zero_two, mWindow.top_zero_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_two, mWindow.bottom_zero_two, mWindow.top_zero_two);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_two, mWindow.bottom_one_two, mWindow.top_one_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_two, mWindow.bottom_one_two, mWindow.top_one_two);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_two, mWindow.bottom_two_two, mWindow.top_two_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_two, mWindow.bottom_two_two, mWindow.top_two_two);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_two, mWindow.bottom_three_two, mWindow.top_three_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_two, mWindow.bottom_three_two, mWindow.top_three_two);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_two, mWindow.bottom_four_two, mWindow.top_four_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_two, mWindow.bottom_four_two, mWindow.top_four_two);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_two, mWindow.bottom_five_two, mWindow.top_five_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_two, mWindow.bottom_five_two, mWindow.top_five_two);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_two, mWindow.bottom_six_two, mWindow.top_six_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_two, mWindow.bottom_six_two, mWindow.top_six_two);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_two, mWindow.bottom_seven_two, mWindow.top_seven_two);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_two, mWindow.bottom_seven_two, mWindow.top_seven_two);
                                     break;
                             }
                             break;
@@ -284,28 +306,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_three, mWindow.bottom_zero_three, mWindow.top_zero_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_three, mWindow.bottom_zero_three, mWindow.top_zero_three);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_three, mWindow.bottom_one_three, mWindow.top_one_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_three, mWindow.bottom_one_three, mWindow.top_one_three);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_three, mWindow.bottom_two_three, mWindow.top_two_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_three, mWindow.bottom_two_three, mWindow.top_two_three);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_three, mWindow.bottom_three_three, mWindow.top_three_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_three, mWindow.bottom_three_three, mWindow.top_three_three);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_three, mWindow.bottom_four_three, mWindow.top_four_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_three, mWindow.bottom_four_three, mWindow.top_four_three);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_three, mWindow.bottom_five_three, mWindow.top_five_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_three, mWindow.bottom_five_three, mWindow.top_five_three);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_three, mWindow.bottom_six_three, mWindow.top_six_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_three, mWindow.bottom_six_three, mWindow.top_six_three);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_three, mWindow.bottom_seven_three, mWindow.top_seven_three);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_three, mWindow.bottom_seven_three, mWindow.top_seven_three);
                                     break;
                             }
                             break;
@@ -313,28 +343,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_four, mWindow.bottom_zero_four, mWindow.top_zero_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_four, mWindow.bottom_zero_four, mWindow.top_zero_four);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_four, mWindow.bottom_one_four, mWindow.top_one_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_four, mWindow.bottom_one_four, mWindow.top_one_four);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_four, mWindow.bottom_two_four, mWindow.top_two_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_four, mWindow.bottom_two_four, mWindow.top_two_four);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_four, mWindow.bottom_three_four, mWindow.top_three_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_four, mWindow.bottom_three_four, mWindow.top_three_four);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_four, mWindow.bottom_four_four, mWindow.top_four_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_four, mWindow.bottom_four_four, mWindow.top_four_four);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_four, mWindow.bottom_five_four, mWindow.top_five_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_four, mWindow.bottom_five_four, mWindow.top_five_four);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_four, mWindow.bottom_six_four, mWindow.top_six_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_four, mWindow.bottom_six_four, mWindow.top_six_four);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_four, mWindow.bottom_seven_four, mWindow.top_seven_four);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_four, mWindow.bottom_seven_four, mWindow.top_seven_four);
                                     break;
                             }
                             break;
@@ -342,28 +380,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_five, mWindow.bottom_zero_five, mWindow.top_zero_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_five, mWindow.bottom_zero_five, mWindow.top_zero_five);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_five, mWindow.bottom_one_five, mWindow.top_one_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_five, mWindow.bottom_one_five, mWindow.top_one_five);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_five, mWindow.bottom_two_five, mWindow.top_two_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_five, mWindow.bottom_two_five, mWindow.top_two_five);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_five, mWindow.bottom_three_five, mWindow.top_three_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_five, mWindow.bottom_three_five, mWindow.top_three_five);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_five, mWindow.bottom_four_five, mWindow.top_four_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_five, mWindow.bottom_four_five, mWindow.top_four_five);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_five, mWindow.bottom_five_five, mWindow.top_five_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_five, mWindow.bottom_five_five, mWindow.top_five_five);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_five, mWindow.bottom_six_five, mWindow.top_six_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_five, mWindow.bottom_six_five, mWindow.top_six_five);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_five, mWindow.bottom_seven_five, mWindow.top_seven_five);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_five, mWindow.bottom_seven_five, mWindow.top_seven_five);
                                     break;
                             }
                             break;
@@ -371,28 +417,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_six, mWindow.bottom_zero_six, mWindow.top_zero_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_six, mWindow.bottom_zero_six, mWindow.top_zero_six);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_six, mWindow.bottom_one_six, mWindow.top_one_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_six, mWindow.bottom_one_six, mWindow.top_one_six);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_six, mWindow.bottom_two_six, mWindow.top_two_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_six, mWindow.bottom_two_six, mWindow.top_two_six);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_six, mWindow.bottom_three_six, mWindow.top_three_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_six, mWindow.bottom_three_six, mWindow.top_three_six);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_six, mWindow.bottom_four_six, mWindow.top_four_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_six, mWindow.bottom_four_six, mWindow.top_four_six);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_six, mWindow.bottom_five_six, mWindow.top_five_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_six, mWindow.bottom_five_six, mWindow.top_five_six);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_six, mWindow.bottom_six_six, mWindow.top_six_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_six, mWindow.bottom_six_six, mWindow.top_six_six);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_six, mWindow.bottom_seven_six, mWindow.top_seven_six);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_six, mWindow.bottom_seven_six, mWindow.top_seven_six);
                                     break;
                             }
                             break;
@@ -400,28 +454,36 @@ namespace Chess
                             switch (x)
                             {
                                 case 0:
-                                    displayArray[x, y] = new display(mWindow.zero_seven, mWindow.bottom_zero_seven, mWindow.top_zero_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.zero_seven, mWindow.bottom_zero_seven, mWindow.top_zero_seven);
                                     break;
                                 case 1:
-                                    displayArray[x, y] = new display(mWindow.one_seven, mWindow.bottom_one_seven, mWindow.top_one_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.one_seven, mWindow.bottom_one_seven, mWindow.top_one_seven);
                                     break;
                                 case 2:
-                                    displayArray[x, y] = new display(mWindow.two_seven, mWindow.bottom_two_seven, mWindow.top_two_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.two_seven, mWindow.bottom_two_seven, mWindow.top_two_seven);
                                     break;
                                 case 3:
-                                    displayArray[x, y] = new display(mWindow.three_seven, mWindow.bottom_three_seven, mWindow.top_three_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.three_seven, mWindow.bottom_three_seven, mWindow.top_three_seven);
                                     break;
                                 case 4:
-                                    displayArray[x, y] = new display(mWindow.four_seven, mWindow.bottom_four_seven, mWindow.top_four_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.four_seven, mWindow.bottom_four_seven, mWindow.top_four_seven);
                                     break;
                                 case 5:
-                                    displayArray[x, y] = new display(mWindow.five_seven, mWindow.bottom_five_seven, mWindow.top_five_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.five_seven, mWindow.bottom_five_seven, mWindow.top_five_seven);
                                     break;
                                 case 6:
-                                    displayArray[x, y] = new display(mWindow.six_seven, mWindow.bottom_six_seven, mWindow.top_six_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.six_seven, mWindow.bottom_six_seven, mWindow.top_six_seven);
                                     break;
                                 case 7:
-                                    displayArray[x, y] = new display(mWindow.seven_seven, mWindow.bottom_seven_seven, mWindow.top_seven_seven);
+                                    displayArray[x, y] =
+                                        new display(mWindow.seven_seven, mWindow.bottom_seven_seven, mWindow.top_seven_seven);
                                     break;
                             }
                             break;
@@ -478,7 +540,7 @@ namespace Chess
 
                     else
                     {
-                        displayArray[x, y].top.Source = matchPicture(pieceArray[x, y]);
+                        displayArray[x, y].top.Source = null;
                     }
                 }
             }
@@ -789,8 +851,8 @@ namespace Chess
                             humanMoves[j].value = 0;
                             break;
                     }
-
-                    switch (pieceArray[humanMoves[j].pieceSpot.x, humanMoves[j].pieceSpot.y].job)    //what piece does the capturing
+                    //what piece does the capturing
+                    switch (pieceArray[humanMoves[j].pieceSpot.x, humanMoves[j].pieceSpot.y].job)
                     {
                         case "King":
                             humanMoves[j].value -= 5;
@@ -815,13 +877,14 @@ namespace Chess
 
                 for (int j = 0; j < humanMoves.Count; j++)
                 {
-                    if (humanMoves[j].value != humanMoves[0].value)    //find all moves with highest value
+                    if (humanMoves[j].value != humanMoves[0].value)    //find all moves with lowest value
                     {
                         break;
                     }
                     bestMovesList.Add(humanMoves[j]);  //add them to list
                 }
-                pos[i].value -= bestMovesList[rnd.Next(0, bestMovesList.Count)].value; //score of computer move - human reaction move
+                //score of computer move - human reaction move
+                pos[i].value -= bestMovesList[rnd.Next(0, bestMovesList.Count)].value;
 
                 //reset pieces
                 pieceArray[from.x, from.y].color = pieceArray[to.x, to.y].color;
@@ -871,7 +934,8 @@ namespace Chess
             foreach (move m in poss)
             {
                 //if opposing team's move can capture your king, you're in check
-                if (pieceArray[m.moveSpot.x, m.moveSpot.y].job == "King" && pieceArray[m.moveSpot.x, m.moveSpot.y].color == teamInQuestion)
+                if (pieceArray[m.moveSpot.x, m.moveSpot.y].job == "King" &&
+                    pieceArray[m.moveSpot.x, m.moveSpot.y].color == teamInQuestion)
                 {
                     return true;
                 }
@@ -1172,8 +1236,6 @@ namespace Chess
                             clearToAndFrom();
                             displayArray[curTurn.pieceSpot.x, curTurn.pieceSpot.y].bottom.Source = bmpFrom;
                             displayArray[curTurn.moveSpot.x, curTurn.moveSpot.y].bottom.Source = bmpTo;
-                            toCoor = curTurn.moveSpot;
-                            fromCoor = curTurn.pieceSpot;
                         }
 
                         if (pieceArray[currentCell.x, currentCell.y].job == "King")
@@ -1338,8 +1400,6 @@ namespace Chess
                 clearToAndFrom();
                 displayArray[bestMove.pieceSpot.x, bestMove.pieceSpot.y].bottom.Source = bmpFrom;
                 displayArray[bestMove.moveSpot.x, bestMove.moveSpot.y].bottom.Source = bmpTo;
-                toCoor = bestMove.moveSpot;
-                fromCoor = bestMove.pieceSpot;
             }
 
             if (pieceArray[newSpot.x, newSpot.y].job == "King")
@@ -1606,8 +1666,10 @@ namespace Chess
         {
             //clears last move indicators from board
 
-            displayArray[toCoor.x, toCoor.y].bottom.Source = null;
-            displayArray[fromCoor.x, fromCoor.y].bottom.Source = null;
+            foreach(display cell in displayArray)
+            {
+                cell.bottom.Source = null;
+            }
         }
 
         public void changeThemeVisually()
@@ -1642,8 +1704,8 @@ namespace Chess
             }
             catch (IOException)
             {
-                ignore.Add(pwd + "\\" + themeName + ".dll");
-                themeList.Clear();
+                themeList.RemoveAt(themeIndex);
+                themeIndex--;
             }
         }
 
@@ -1685,6 +1747,7 @@ namespace Chess
             FileInfo file;
             string name;
             themeList = new List<string>();
+            ignore = new List<string>();
             string[] dllFilePathArray = null;
             bool themesFound = false;
 
@@ -1715,24 +1778,21 @@ namespace Chess
                 {
                     ignore.Add(pwd + "\\" + ex.FileName);
                     themeList.Clear();
+                    continue;
                 }
 
-                if (themeList.Count < 1)    //if 0 themes or 1 bad file before added to ignore
+                if (themeList.Count == 0)    //if 0 good themes
                 {
-                    //if 0 bad files <OR> bad files = total dll files
-                    if (ignore.Count < 1 || ignore.Count == dllFilePathArray.Count())
-                    {
-                        MessageBoxResult result = MessageBox.Show(
-                        "No themes found.\n\nPlace theme dll in directory containing 'Chess.exe'\n\nTry Again?",
-                        "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
+                    MessageBoxResult result = MessageBox.Show(
+                    "No themes found.\n\nPlace theme dll in directory containing 'Chess.exe'\n\nTry Again?",
+                    "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
 
-                        if (result == MessageBoxResult.No)
-                        {
-                            Environment.Exit(1);
-                        }
-                        ignore.Clear();
-                        themeList.Clear();
+                    if (result == MessageBoxResult.No)
+                    {
+                        Environment.Exit(1);
                     }
+                    ignore.Clear();
+                    themeList.Clear();
                 }
                 else
                 {

@@ -11,3 +11,10 @@ C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.csproj.GenerateRe
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.exe
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.pdb
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess.csprojResolveAssemblyReference.cache
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Options.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\NewGame.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\PawnTransformation.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Options.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\NewGame.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\PawnTransformation.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess_MarkupCompile.lref

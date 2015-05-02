@@ -16,6 +16,7 @@ namespace Chess
         {
             InitializeComponent();
             this.game = l;
+            index = game.themeIndex;
             populate();
         }
 
@@ -30,7 +31,6 @@ namespace Chess
                     themeBox.Text = game.themeList[i];
                 }
             }
-            index = game.themeIndex;
             previewBox.Source = game.lKing;
             durationBox.IsEnabled = game.onePlayer == false && game.rotate == true;
             rotateBtn.IsEnabled = !game.onePlayer;
@@ -53,6 +53,9 @@ namespace Chess
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
+            game.themeIndex = index;
+            game.changeThemeInternally();
+
             if (game.pieceArray != null)
             {
                 game.changeThemeVisually();
@@ -67,8 +70,7 @@ namespace Chess
             {
                 game.clearToAndFrom();
             }
-            game.themeIndex = index;
-            game.changeThemeInternally();
+            
             game.saveGame = saveGameBtn.IsChecked.Value;
             game.rotate = rotateBtn.IsChecked.Value;
             game.lastMove = lastMoveBtn.IsChecked.Value;
