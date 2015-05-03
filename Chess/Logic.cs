@@ -49,7 +49,7 @@ namespace Chess
         public TcpClient client;
         public NetworkStream nwStream;
         public int bytesRead;
-        public byte[] buffer = new byte[1024];
+        public byte[] buffer = new byte[512];
         private static Random rnd = new Random();
         public bool rotate = true;                          //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                        //is lastMove menu option checked?
@@ -1291,8 +1291,8 @@ namespace Chess
                     networkMove = new move(pTemp, mTemp);
                     networkMove.pawnTrans = pieceArray[cCell.x, cCell.y].job;
 
-                    BinaryFormatter writer = new BinaryFormatter();
-                    writer.Serialize(nwStream, networkMove);
+                    buffer = moveToByteArray(networkMove);
+                    nwStream.Write(buffer, 0, buffer.Length);
                 }
 
                 if (lastMove == true)
@@ -1959,6 +1959,28 @@ namespace Chess
             }
         }
 
+        public byte[] moveToByteArray(move m)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            using (MemoryStream ms = new MemoryStream())
+            {
+                bf.Serialize(ms, m);
+                return ms.ToArray();
+            }
+        }
+
+        public static move byteArrayToMove(byte[] data)
+        {
+            using (MemoryStream memStream = new MemoryStream(data))
+            {
+                BinaryFormatter binForm = new BinaryFormatter();
+                memStream.Write(data, 0, data.Length);
+                memStream.Seek(0, SeekOrigin.Begin);
+                object obj = binForm.Deserialize(memStream);
+                return (move)obj;
+            }
+        }
+
         public void rotateOptionToggled()
         {
             //when rotate option is toggled
@@ -1979,11 +2001,11 @@ namespace Chess
             play.ShowDialog();
         }
 
-        public async void listenToServer()
+        public async void continuousReader()
         {
             while(true)
             {
-                bytesRead = await nwStream.ReadAsync(buffer, 0, 1024);
+                bytesRead = await nwStream.ReadAsync(buffer, 0, 512);
 
                 if(bytesRead == 0)
                 {
@@ -2009,9 +2031,7 @@ namespace Chess
                 //move
                 else
                 {
-                    BinaryFormatter reader = new BinaryFormatter();
-                    move opponentsMove = (move)reader.Deserialize(nwStream);
-
+                    move opponentsMove = byteArrayToMove(buffer);
                     doMove(opponentsMove);
                 }
             }
@@ -2045,6 +2065,17 @@ namespace Chess
             {
                 castling(m);
             }
+
+            if(offensiveTeam == "dark")
+            {
+                offensiveTeam = "light";
+            }
+            else
+            {
+                offensiveTeam = "dark";
+            }
+
+            ready = true;
         }
 
         //the next few functions define the rules for what piece can move where in any situation

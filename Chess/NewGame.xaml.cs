@@ -63,8 +63,7 @@ namespace Chess
                 }
                 Connecting connect = new Connecting(game);
                 connect.ShowDialog();
-
-                game.listenToServer();
+                game.continuousReader();
             }
 
             if (networkBtn.IsChecked == false || game.client.Connected == true)
