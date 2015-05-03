@@ -12,6 +12,7 @@ namespace Chess
             InitializeComponent();
             this.spot = c;
             this.game = l;
+            this.Owner = game.mWindow;
         }
 
         private void QueenBtn_Click(object sender, RoutedEventArgs e)

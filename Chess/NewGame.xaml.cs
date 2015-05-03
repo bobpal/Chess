@@ -14,6 +14,7 @@ namespace Chess
         {
             InitializeComponent();
             this.game = l;
+            this.Owner = game.mWindow;
             ipBox.Text = game.IP;
             portBox.Text = game.port.ToString();
         }
@@ -26,7 +27,8 @@ namespace Chess
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
             //if going from 2Player game to 1Player game and opponent is on bottom
-            if (game.onePlayer == false && onePlayerBtn.IsChecked.Value == true && game.offensiveTeam == game.opponent && game.rotate == true)
+            if (game.onePlayer == false && onePlayerBtn.IsChecked.Value == true &&
+                game.offensiveTeam == game.opponent && game.rotate == true)
             {
                 game.rotateBoard(true, 0);
             }
@@ -46,7 +48,7 @@ namespace Chess
             
             if (networkBtn.IsChecked == true)
             {
-                if (game.client.Connected == false)
+                if (game.client == null)
                 {
                     game.IP = ipBox.Text;
                     game.port = System.Convert.ToInt32(portBox.Text);
@@ -75,7 +77,11 @@ namespace Chess
                 game.clearToAndFrom();
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
-                game.ready = true;
+
+                if (game.buffer[0] != 2)
+                {
+                    game.ready = true;
+                }
                 this.Close();
             }
         }

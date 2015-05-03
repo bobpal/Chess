@@ -48,8 +48,8 @@ namespace Chess
         private BitmapImage dPawn;
         public TcpClient client;
         public NetworkStream nwStream;
-        public byte[] buffer;
         public int bytesRead;
+        public byte[] buffer = new byte[1024];
         private static Random rnd = new Random();
         public bool rotate = true;                          //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                        //is lastMove menu option checked?

@@ -16,6 +16,7 @@ namespace Chess
         {
             InitializeComponent();
             this.game = l;
+            this.Owner = game.mWindow;
             index = game.themeIndex;
             populate();
         }
