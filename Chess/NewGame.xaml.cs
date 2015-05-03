@@ -43,16 +43,26 @@ namespace Chess
                 game.opponent = "dark";
                 game.setBoardForNewGame();
             }
-
+            
             if (networkBtn.IsChecked == true)
             {
-                game.IP = ipBox.Text;
-                game.port = System.Convert.ToInt32(portBox.Text);
-                game.client = new TcpClient(game.IP, game.port);
-                game.nwStream = game.client.GetStream();
-
+                if (game.client.Connected == false)
+                {
+                    game.IP = ipBox.Text;
+                    game.port = System.Convert.ToInt32(portBox.Text);
+                    game.client = new TcpClient(game.IP, game.port);
+                    game.nwStream = game.client.GetStream();
+                }
+                //already connected to server
+                else
+                {
+                    byte[] ng = new byte[1] { 2 };
+                    game.nwStream.Write(ng, 0, 1);
+                }
                 Connecting connect = new Connecting(game);
                 connect.ShowDialog();
+
+                game.listenToServer();
             }
 
             if (networkBtn.IsChecked == false || game.client.Connected == true)

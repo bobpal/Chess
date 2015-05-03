@@ -138,12 +138,12 @@ namespace Chess
             public coordinate pieceSpot { get; set; }   //starting position
             public coordinate moveSpot { get; set; }    //ending position
             public int value { get; set; }              //how good the move is
+            public string pawnTrans { get; set; }       //what piece pawn turned into
 
-            public move(coordinate p1, coordinate p2, int p3)
+            public move(coordinate p1, coordinate p2)
             {
                 this.pieceSpot = p1;
                 this.moveSpot = p2;
-                this.value = p3;
             }
 
             public move() { }
@@ -1087,6 +1087,12 @@ namespace Chess
                     }
                 }
 
+                if(networkGame == true)
+                {
+                    byte[] gameOver = new byte[1] {1};
+                    nwStream.Write(gameOver, 0, 1);
+                }
+
                 MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
                         MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
 
@@ -1158,127 +1164,159 @@ namespace Chess
         {
             //human player's turn, gets called when player clicks on spot
 
+            //check if still connected to server
+            if (networkGame == true && client.Connected == false)
+            {
+                MessageBox.Show("You have been disconnected from the server",
+                    "Disconnected", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+                ready = false;
+            }
+
             if (ready == true)  //blocks functionality if game hasn't started yet
             {
                 piece currentPiece = pieceArray[currentCell.x, currentCell.y];
-
-                if (displayArray[currentCell.x, currentCell.y].tile.Background == Brushes.DeepSkyBlue)//if selected same piece
+                //if selected same piece
+                if (displayArray[currentCell.x, currentCell.y].tile.Background == Brushes.DeepSkyBlue)
                 {
                     movablePieceSelected = false;
                     clearSelectedAndPossible();
                 }
-
-                else if (currentPiece.color == offensiveTeam)//if selected own piece
+                //if selected own piece
+                else if (currentPiece.color == offensiveTeam)
                 {
-                    string defensiveTeam;
-                    movablePieceSelected = true;
-                    clearSelectedAndPossible();
-                    displayArray[currentCell.x, currentCell.y].tile.Background = Brushes.DeepSkyBlue;
-                    prevSelected = currentCell;
-                    possible.Clear();
-                    possible.AddRange(getCheckRestrictedMoves(currentCell));
+                    ownCellSelected(currentCell);
+                }
+                //if selected movable spot
+                else if (movablePieceSelected == true)
+                {
+                    movableCellSelected(currentCell);
+                }
+            }
+        }
 
-                    if (offensiveTeam == "light")
+        private void ownCellSelected(coordinate cCell)
+        {
+            string defensiveTeam;
+            movablePieceSelected = true;
+            clearSelectedAndPossible();
+            displayArray[cCell.x, cCell.y].tile.Background = Brushes.DeepSkyBlue;
+            prevSelected = cCell;
+            possible.Clear();
+            possible.AddRange(getCheckRestrictedMoves(cCell));
+
+            if (offensiveTeam == "light")
+            {
+                defensiveTeam = "dark";
+            }
+            else
+            {
+                defensiveTeam = "light";
+            }
+
+            foreach (move m in possible)
+            {
+                if (pieceArray[m.moveSpot.x, m.moveSpot.y].color == defensiveTeam)
+                {
+                    displayArray[m.moveSpot.x, m.moveSpot.y].tile.Background = Brushes.DarkOrange;
+                }
+                else
+                {
+                    displayArray[m.moveSpot.x, m.moveSpot.y].tile.Background = Brushes.LawnGreen;
+                }
+            }
+        }
+
+        private void movableCellSelected(coordinate cCell)
+        {
+            move curTurn = new move();
+            bool movableSpot = false;
+
+            foreach (move m in possible)
+            {
+                if (cCell.Equals(m.moveSpot))//if selected spot is in possible move list
+                {
+                    movableSpot = true;
+                    curTurn = m;
+                }
+            }
+
+            if (movableSpot == true)
+            {
+                historyNode node;
+                piece captured = pieceArray[cCell.x, cCell.y];
+                bool virginMove = pieceArray[prevSelected.x, prevSelected.y].virgin;
+                movePiece(cCell, pieceArray[prevSelected.x, prevSelected.y], prevSelected);
+                clearSelectedAndPossible();
+
+                if (pieceArray[cCell.x, cCell.y].job == "Pawn")
+                {
+                    if (cCell.y == 0 || cCell.y == 7)
                     {
-                        defensiveTeam = "dark";
+                        PawnTransformation transform = new PawnTransformation(cCell, this);
+                        transform.ShowDialog();
+                        node = new historyNode(curTurn, captured, true, false, false);
                     }
+                    //if pawn, but no transform
                     else
                     {
-                        defensiveTeam = "light";
-                    }
-
-                    foreach (move m in possible)
-                    {
-                        if (pieceArray[m.moveSpot.x, m.moveSpot.y].color == defensiveTeam)
-                        {
-                            displayArray[m.moveSpot.x, m.moveSpot.y].tile.Background = Brushes.DarkOrange;
-                        }
-                        else
-                        {
-                            displayArray[m.moveSpot.x, m.moveSpot.y].tile.Background = Brushes.LawnGreen;
-                        }
+                        node = new historyNode(curTurn, captured, false, false, virginMove);
                     }
                 }
 
-                else if (movablePieceSelected == true)//if previously selected own piece
+                else    //not pawn
                 {
-                    move curTurn = new move();
-                    bool movableSpot = false;
-
-                    foreach (move m in possible)
-                    {
-                        if (currentCell.Equals(m.moveSpot))//if selected spot is in possible move list
-                        {
-                            movableSpot = true;
-                            curTurn = m;
-                        }
-                    }
-
-                    if (movableSpot == true)
-                    {
-                        historyNode node;
-                        piece captured = pieceArray[currentCell.x, currentCell.y];
-                        bool virginMove = pieceArray[prevSelected.x, prevSelected.y].virgin;
-                        movePiece(currentCell, pieceArray[prevSelected.x, prevSelected.y], prevSelected);
-                        clearSelectedAndPossible();
-
-                        if (pieceArray[currentCell.x, currentCell.y].job == "Pawn")
-                        {
-                            if (pieceArray[currentCell.x, currentCell.y].color == opponent && currentCell.y == 0)
-                            {
-                                PawnTransformation transform = new PawnTransformation(currentCell, this);
-                                transform.ShowDialog();
-                                node = new historyNode(curTurn, captured, true, false, false);
-                            }
-
-                            else if (pieceArray[currentCell.x, currentCell.y].color != opponent && currentCell.y == 7)
-                            {
-                                PawnTransformation transform = new PawnTransformation(currentCell, this);
-                                transform.ShowDialog();
-                                node = new historyNode(curTurn, captured, true, false, false);
-                            }
-
-                            else    //if pawn, but no transform
-                            {
-                                node = new historyNode(curTurn, captured, false, false, virginMove);
-                            }
-                        }
-
-                        else    //not pawn
-                        {
-                            node = new historyNode(curTurn, captured, false, false, virginMove);
-                        }
-
-                        if(networkGame == false)
-                        {
-                            history.Push(node);
-                            mWindow.undoMenu.IsEnabled = true;
-                        }
-
-                        if (lastMove == true)
-                        {
-                            clearToAndFrom();
-                            displayArray[curTurn.pieceSpot.x, curTurn.pieceSpot.y].bottom.Source = bmpFrom;
-                            displayArray[curTurn.moveSpot.x, curTurn.moveSpot.y].bottom.Source = bmpTo;
-                        }
-
-                        if (pieceArray[currentCell.x, currentCell.y].job == "King")
-                        {
-                            castling(curTurn);//check if move is a castling
-                        }
-
-                        foreach (display d in displayArray)
-                        {
-                            d.tile.Cursor = Cursors.Arrow;
-                        }
-                        betweenTurns();
-                    }
-                    else    //if didn't select movable spot
-                    {
-                        clearSelectedAndPossible();
-                        movablePieceSelected = false;
-                    }
+                    node = new historyNode(curTurn, captured, false, false, virginMove);
                 }
+
+                if (networkGame == false)
+                {
+                    history.Push(node);
+                    mWindow.undoMenu.IsEnabled = true;
+                }
+                //send move to server
+                else
+                {
+                    int xTemp;
+                    int yTemp;
+                    coordinate mTemp;
+                    coordinate pTemp;
+                    move networkMove;
+
+                    xTemp = 7 - curTurn.pieceSpot.x;
+                    yTemp = 7 - curTurn.pieceSpot.y;
+                    pTemp = new coordinate(xTemp, yTemp);
+                    xTemp = 7 - curTurn.moveSpot.x;
+                    yTemp = 7 - curTurn.moveSpot.y;
+                    mTemp = new coordinate(xTemp, yTemp);
+                    networkMove = new move(pTemp, mTemp);
+                    networkMove.pawnTrans = pieceArray[cCell.x, cCell.y].job;
+
+                    BinaryFormatter writer = new BinaryFormatter();
+                    writer.Serialize(nwStream, networkMove);
+                }
+
+                if (lastMove == true)
+                {
+                    clearToAndFrom();
+                    displayArray[curTurn.pieceSpot.x, curTurn.pieceSpot.y].bottom.Source = bmpFrom;
+                    displayArray[curTurn.moveSpot.x, curTurn.moveSpot.y].bottom.Source = bmpTo;
+                }
+
+                if (pieceArray[cCell.x, cCell.y].job == "King")
+                {
+                    castling(curTurn);//check if move is a castling
+                }
+
+                foreach (display d in displayArray)
+                {
+                    d.tile.Cursor = Cursors.Arrow;
+                }
+                betweenTurns();
+            }
+            else    //if didn't select movable spot
+            {
+                clearSelectedAndPossible();
+                movablePieceSelected = false;
             }
         }
 
@@ -1941,6 +1979,74 @@ namespace Chess
             play.ShowDialog();
         }
 
+        public async void listenToServer()
+        {
+            while(true)
+            {
+                bytesRead = await nwStream.ReadAsync(buffer, 0, 1024);
+
+                if(bytesRead == 0)
+                {
+                    break;
+                }
+                else if(buffer.Length == 1)
+                {
+                    if(buffer[0] == 3)
+                    {
+                        ready = false;
+
+                        string message = "Your opponent has forfeited the match";
+
+                        MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
+                        MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
+
+                        if (result == MessageBoxResult.Yes)
+                        {
+                            newGame();
+                        }
+                    }
+                }
+                //move
+                else
+                {
+                    BinaryFormatter reader = new BinaryFormatter();
+                    move opponentsMove = (move)reader.Deserialize(nwStream);
+
+                    doMove(opponentsMove);
+                }
+            }
+        }
+
+        private void doMove(move m)
+        {
+            int xCoor = m.moveSpot.x;
+            int yCoor = m.pieceSpot.y;
+
+            //movePiece
+            movePiece(m.moveSpot, pieceArray[xCoor, yCoor], m.pieceSpot);
+            //pawnTransform
+            if (pieceArray[xCoor, yCoor].job == "Pawn")
+            {
+                if (yCoor == 0)
+                {
+                    pieceArray[xCoor, yCoor].job = m.pawnTrans;
+                    displayArray[xCoor, yCoor].top.Source = matchPicture(pieceArray[xCoor, yCoor]);
+                }
+            }
+            //clear then set to and from
+            if (lastMove == true)
+            {
+                clearToAndFrom();
+                displayArray[m.pieceSpot.x, m.pieceSpot.y].bottom.Source = bmpFrom;
+                displayArray[xCoor, yCoor].bottom.Source = bmpTo;
+            }
+            //check for castling
+            if (pieceArray[xCoor, yCoor].job == "King")
+            {
+                castling(m);
+            }
+        }
+
         //the next few functions define the rules for what piece can move where in any situation
         //does not account for check restrictions
         //takes coordinate and returns list of possible moves for that piece
@@ -1978,7 +2084,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);       //add to list
                     break;                                  //can't go past
                 }
@@ -1987,7 +2093,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);       //add to list
                     availableY++;                           //try next spot
                 }
@@ -2008,7 +2114,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2017,7 +2123,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableX--;
                 }
@@ -2038,7 +2144,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2047,7 +2153,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableY--;
                 }
@@ -2068,7 +2174,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2077,7 +2183,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableX++;
                 }
@@ -2103,7 +2209,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2119,7 +2225,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2135,7 +2241,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2151,7 +2257,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2167,7 +2273,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2183,7 +2289,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2199,7 +2305,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2215,7 +2321,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2256,7 +2362,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2265,7 +2371,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableX++;
                     availableY++;
@@ -2288,7 +2394,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2297,7 +2403,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableX--;
                     availableY++;
@@ -2320,7 +2426,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2329,7 +2435,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableX--;
                     availableY--;
@@ -2352,7 +2458,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     break;
                 }
@@ -2361,7 +2467,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                     availableX++;
                     availableY--;
@@ -2387,7 +2493,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2403,7 +2509,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2418,7 +2524,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2434,7 +2540,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2449,7 +2555,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2465,7 +2571,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2480,7 +2586,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2496,7 +2602,7 @@ namespace Chess
                 {
                     moveCoor.x = availableX;
                     moveCoor.y = availableY;
-                    availableMove = new move(current, moveCoor, 0);
+                    availableMove = new move(current, moveCoor);
                     availableList.Add(availableMove);
                 }
             }
@@ -2513,7 +2619,7 @@ namespace Chess
                         {
                             moveCoor.x = 2;
                             moveCoor.y = 7;
-                            availableMove = new move(current, moveCoor, 0);
+                            availableMove = new move(current, moveCoor);
                             availableList.Add(availableMove);
                         }
                     }
@@ -2524,7 +2630,7 @@ namespace Chess
                         {
                             moveCoor.x = 6;
                             moveCoor.y = 7;
-                            availableMove = new move(current, moveCoor, 0);
+                            availableMove = new move(current, moveCoor);
                             availableList.Add(availableMove);
                         }
                     }
@@ -2538,7 +2644,7 @@ namespace Chess
                         {
                             moveCoor.x = 2;
                             moveCoor.y = 0;
-                            availableMove = new move(current, moveCoor, 0);
+                            availableMove = new move(current, moveCoor);
                             availableList.Add(availableMove);
                         }
                     }
@@ -2549,7 +2655,7 @@ namespace Chess
                         {
                             moveCoor.x = 6;
                             moveCoor.y = 0;
-                            availableMove = new move(current, moveCoor, 0);
+                            availableMove = new move(current, moveCoor);
                             availableList.Add(availableMove);
                         }
                     }
@@ -2587,7 +2693,7 @@ namespace Chess
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
+                        availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
 
                         //search first move
@@ -2598,7 +2704,7 @@ namespace Chess
                             {
                                 moveCoor.x = availableX;
                                 moveCoor.y = availableY;
-                                availableMove = new move(current, moveCoor, 0);
+                                availableMove = new move(current, moveCoor);
                                 availableList.Add(availableMove);
                             }
                         }
@@ -2614,7 +2720,7 @@ namespace Chess
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
+                        availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
                     }
                 }
@@ -2627,7 +2733,7 @@ namespace Chess
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
+                        availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
                     }
                 }
@@ -2643,7 +2749,7 @@ namespace Chess
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
+                        availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
 
                         //search first move
@@ -2654,7 +2760,7 @@ namespace Chess
                             {
                                 moveCoor.x = availableX;
                                 moveCoor.y = availableY;
-                                availableMove = new move(current, moveCoor, 0);
+                                availableMove = new move(current, moveCoor);
                                 availableList.Add(availableMove);
                             }
                         }
@@ -2670,7 +2776,7 @@ namespace Chess
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
+                        availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
                     }
                 }
@@ -2683,7 +2789,7 @@ namespace Chess
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
-                        availableMove = new move(current, moveCoor, 0);
+                        availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
                     }
                 }

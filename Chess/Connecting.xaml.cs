@@ -49,11 +49,6 @@ namespace Chess
             {
                 game.offensiveTeam = game.opponent;
             }
-            else
-            {
-                game.nwStream.Close();
-                game.client.Close();
-            }
             this.Close();
         }
 
