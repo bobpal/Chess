@@ -39,7 +39,7 @@ namespace Chess
             {
                 game.displayArray[spot.x, spot.y].top.Source = game.dRook;
             }
-            game.pieceArray[spot.x, spot.y].job = "Queen";
+            game.pieceArray[spot.x, spot.y].job = "Rook";
             this.Close();
         }
 
@@ -53,7 +53,7 @@ namespace Chess
             {
                 game.displayArray[spot.x, spot.y].top.Source = game.dBishop;
             }
-            game.pieceArray[spot.x, spot.y].job = "Queen";
+            game.pieceArray[spot.x, spot.y].job = "Bishop";
             this.Close();
         }
 
@@ -67,7 +67,7 @@ namespace Chess
             {
                 game.displayArray[spot.x, spot.y].top.Source = game.dKnight;
             }
-            game.pieceArray[spot.x, spot.y].job = "Queen";
+            game.pieceArray[spot.x, spot.y].job = "Knight";
             this.Close();
         }
     }

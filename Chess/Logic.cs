@@ -138,7 +138,6 @@ namespace Chess
             public coordinate pieceSpot { get; set; }   //starting position
             public coordinate moveSpot { get; set; }    //ending position
             public int value { get; set; }              //how good the move is
-            public string pawnTrans { get; set; }       //what piece pawn turned into
 
             public move(coordinate p1, coordinate p2)
             {
@@ -1243,6 +1242,7 @@ namespace Chess
             if (movableSpot == true)
             {
                 historyNode node;
+                string pawnTrans = "Pawn";
                 piece captured = pieceArray[cCell.x, cCell.y];
                 bool virginMove = pieceArray[prevSelected.x, prevSelected.y].virgin;
                 movePiece(cCell, pieceArray[prevSelected.x, prevSelected.y], prevSelected);
@@ -1255,6 +1255,7 @@ namespace Chess
                         PawnTransformation transform = new PawnTransformation(cCell, this);
                         transform.ShowDialog();
                         node = new historyNode(curTurn, captured, true, false, false);
+                        pawnTrans = pieceArray[cCell.x, cCell.y].job;
                     }
                     //if pawn, but no transform
                     else
@@ -1276,23 +1277,34 @@ namespace Chess
                 //send move to server
                 else
                 {
-                    int xTemp;
-                    int yTemp;
-                    coordinate mTemp;
-                    coordinate pTemp;
-                    move networkMove;
+                    byte pawnT;
 
-                    xTemp = 7 - curTurn.pieceSpot.x;
-                    yTemp = 7 - curTurn.pieceSpot.y;
-                    pTemp = new coordinate(xTemp, yTemp);
-                    xTemp = 7 - curTurn.moveSpot.x;
-                    yTemp = 7 - curTurn.moveSpot.y;
-                    mTemp = new coordinate(xTemp, yTemp);
-                    networkMove = new move(pTemp, mTemp);
-                    networkMove.pawnTrans = pieceArray[cCell.x, cCell.y].job;
+                    switch(pawnTrans)
+                    {
+                        case "Queen":
+                            pawnT = 2;
+                            break;
+                        case "Rook":
+                            pawnT = 3;
+                            break;
+                        case "Bishop":
+                            pawnT = 4;
+                            break;
+                        case "Knight":
+                            pawnT = 5;
+                            break;
+                        default:
+                            pawnT = 6;
+                            break;
+                    }
 
-                    buffer = moveToByteArray(networkMove);
-                    nwStream.Write(buffer, 0, buffer.Length);
+                    buffer[0] = 1;
+                    buffer[1] = (byte)(curTurn.pieceSpot.x);
+                    buffer[2] = (byte)(7 - curTurn.pieceSpot.y);
+                    buffer[3] = (byte)(curTurn.moveSpot.x);
+                    buffer[4] = (byte)(7 - curTurn.moveSpot.y);
+                    buffer[5] = pawnT;
+                    nwStream.Write(buffer, 0, 6);
                 }
 
                 if (lastMove == true)
@@ -1959,28 +1971,6 @@ namespace Chess
             }
         }
 
-        public byte[] moveToByteArray(move m)
-        {
-            BinaryFormatter bf = new BinaryFormatter();
-            using (MemoryStream ms = new MemoryStream())
-            {
-                bf.Serialize(ms, m);
-                return ms.ToArray();
-            }
-        }
-
-        public static move byteArrayToMove(byte[] data)
-        {
-            using (MemoryStream memStream = new MemoryStream(data))
-            {
-                BinaryFormatter binForm = new BinaryFormatter();
-                memStream.Write(data, 0, data.Length);
-                memStream.Seek(0, SeekOrigin.Begin);
-                object obj = binForm.Deserialize(memStream);
-                return (move)obj;
-            }
-        }
-
         public void rotateOptionToggled()
         {
             //when rotate option is toggled
@@ -2029,28 +2019,52 @@ namespace Chess
                     }
                 }
                 //move
-                else
+                else if(buffer[0] == 1) 
                 {
-                    move opponentsMove = byteArrayToMove(buffer);
-                    doMove(opponentsMove);
+                    coordinate p = new coordinate(buffer[1], buffer[2]);
+                    coordinate m = new coordinate(buffer[3], buffer[4]);
+
+                    move opponentsMove = new move(p, m);
+                    doMove(opponentsMove, buffer[5]);
                 }
             }
         }
 
-        private void doMove(move m)
+        private void doMove(move m, byte pawn)
         {
-            int xCoor = m.moveSpot.x;
-            int yCoor = m.pieceSpot.y;
+            int xMove = m.moveSpot.x;
+            int yMove = m.moveSpot.y;
 
             //movePiece
-            movePiece(m.moveSpot, pieceArray[xCoor, yCoor], m.pieceSpot);
+            movePiece(m.moveSpot, pieceArray[m.pieceSpot.x, m.pieceSpot.y], m.pieceSpot);
             //pawnTransform
-            if (pieceArray[xCoor, yCoor].job == "Pawn")
+            if (pieceArray[xMove, yMove].job == "Pawn")
             {
-                if (yCoor == 0)
+                if (yMove == 0)
                 {
-                    pieceArray[xCoor, yCoor].job = m.pawnTrans;
-                    displayArray[xCoor, yCoor].top.Source = matchPicture(pieceArray[xCoor, yCoor]);
+                    string pawnT;
+
+                    switch (pawn)
+                    {
+                        case 2:
+                            pawnT = "Queen";
+                            break;
+                        case 3:
+                            pawnT = "Rook";
+                            break;
+                        case 4:
+                            pawnT = "Bishop";
+                            break;
+                        case 5:
+                            pawnT = "Knight";
+                            break;
+                        default:
+                            pawnT = null;
+                            break;
+                    }
+
+                    pieceArray[xMove, yMove].job = pawnT;
+                    displayArray[xMove, yMove].top.Source = matchPicture(pieceArray[xMove, yMove]);
                 }
             }
             //clear then set to and from
@@ -2058,10 +2072,10 @@ namespace Chess
             {
                 clearToAndFrom();
                 displayArray[m.pieceSpot.x, m.pieceSpot.y].bottom.Source = bmpFrom;
-                displayArray[xCoor, yCoor].bottom.Source = bmpTo;
+                displayArray[xMove, yMove].bottom.Source = bmpTo;
             }
             //check for castling
-            if (pieceArray[xCoor, yCoor].job == "King")
+            if (pieceArray[xMove, yMove].job == "King")
             {
                 castling(m);
             }
@@ -2074,7 +2088,6 @@ namespace Chess
             {
                 offensiveTeam = "dark";
             }
-
             ready = true;
         }
 
