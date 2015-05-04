@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Chess
 {
@@ -37,13 +39,11 @@ namespace Chess
             {
                 game.offensiveTeam = "dark";
                 game.opponent = "light";
-                game.setBoardForNewGame();
             }
             else
             {
                 game.offensiveTeam = "light";
                 game.opponent = "dark";
-                game.setBoardForNewGame();
             }
             
             if (networkBtn.IsChecked == true)
@@ -63,9 +63,10 @@ namespace Chess
                 }
                 Connecting connect = new Connecting(game);
                 connect.ShowDialog();
+                addChat();
                 game.continuousReader();
             }
-
+            //always unless clicked cancel on Connecting
             if (networkBtn.IsChecked == false || game.client.Connected == true)
             {
                 game.onePlayer = onePlayerBtn.IsChecked.Value;
@@ -76,6 +77,7 @@ namespace Chess
                 game.clearToAndFrom();
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
+                game.setBoardForNewGame();
 
                 if (game.buffer[0] != 2)
                 {
@@ -83,6 +85,21 @@ namespace Chess
                 }
                 this.Close();
             }
+        }
+
+        private void addChat()
+        {
+            game.mWindow.Board.Width += 200;
+            game.mWindow.chat.Visibility = Visibility.Visible;
+            game.mWindow.split.Visibility = Visibility.Visible;
+
+            ColumnDefinition c1 = new ColumnDefinition();
+            c1.Width = new GridLength(5, GridUnitType.Pixel);
+            game.mWindow.space.ColumnDefinitions.Add(c1);
+
+            ColumnDefinition c2 = new ColumnDefinition();
+            c2.Width = new GridLength(195, GridUnitType.Star);
+            game.mWindow.space.ColumnDefinitions.Add(c2);
         }
 
         private void portBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
