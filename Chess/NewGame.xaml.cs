@@ -77,7 +77,6 @@ namespace Chess
                 game.clearToAndFrom();
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
-                game.setBoardForNewGame();
 
                 if (game.buffer[0] != 2)
                 {
@@ -89,7 +88,7 @@ namespace Chess
 
         private void addChat()
         {
-            game.mWindow.Board.Width += 200;
+            game.mWindow.Board.Width += 300;
             game.mWindow.chat.Visibility = Visibility.Visible;
             game.mWindow.split.Visibility = Visibility.Visible;
 
@@ -98,7 +97,7 @@ namespace Chess
             game.mWindow.space.ColumnDefinitions.Add(c1);
 
             ColumnDefinition c2 = new ColumnDefinition();
-            c2.Width = new GridLength(195, GridUnitType.Star);
+            c2.Width = new GridLength(295, GridUnitType.Star);
             game.mWindow.space.ColumnDefinitions.Add(c2);
         }
 

@@ -1138,7 +1138,7 @@ namespace Chess
                         history.Push(node);
                     }
                     
-                    movePiece(newCastleCoor, pieceArray[0, yCoor], oldCastleCoor);
+                    movePiece(oldCastleCoor, newCastleCoor);
                 }
 
                 else if (toSpot.x == 6 && toSpot.y == yCoor) //if moving two spaces to the right
@@ -1153,8 +1153,8 @@ namespace Chess
                         node = new historyNode(castleMove, pieceArray[5, yCoor], false, true, true);
                         history.Push(node);
                     }
-                    
-                    movePiece(newCastleCoor, pieceArray[7, yCoor], oldCastleCoor);
+
+                    movePiece(oldCastleCoor, newCastleCoor);
                 }
             }
         }
@@ -1245,7 +1245,7 @@ namespace Chess
                 string pawnTrans = "Pawn";
                 piece captured = pieceArray[cCell.x, cCell.y];
                 bool virginMove = pieceArray[prevSelected.x, prevSelected.y].virgin;
-                movePiece(cCell, pieceArray[prevSelected.x, prevSelected.y], prevSelected);
+                movePiece(prevSelected, cCell);
                 clearSelectedAndPossible();
 
                 if (pieceArray[cCell.x, cCell.y].job == "Pawn")
@@ -1416,7 +1416,7 @@ namespace Chess
 
             piece captured = pieceArray[newSpot.x, newSpot.y];
             bool virginMove = pieceArray[oldSpot.x, oldSpot.y].virgin;
-            movePiece(newSpot, pieceArray[oldSpot.x, oldSpot.y], oldSpot);
+            movePiece(oldSpot, newSpot);
 
             if (pieceArray[newSpot.x, newSpot.y].job == "Pawn" && newSpot.y == 0)//if pawn makes it to last row
             {
@@ -1582,9 +1582,11 @@ namespace Chess
             }
         }
 
-        private void movePiece(coordinate newCell, piece pPiece, coordinate oldCell)
+        private void movePiece(coordinate oldCell, coordinate newCell)
         {
             //does standard piece move
+
+            piece pPiece = pieceArray[oldCell.x, oldCell.y];
 
             //overwrite current cell
             pieceArray[newCell.x, newCell.y].color = pPiece.color;
@@ -2036,7 +2038,7 @@ namespace Chess
             int yMove = m.moveSpot.y;
 
             //movePiece
-            movePiece(m.moveSpot, pieceArray[m.pieceSpot.x, m.pieceSpot.y], m.pieceSpot);
+            movePiece(m.pieceSpot, m.moveSpot);
             //pawnTransform
             if (pieceArray[xMove, yMove].job == "Pawn")
             {

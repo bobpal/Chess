@@ -11,6 +11,7 @@ namespace Chess
         public Connecting(Logic l)
         {
             InitializeComponent();
+            this.MouseDown += delegate { DragMove(); };
             this.game = l;
             this.Owner = game.mWindow;
             waitForData();
@@ -38,7 +39,8 @@ namespace Chess
                 
             }
             //start game
-            else if (game.buffer[0] == 1)
+            game.setBoardForNewGame();
+            if (game.buffer[0] == 1)
             {
                 game.offensiveTeam = player1;
             }

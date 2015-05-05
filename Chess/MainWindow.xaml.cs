@@ -2,20 +2,25 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Documents;
 
 namespace Chess
 {
     public partial class MainWindow : Window
     {
         private Logic game;
+        private Paragraph para;
         public static RoutedCommand newGameCmd = new RoutedCommand();
         public static RoutedCommand undoCmd = new RoutedCommand();
         public static RoutedCommand themeCmd = new RoutedCommand();
         public static RoutedCommand sizeCmd = new RoutedCommand();
+        public static RoutedCommand sendCmd = new RoutedCommand();
         
         public MainWindow()
         {
             InitializeComponent();
+            para = new Paragraph();
+            conversationBox.Document = new FlowDocument(para);
             game = new Logic(this);
             game.createDisplayArray();
             game.initializeDlls();
@@ -23,12 +28,14 @@ namespace Chess
             undoCmd.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             themeCmd.InputGestures.Add(new KeyGesture(Key.F3));
             sizeCmd.InputGestures.Add(new KeyGesture(Key.F4));
+            sendCmd.InputGestures.Add(new KeyGesture(Key.Enter));
             CommandBindings.Add(new CommandBinding(newGameCmd, newGameMenu_Click));
             CommandBindings.Add(new CommandBinding(undoCmd, undoMenu_Click));
             CommandBindings.Add(new CommandBinding(themeCmd, optionMenu_Click));
             CommandBindings.Add(new CommandBinding(sizeCmd, sizeMenu_Click));
+            CommandBindings.Add(new CommandBinding(sendCmd, sendBtn_Click));
             this.Show();
-
+            
             if (System.IO.File.Exists(game.filePath))
             {
                 game.loadState();
@@ -112,6 +119,39 @@ namespace Chess
         private void Board_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             game.saveState();
+        }
+
+        private void sendBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (inputBox.Text != "Type to send message" && inputBox.Text != "")
+            {
+                para.Inlines.Add(new Bold(new Run("You: "))
+                {
+                    Foreground = Brushes.Blue
+                });
+                para.Inlines.Add(inputBox.Text);
+                para.Inlines.Add(new LineBreak());
+                this.DataContext = this;
+                inputBox.Text = "";
+            }
+        }
+
+        private void inputBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (inputBox.Text == "Type to send message")
+            {
+                inputBox.Text = "";
+                inputBox.Foreground = Brushes.Black;
+            }
+        }
+
+        private void inputBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (inputBox.Text.Trim().Equals(""))
+            {
+                inputBox.Foreground = Brushes.Gray;
+                inputBox.Text = "Type to send message";
+            }
         }
     }
 }
