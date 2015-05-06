@@ -10,6 +10,7 @@ namespace Chess
         public PawnTransformation(Logic.coordinate c, Logic l)
         {
             InitializeComponent();
+            this.MouseDown += delegate { DragMove(); };
             this.spot = c;
             this.game = l;
             this.Owner = game.mWindow;

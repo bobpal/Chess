@@ -34,6 +34,11 @@ namespace Chess
             {
                 game.rotateBoard(true, 0);
             }
+            //if going from network game to local game
+            if(game.networkGame == true && networkBtn.IsChecked == false)
+            {
+                removeChat();
+            }
 
             if (darkBtn.IsChecked == true)
             {
@@ -65,6 +70,10 @@ namespace Chess
                 connect.ShowDialog();
                 addChat();
                 game.continuousReader();
+            }
+            else
+            {
+                game.setBoardForNewGame();
             }
             //always unless clicked cancel on Connecting
             if (networkBtn.IsChecked == false || game.client.Connected == true)
@@ -99,6 +108,15 @@ namespace Chess
             ColumnDefinition c2 = new ColumnDefinition();
             c2.Width = new GridLength(295, GridUnitType.Star);
             game.mWindow.space.ColumnDefinitions.Add(c2);
+        }
+
+        private void removeChat()
+        {
+            game.mWindow.Board.Width -= 300;
+            game.mWindow.chat.Visibility = Visibility.Hidden;
+            game.mWindow.split.Visibility = Visibility.Hidden;
+            game.mWindow.space.ColumnDefinitions.RemoveAt(2);
+            game.mWindow.space.ColumnDefinitions.RemoveAt(1);
         }
 
         private void portBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

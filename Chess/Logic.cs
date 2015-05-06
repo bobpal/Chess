@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -1297,8 +1298,7 @@ namespace Chess
                             pawnT = 6;
                             break;
                     }
-
-                    buffer[0] = 1;
+                    buffer[0] = 7;
                     buffer[1] = (byte)(curTurn.pieceSpot.x);
                     buffer[2] = (byte)(7 - curTurn.pieceSpot.y);
                     buffer[3] = (byte)(curTurn.moveSpot.x);
@@ -1731,20 +1731,33 @@ namespace Chess
             //resets Background to get rid of green, blue, and red squares
 
             int sum;
+            Brush even;
+            Brush odd;
+            
+            if(opponent == "dark")
+            {
+                even = Brushes.DarkGray;
+                odd = Brushes.White;
+            }
+            else
+            {
+                even = Brushes.White;
+                odd = Brushes.DarkGray;
+            }
 
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
                     sum = x + y;
-                    if(sum % 2 == 0)    //if even number
+                    if(sum % 2 == 0)
                     {
-                        displayArray[x, y].tile.Background = Brushes.DarkGray;
+                        displayArray[x, y].tile.Background = even;
                     }
 
                     else
                     {
-                        displayArray[x, y].tile.Background = Brushes.White;
+                        displayArray[x, y].tile.Background = odd;
                     }
                 }
             }
@@ -2003,7 +2016,7 @@ namespace Chess
                 {
                     break;
                 }
-                else if(buffer.Length == 1)
+                else if (bytesRead == 1)
                 {
                     if(buffer[0] == 3)
                     {
@@ -2021,13 +2034,19 @@ namespace Chess
                     }
                 }
                 //move
-                else if(buffer[0] == 1) 
+                else if (buffer[0] == 7)
                 {
                     coordinate p = new coordinate(buffer[1], buffer[2]);
                     coordinate m = new coordinate(buffer[3], buffer[4]);
 
                     move opponentsMove = new move(p, m);
                     doMove(opponentsMove, buffer[5]);
+                }
+                //message
+                else
+                {
+                    string chatMessage = Encoding.ASCII.GetString(buffer, 0, bytesRead);
+                    mWindow.respone(chatMessage);
                 }
             }
         }

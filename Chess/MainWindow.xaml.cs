@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -73,8 +74,15 @@ namespace Chess
 
         private void sizeMenu_Click(object sender, RoutedEventArgs e)
         {
+            if(game.networkGame == true)
+            {
+                this.Width = 1028;
+            }
+            else
+            {
+                this.Width = 728;
+            }
             this.Height = 721;
-            this.Width = 728;
         }
 
         private void cell_Click(object sender, RoutedEventArgs e)
@@ -121,10 +129,12 @@ namespace Chess
             game.saveState();
         }
 
-        private void sendBtn_Click(object sender, RoutedEventArgs e)
+        private async void sendBtn_Click(object sender, RoutedEventArgs e)
         {
             if (inputBox.Text != "Type to send message" && inputBox.Text != "")
             {
+                byte[] byteArray;
+
                 para.Inlines.Add(new Bold(new Run("You: "))
                 {
                     Foreground = Brushes.Blue
@@ -132,8 +142,22 @@ namespace Chess
                 para.Inlines.Add(inputBox.Text);
                 para.Inlines.Add(new LineBreak());
                 this.DataContext = this;
+
+                byteArray = Encoding.ASCII.GetBytes(inputBox.Text);
+                await game.nwStream.WriteAsync(byteArray, 0, inputBox.Text.Length);
                 inputBox.Text = "";
             }
+        }
+
+        public void respone(string message)
+        {
+            para.Inlines.Add(new Bold(new Run("Opponent: "))
+            {
+                Foreground = Brushes.Red
+            });
+            para.Inlines.Add(message);
+            para.Inlines.Add(new LineBreak());
+            this.DataContext = this;
         }
 
         private void inputBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

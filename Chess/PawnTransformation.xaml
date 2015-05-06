@@ -1,9 +1,9 @@
 ﻿<Window x:Class="Chess.PawnTransformation"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Pawn Transformation" Height="280" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="None" ShowInTaskbar="False">
+        Height="280" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" WindowStyle="None" ShowInTaskbar="False" BorderThickness="2">
     <Grid Margin="0">
-        <Label Content="Choose which piece to turn your pawn into." Margin="30,10,30,220"/>
+        <Label Content="Choose which piece to turn your pawn into" Margin="30,10,30,220" Padding="0,5"/>
         <Button x:Name="QueenBtn" Content="Queen" Height="50" Margin="10,55,10,0" VerticalAlignment="Top" Click="QueenBtn_Click"/>
         <Button x:Name="RookBtn" Content="Rook" Height="50" Margin="10,110,10,0" VerticalAlignment="Top" Click="RookBtn_Click"/>
         <Button x:Name="BishopBtn" Content="Bishop" Height="50" Margin="10,165,10,0" VerticalAlignment="Top" Click="BishopBtn_Click"/>
