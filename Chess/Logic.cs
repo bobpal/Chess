@@ -507,17 +507,7 @@ namespace Chess
         {
             //Sets arrays in starting position
 
-            string defensiveTeam;
             pieceArray = new piece[8, 8];
-
-            if (offensiveTeam == "light")
-            {
-                defensiveTeam = "dark";
-            }
-            else
-            {
-                defensiveTeam = "light";
-            }
 
             for (int y = 0; y < 8; y++)
             {
@@ -525,12 +515,12 @@ namespace Chess
                 {
                     if (y == 0)
                     {
-                        pieceArray[x, 0].color = offensiveTeam;
+                        pieceArray[x, 0].color = "light";
                     }
 
                     else if (y == 1)
                     {
-                        pieceArray[x, 1].color = offensiveTeam;
+                        pieceArray[x, 1].color = "light";
                         pieceArray[x, 1].job = "Pawn";
                         pieceArray[x, 1].virgin = true;
                         displayArray[x, 1].top.Source = matchPicture(pieceArray[x, 1]);
@@ -538,7 +528,7 @@ namespace Chess
 
                     else if (y == 6)
                     {
-                        pieceArray[x, 6].color = defensiveTeam;
+                        pieceArray[x, 6].color = "dark";
                         pieceArray[x, 6].job = "Pawn";
                         pieceArray[x, 6].virgin = true;
                         displayArray[x, 6].top.Source = matchPicture(pieceArray[x, 6]);
@@ -546,7 +536,7 @@ namespace Chess
 
                     else if (y == 7)
                     {
-                        pieceArray[x, 7].color = defensiveTeam;
+                        pieceArray[x, 7].color = "dark";
                     }
 
                     else
@@ -579,22 +569,22 @@ namespace Chess
             pieceArray[6, 7].job = "Knight";
             pieceArray[7, 7].job = "Rook";
 
-            displayArray[0, 0].top.Source = matchPicture(pieceArray[0, 0]);
-            displayArray[1, 0].top.Source = matchPicture(pieceArray[1, 0]);
-            displayArray[2, 0].top.Source = matchPicture(pieceArray[2, 0]);
-            displayArray[3, 0].top.Source = matchPicture(pieceArray[3, 0]);
-            displayArray[4, 0].top.Source = matchPicture(pieceArray[4, 0]);
-            displayArray[5, 0].top.Source = matchPicture(pieceArray[5, 0]);
-            displayArray[6, 0].top.Source = matchPicture(pieceArray[6, 0]);
-            displayArray[7, 0].top.Source = matchPicture(pieceArray[7, 0]);
-            displayArray[0, 7].top.Source = matchPicture(pieceArray[0, 7]);
-            displayArray[1, 7].top.Source = matchPicture(pieceArray[1, 7]);
-            displayArray[2, 7].top.Source = matchPicture(pieceArray[2, 7]);
-            displayArray[3, 7].top.Source = matchPicture(pieceArray[3, 7]);
-            displayArray[4, 7].top.Source = matchPicture(pieceArray[4, 7]);
-            displayArray[5, 7].top.Source = matchPicture(pieceArray[5, 7]);
-            displayArray[6, 7].top.Source = matchPicture(pieceArray[6, 7]);
-            displayArray[7, 7].top.Source = matchPicture(pieceArray[7, 7]);
+            displayArray[0, 0].top.Source = lRook;
+            displayArray[1, 0].top.Source = lKnight;
+            displayArray[2, 0].top.Source = lBishop;
+            displayArray[3, 0].top.Source = lQueen;
+            displayArray[4, 0].top.Source = lKing;
+            displayArray[5, 0].top.Source = lBishop;
+            displayArray[6, 0].top.Source = lKnight;
+            displayArray[7, 0].top.Source = lRook;
+            displayArray[0, 7].top.Source = dRook;
+            displayArray[1, 7].top.Source = dKnight;
+            displayArray[2, 7].top.Source = dBishop;
+            displayArray[3, 7].top.Source = dQueen;
+            displayArray[4, 7].top.Source = dKing;
+            displayArray[5, 7].top.Source = dBishop;
+            displayArray[6, 7].top.Source = dKnight;
+            displayArray[7, 7].top.Source = dRook;
         }
 
         private List<coordinate> getDarkPieces()
@@ -1299,10 +1289,21 @@ namespace Chess
                             break;
                     }
                     buffer[0] = 7;
-                    buffer[1] = (byte)(curTurn.pieceSpot.x);
-                    buffer[2] = (byte)(7 - curTurn.pieceSpot.y);
-                    buffer[3] = (byte)(curTurn.moveSpot.x);
-                    buffer[4] = (byte)(7 - curTurn.moveSpot.y);
+
+                    if(opponent == "light")
+                    {
+                        buffer[1] = (byte)(curTurn.pieceSpot.x);
+                        buffer[2] = (byte)(curTurn.pieceSpot.y);
+                        buffer[3] = (byte)(curTurn.moveSpot.x);
+                        buffer[4] = (byte)(curTurn.moveSpot.y);
+                    }
+                    else
+                    {
+                        buffer[1] = (byte)(curTurn.pieceSpot.x);
+                        buffer[2] = (byte)(7 - curTurn.pieceSpot.y);
+                        buffer[3] = (byte)(curTurn.moveSpot.x);
+                        buffer[4] = (byte)(7 - curTurn.moveSpot.y);
+                    }
                     buffer[5] = pawnT;
                     nwStream.Write(buffer, 0, 6);
                 }
@@ -1380,10 +1381,17 @@ namespace Chess
                 ready = false;
                 //wait for response move
             }
-
+            //if 2Player local, rotate is on, and didn't end game
             else if (onePlayer == false && rotate == true && endOfGame == false)
             {
-                rotateBoard(false, rotationDuration);
+                if(offensiveTeam == "dark")
+                {
+                    rotateBoard(true, rotationDuration);
+                }
+                else
+                {
+                    rotateBoard(false, rotationDuration);
+                }
             }
         }
 
@@ -1496,7 +1504,7 @@ namespace Chess
             }
         }
 
-        public async void rotateBoard(bool optionToggled, double time)
+        public async void rotateBoard(bool bottomLightToDark, double time)
         {
             //performs rotate animation
 
@@ -1527,33 +1535,16 @@ namespace Chess
                 DoubleAnimation expand =
                     new DoubleAnimation(spaceSize, gridHeight, TimeSpan.FromSeconds(time * .15), FillBehavior.Stop);
 
-                //turning opponent's turn
-                if (offensiveTeam == opponent && optionToggled == false)
+                if(bottomLightToDark == true)
                 {
-                    //opponent top to bottom
                     rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
                     ft.ScaleY = -1;
                 }
-                //turning firstPlayer's turn
-                else if(offensiveTeam != opponent && optionToggled == false)
-                {
-                    //opponent bottom to top
-                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
-                    ft.ScaleY = 1;
-                }
-                //toggled off
-                else if(rotate == true && optionToggled == true)
-                {
-                    //opponent bottom to top
-                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
-                    ft.ScaleY = 1;
-                }
-                //toggled on
+                
                 else
                 {
-                    //opponent top to bottom
-                    rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
-                    ft.ScaleY = -1;
+                    rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
+                    ft.ScaleY = 1;
                 }
 
                 //shrink
@@ -1630,9 +1621,16 @@ namespace Chess
             from = pieceArray[xPiece, yPiece];
             offensiveTeam = to.color;
 
-            if (rotate == true && onePlayer == false && networkGame == false)
+            if (rotate == true && onePlayer == false)
             {
-                rotateBoard(false, rotationDuration);
+                if(offensiveTeam == "dark")
+                {
+                    rotateBoard(true, rotationDuration);
+                }
+                else
+                {
+                    rotateBoard(false, rotationDuration);
+                }
             }
 
             if (node.pawnTransform == true)
@@ -1671,8 +1669,8 @@ namespace Chess
             {
                 undo(); //call function again to undo another move
             }
-
-            else if (history.Count == 0)    //if stack is empty, disable button; skip and empty stack can't both happen
+            //if stack is empty, disable button; skip and empty stack can't both happen
+            else if (history.Count == 0)
             {
                 mWindow.undoMenu.IsEnabled = false;
             }
@@ -1731,19 +1729,6 @@ namespace Chess
             //resets Background to get rid of green, blue, and red squares
 
             int sum;
-            Brush even;
-            Brush odd;
-            
-            if(opponent == "dark")
-            {
-                even = Brushes.DarkGray;
-                odd = Brushes.White;
-            }
-            else
-            {
-                even = Brushes.White;
-                odd = Brushes.DarkGray;
-            }
 
             for (int y = 0; y < 8; y++)
             {
@@ -1752,12 +1737,12 @@ namespace Chess
                     sum = x + y;
                     if(sum % 2 == 0)
                     {
-                        displayArray[x, y].tile.Background = even;
+                        displayArray[x, y].tile.Background = Brushes.DarkGray;
                     }
 
                     else
                     {
-                        displayArray[x, y].tile.Background = odd;
+                        displayArray[x, y].tile.Background = Brushes.White;
                     }
                 }
             }
@@ -1949,10 +1934,17 @@ namespace Chess
                         onePlayer = lData.sOnePlayer;
                         medMode = lData.sMedMode;
                         hardMode = lData.sHardMode;
-
+                        //if 2Player local, rotate is on, and opponent's turn
                         if(rotate == true && offensiveTeam == opponent && onePlayer == false)
                         {
-                            rotateBoard(false, 0);
+                            if(offensiveTeam == "dark")
+                            {
+                                rotateBoard(true, 0);
+                            }
+                            else
+                            {
+                                rotateBoard(false, 0);
+                            }
                         }
                     }
                     else    //Exit while game not being played
@@ -1993,7 +1985,30 @@ namespace Chess
             if (offensiveTeam == opponent)  //if opponent's turn
             {
                 clearSelectedAndPossible();
-                rotateBoard(true, 0);
+                //if toggled on
+                if(rotate == false)
+                {
+                    if(offensiveTeam == "dark")
+                    {
+                        rotateBoard(true, 0);
+                    }
+                    else
+                    {
+                        rotateBoard(false, 0);
+                    }
+                }
+                //toggled off
+                else
+                {
+                    if (offensiveTeam == "dark")
+                    {
+                        rotateBoard(false, 0);
+                    }
+                    else
+                    {
+                        rotateBoard(true, 0);
+                    }
+                }
                 clearToAndFrom();
             }
         }
@@ -2036,8 +2051,19 @@ namespace Chess
                 //move
                 else if (buffer[0] == 7)
                 {
-                    coordinate p = new coordinate(buffer[1], buffer[2]);
-                    coordinate m = new coordinate(buffer[3], buffer[4]);
+                    coordinate p;
+                    coordinate m;
+
+                    if(opponent == "light")
+                    {
+                        p = new coordinate(buffer[1], 7 - buffer[2]);
+                        m = new coordinate(buffer[3], 7 - buffer[4]);
+                    }
+                    else
+                    {
+                        p = new coordinate(buffer[1], buffer[2]);
+                        m = new coordinate(buffer[3], buffer[4]);
+                    }
 
                     move opponentsMove = new move(p, m);
                     doMove(opponentsMove, buffer[5]);
@@ -2748,7 +2774,7 @@ namespace Chess
                 oppositeColor = "light";
             }
 
-            if (pieceColor == opponent)
+            if (pieceColor == "dark")
             {
                 //search down
                 availableY--;

@@ -28,28 +28,13 @@ namespace Chess
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            //if going from 2Player game to 1Player game and opponent is on bottom
-            if (game.onePlayer == false && onePlayerBtn.IsChecked.Value == true &&
-                game.offensiveTeam == game.opponent && game.rotate == true)
-            {
-                game.rotateBoard(true, 0);
-            }
             //if going from network game to local game
             if(game.networkGame == true && networkBtn.IsChecked == false)
             {
                 removeChat();
             }
 
-            if (darkBtn.IsChecked == true)
-            {
-                game.offensiveTeam = "dark";
-                game.opponent = "light";
-            }
-            else
-            {
-                game.offensiveTeam = "light";
-                game.opponent = "dark";
-            }
+            whoIsOnBottom();
             
             if (networkBtn.IsChecked == true)
             {
@@ -87,12 +72,112 @@ namespace Chess
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
 
-                if (game.buffer[0] != 2)
+                if (game.offensiveTeam != game.opponent)
                 {
                     game.ready = true;
                 }
                 this.Close();
             }
+        }
+
+        private void whoIsOnBottom()
+        {
+            game.ready = true;
+
+            if (darkBtn.IsChecked == true)
+            {
+                //if bottom != dark, rotate
+
+                //if no game has been started
+                if (game.pieceArray == null)
+                {
+                    game.rotateBoard(true, 0);
+                }
+                //coming from 1Player or networkGame
+                else if (game.onePlayer == true || game.networkGame == true)
+                {
+                    if (game.opponent == "dark")
+                    {
+                        game.rotateBoard(true, 0);
+                    }
+                }
+                //coming from 2Player local
+                else
+                {
+                    if (game.offensiveTeam == game.opponent)
+                    {
+                        if (game.rotate == true)
+                        {
+                            if (game.offensiveTeam == "light")
+                            {
+                                game.rotateBoard(true, 0);
+                            }
+                        }
+                        else
+                        {
+                            if (game.opponent == "dark")
+                            {
+                                game.rotateBoard(true, 0);
+                            }
+                        }
+                    }
+                    //if firstPlayer's turn
+                    else
+                    {
+                        if (game.offensiveTeam == "light")
+                        {
+                            game.rotateBoard(true, 0);
+                        }
+                    }
+                }
+                game.offensiveTeam = "dark";
+                game.opponent = "light";
+            }
+            else
+            {
+                //if bottom != light, rotate
+
+                //coming from 1Player or networkGame
+                if (game.onePlayer == true || game.networkGame == true)
+                {
+                    if (game.opponent == "light")
+                    {
+                        game.rotateBoard(false, 0);
+                    }
+                }
+                //coming from 2Player local
+                else
+                {
+                    if (game.offensiveTeam == game.opponent)
+                    {
+                        if (game.rotate == true)
+                        {
+                            if (game.offensiveTeam == "dark")
+                            {
+                                game.rotateBoard(false, 0);
+                            }
+                        }
+                        else
+                        {
+                            if (game.opponent == "light")
+                            {
+                                game.rotateBoard(false, 0);
+                            }
+                        }
+                    }
+                    //if firstPlayer's turn
+                    else
+                    {
+                        if (game.offensiveTeam == "dark")
+                        {
+                            game.rotateBoard(false, 0);
+                        }
+                    }
+                }
+                game.offensiveTeam = "light";
+                game.opponent = "dark";
+            }
+            game.ready = false;
         }
 
         private void addChat()
