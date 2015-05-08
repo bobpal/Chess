@@ -1105,7 +1105,7 @@ namespace Chess
             coordinate toSpot = shift.moveSpot;
             coordinate fromSpot = shift.pieceSpot;
 
-            if (offensiveTeam == opponent)
+            if (offensiveTeam == "dark")
             {
                 yCoor = 7;
             }
@@ -2701,7 +2701,7 @@ namespace Chess
             //search for castleing opportunity
             if (pieceArray[current.x, current.y].virgin == true)//if king's first move
             {
-                if (pieceColor == opponent)
+                if (pieceColor == "dark")
                 {
                     if (pieceArray[0, 7].virgin == true)//if left rook's first move
                     {
