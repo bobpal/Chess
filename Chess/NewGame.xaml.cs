@@ -28,17 +28,21 @@ namespace Chess
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
+            bool? canceled = false;
+
             //if going from network game to local game
             if(game.networkGame == true && networkBtn.IsChecked == false)
             {
-                removeChat();
+                byte[] newLocalGame = new byte[1] { 1 };
+                game.nwStream.Write(newLocalGame, 0, 1);
+                game.removeChat();
             }
 
             whoIsOnBottom();
             
             if (networkBtn.IsChecked == true)
             {
-                if (game.client == null)
+                if (game.client == null || game.client.Connected == false)
                 {
                     game.IP = ipBox.Text;
                     game.port = System.Convert.ToInt32(portBox.Text);
@@ -48,11 +52,11 @@ namespace Chess
                 //already connected to server
                 else
                 {
-                    byte[] ng = new byte[1] { 2 };
-                    game.nwStream.Write(ng, 0, 1);
+                    byte[] newNetworkGame = new byte[1] { 2 };
+                    game.nwStream.Write(newNetworkGame, 0, 1);
                 }
                 Connecting connect = new Connecting(game);
-                connect.ShowDialog();
+                canceled = connect.ShowDialog();
                 addChat();
                 game.continuousReader();
             }
@@ -61,7 +65,7 @@ namespace Chess
                 game.setBoardForNewGame();
             }
             //always unless clicked cancel on Connecting
-            if (networkBtn.IsChecked == false || game.client.Connected == true)
+            if (canceled == false)
             {
                 game.onePlayer = onePlayerBtn.IsChecked.Value;
                 game.networkGame = networkBtn.IsChecked.Value;
@@ -193,15 +197,6 @@ namespace Chess
             ColumnDefinition c2 = new ColumnDefinition();
             c2.Width = new GridLength(295, GridUnitType.Star);
             game.mWindow.space.ColumnDefinitions.Add(c2);
-        }
-
-        private void removeChat()
-        {
-            game.mWindow.Board.Width -= 300;
-            game.mWindow.chat.Visibility = Visibility.Hidden;
-            game.mWindow.split.Visibility = Visibility.Hidden;
-            game.mWindow.space.ColumnDefinitions.RemoveAt(2);
-            game.mWindow.space.ColumnDefinitions.RemoveAt(1);
         }
 
         private void portBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

@@ -50,7 +50,7 @@ namespace Chess
         public TcpClient client;
         public NetworkStream nwStream;
         public int bytesRead;
-        public byte[] buffer = new byte[512];
+        public byte[] buffer = new byte[255];
         private static Random rnd = new Random();
         public bool rotate = true;                          //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                        //is lastMove menu option checked?
@@ -1077,12 +1077,6 @@ namespace Chess
                     }
                 }
 
-                if(networkGame == true)
-                {
-                    byte[] gameOver = new byte[1] {1};
-                    nwStream.Write(gameOver, 0, 1);
-                }
-
                 MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
                         MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
 
@@ -1153,14 +1147,6 @@ namespace Chess
         public void clicker(coordinate currentCell)
         {
             //human player's turn, gets called when player clicks on spot
-
-            //check if still connected to server
-            if (networkGame == true && client.Connected == false)
-            {
-                MessageBox.Show("You have been disconnected from the server",
-                    "Disconnected", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
-                ready = false;
-            }
 
             if (ready == true)  //blocks functionality if game hasn't started yet
             {
@@ -2025,27 +2011,30 @@ namespace Chess
         {
             while(true)
             {
-                bytesRead = await nwStream.ReadAsync(buffer, 0, 512);
-
-                if(bytesRead == 0)
+                try
                 {
+                    bytesRead = await nwStream.ReadAsync(buffer, 0, 255);
+                }
+                catch(ObjectDisposedException)
+                {
+                    nwStream.Close();
+                    client.Close();
+                    removeChat();
                     break;
                 }
-                else if (bytesRead == 1)
+
+                if (buffer[0] == 3)
                 {
-                    if(buffer[0] == 3)
+                    ready = false;
+
+                    string message = "Your opponent has forfeited the match";
+
+                    MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
+                    MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
+
+                    if (result == MessageBoxResult.Yes)
                     {
-                        ready = false;
-
-                        string message = "Your opponent has forfeited the match";
-
-                        MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
-                        MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
-
-                        if (result == MessageBoxResult.Yes)
-                        {
-                            newGame();
-                        }
+                        newGame();
                     }
                 }
                 //move
@@ -2136,6 +2125,15 @@ namespace Chess
                 offensiveTeam = "dark";
             }
             ready = true;
+        }
+
+        public void removeChat()
+        {
+            mWindow.Board.Width -= 300;
+            mWindow.chat.Visibility = Visibility.Hidden;
+            mWindow.split.Visibility = Visibility.Hidden;
+            mWindow.space.ColumnDefinitions.RemoveAt(2);
+            mWindow.space.ColumnDefinitions.RemoveAt(1);
         }
 
         //the next few functions define the rules for what piece can move where in any situation
