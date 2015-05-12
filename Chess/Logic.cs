@@ -2015,27 +2015,21 @@ namespace Chess
                 {
                     bytesRead = await nwStream.ReadAsync(buffer, 0, 255);
                 }
-                catch(ObjectDisposedException)
+                //Server crashes during play
+                catch(System.IO.IOException)
                 {
-                    nwStream.Close();
-                    client.Close();
-                    removeChat();
+                    MessageBox.Show("You have been disconnected from the Server", "Disconnected",
+                    MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+
                     break;
                 }
 
                 if (buffer[0] == 3)
                 {
-                    ready = false;
+                    MessageBox.Show("Your opponent has forfeited the match", "Game Over",
+                    MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
-                    string message = "Your opponent has forfeited the match";
-
-                    MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
-                    MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        newGame();
-                    }
+                    break;
                 }
                 //move
                 else if (buffer[0] == 7)
@@ -2064,6 +2058,10 @@ namespace Chess
                     mWindow.respone(chatMessage);
                 }
             }
+            ready = false;
+            nwStream.Close();
+            client.Close();
+            removeChat();
         }
 
         private void doMove(move m, byte pawn)

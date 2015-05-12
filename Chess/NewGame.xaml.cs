@@ -33,9 +33,11 @@ namespace Chess
             //if going from network game to local game
             if(game.networkGame == true && networkBtn.IsChecked == false)
             {
-                byte[] newLocalGame = new byte[1] { 1 };
-                game.nwStream.Write(newLocalGame, 0, 1);
-                game.removeChat();
+                if(game.client.Connected == true)
+                {
+                    byte[] newLocalGame = new byte[1] { 1 };
+                    game.nwStream.Write(newLocalGame, 0, 1);
+                }
             }
 
             whoIsOnBottom();
@@ -46,8 +48,17 @@ namespace Chess
                 {
                     game.IP = ipBox.Text;
                     game.port = System.Convert.ToInt32(portBox.Text);
-                    game.client = new TcpClient(game.IP, game.port);
-                    game.nwStream = game.client.GetStream();
+                    try
+                    {
+                        game.client = new TcpClient(game.IP, game.port);
+                        game.nwStream = game.client.GetStream();
+                    }
+                    catch(SocketException)
+                    {
+                        canceled = true;
+                        MessageBox.Show("Could not find Server\nCheck the IP Address and port and try again", "Could not find Server",
+                            MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
+                    }
                 }
                 //already connected to server
                 else
@@ -55,10 +66,16 @@ namespace Chess
                     byte[] newNetworkGame = new byte[1] { 2 };
                     game.nwStream.Write(newNetworkGame, 0, 1);
                 }
-                Connecting connect = new Connecting(game);
-                canceled = connect.ShowDialog();
-                addChat();
-                game.continuousReader();
+                if(canceled == false)
+                {
+                    Connecting connect = new Connecting(game);
+                    canceled = connect.ShowDialog();
+                    if (canceled == false)
+                    {
+                        addChat();
+                        game.continuousReader();
+                    }
+                }
             }
             else
             {
