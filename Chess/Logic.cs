@@ -2003,8 +2003,31 @@ namespace Chess
         {
             //call newGame window
 
-            NewGame play = new NewGame(this);
-            play.ShowDialog();
+            NewGame play;
+            MessageBoxResult result = MessageBoxResult.Yes;
+
+            //if closing a network game
+            if (networkGame == true)
+            {
+                if (client.Connected == true)
+                {
+                    result = MessageBox.Show("Online game in progress\nAre you sure you want to quit?",
+                        "Quit Online Game", MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.No);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        byte[] newLocalGame = new byte[1] { 1 };
+                        nwStream.Write(newLocalGame, 0, 1);
+                        nwStream.Close();
+                        client.Close();
+                    }
+                }
+            }
+            if (result == MessageBoxResult.Yes)
+            {
+                play = new NewGame(this);
+                play.ShowDialog();
+            }
         }
 
         public async void continuousReader()
@@ -2021,14 +2044,28 @@ namespace Chess
                     MessageBox.Show("You have been disconnected from the Server", "Disconnected",
                     MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
+                    ready = false;
                     break;
                 }
+                //You quit a network game
+                catch(ObjectDisposedException)
+                {
+                    ready = false;
+                    break;
+                }
+
+                
+                /*if(bytesRead == 0)
+                {
+                    break;
+                }*/
 
                 if (buffer[0] == 3)
                 {
                     MessageBox.Show("Your opponent has forfeited the match", "Game Over",
                     MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
+                    ready = false;
                     break;
                 }
                 //move
@@ -2058,10 +2095,16 @@ namespace Chess
                     mWindow.respone(chatMessage);
                 }
             }
-            ready = false;
             nwStream.Close();
             client.Close();
             removeChat();
+            clearToAndFrom();
+            clearSelectedAndPossible();
+
+            foreach (display d in displayArray)
+            {
+                d.tile.Cursor = Cursors.Arrow;
+            }
         }
 
         private void doMove(move m, byte pawn)

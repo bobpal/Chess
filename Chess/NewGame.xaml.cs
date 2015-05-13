@@ -29,17 +29,6 @@ namespace Chess
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
             bool? canceled = false;
-
-            //if going from network game to local game
-            if(game.networkGame == true && networkBtn.IsChecked == false)
-            {
-                if(game.client.Connected == true)
-                {
-                    byte[] newLocalGame = new byte[1] { 1 };
-                    game.nwStream.Write(newLocalGame, 0, 1);
-                }
-            }
-
             whoIsOnBottom();
             
             if (networkBtn.IsChecked == true)
@@ -60,12 +49,7 @@ namespace Chess
                             MessageBoxButton.OK, MessageBoxImage.Exclamation, MessageBoxResult.OK);
                     }
                 }
-                //already connected to server
-                else
-                {
-                    byte[] newNetworkGame = new byte[1] { 2 };
-                    game.nwStream.Write(newNetworkGame, 0, 1);
-                }
+                
                 if(canceled == false)
                 {
                     Connecting connect = new Connecting(game);
@@ -76,6 +60,7 @@ namespace Chess
                         game.continuousReader();
                     }
                 }
+                game.mWindow.undoMenu.IsEnabled = false;
             }
             else
             {
