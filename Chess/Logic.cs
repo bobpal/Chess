@@ -1041,6 +1041,14 @@ namespace Chess
                 string message;
                 ready = false;
                 mWindow.undoMenu.IsEnabled = false;
+
+                if(networkGame == true)
+                {
+                    byte[] winner = new byte[1] { 2 };
+                    nwStream.Write(winner, 0, 1);
+                    nwStream.Close();
+                    client.Close();
+                }
                 
                 foreach(display d in displayArray)
                 {
@@ -1077,13 +1085,9 @@ namespace Chess
                     }
                 }
 
-                MessageBoxResult result = MessageBox.Show(message + "\n\nTry Again?", "Game Over",
-                        MessageBoxButton.YesNo, MessageBoxImage.None, MessageBoxResult.Yes);
+                MessageBoxResult result = MessageBox.Show(message, "Game Over",
+                        MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
-                if (result == MessageBoxResult.Yes)
-                {
-                    newGame();
-                }
                 return true;
             }
             return false;
@@ -1166,6 +1170,14 @@ namespace Chess
                 else if (movablePieceSelected == true)
                 {
                     movableCellSelected(currentCell);
+                }
+            }
+            else if(networkGame == true && client != null)
+            {
+                if(client.Connected == true)
+                {
+                    MessageBox.Show("It is currently the other player's turn", "Wait",
+                    MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
                 }
             }
         }
@@ -1362,7 +1374,7 @@ namespace Chess
                 }
             }
 
-            if(networkGame == true)
+            if(networkGame == true && endOfGame == false)
             {
                 ready = false;
                 //wait for response move
@@ -2055,15 +2067,18 @@ namespace Chess
                 }
 
                 
-                /*if(bytesRead == 0)
-                {
-                    break;
-                }*/
-
                 if (buffer[0] == 3)
                 {
                     MessageBox.Show("Your opponent has forfeited the match", "Game Over",
                     MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+
+                    ready = false;
+                    break;
+                }
+                else if (buffer[0] == 4)
+                {
+                    MessageBox.Show("Sorry\n\nYou gave a valiant effort,\nbut you have been bested in battle by the enemy army",
+                        "Game Over", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
                     ready = false;
                     break;
