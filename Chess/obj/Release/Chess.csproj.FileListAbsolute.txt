@@ -18,3 +18,5 @@ C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Options.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\NewGame.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\PawnTransformation.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Chess_MarkupCompile.lref
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Connecting.baml
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Connecting.g.cs

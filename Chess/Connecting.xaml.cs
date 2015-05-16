@@ -21,17 +21,8 @@ namespace Chess
 
         private async void waitForData()
         {
-            string player1;
+            string player1 = game.switchTeam(game.opponent);
             byte[] bArray = new byte[1];
-
-            if (game.opponent == "dark")
-            {
-                player1 = "light";
-            }
-            else
-            {
-                player1 = "dark";
-            }
 
             while (game.client.Connected == false){}
             statusBlk.Text = "Connected to server\nLooking for opponent . . .";

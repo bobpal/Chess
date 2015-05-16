@@ -711,16 +711,7 @@ namespace Chess
                 foreach(move m in offensiveMoves)
                 {
                     board = silentMove(board, m);
-
-                    if(attacking == "light")
-                    {
-                        attacking = "dark";
-                    }
-                    else
-                    {
-                        attacking = "light";
-                    }
-
+                    attacking = switchTeam(attacking);
                     evaluator(board, attacking, level);
                     //get back up from looking at every possible outcome x levels deep for one move
                     if(level == 1)
@@ -741,11 +732,11 @@ namespace Chess
             //top level after gone through all moves
             if(level == 1)
             {
-                int indexOfMax = -1;
-                int maxValue = int.MinValue;
+                int indexOfMax = 0;
+                int maxValue = 0;
                 for (int i = 0; i < topLevelVal.Count; i++)
                 {
-                    if ((indexOfMax < 0) || (topLevelVal[i] > maxValue))
+                    if (topLevelVal[i] > maxValue)
                     {
                         maxValue = topLevelVal[i];
                         indexOfMax = i;
@@ -759,11 +750,15 @@ namespace Chess
         private piece[,] silentMove(piece[,] grid, move mv)
         {
             //does a move without visuals on a private board
+
+            return grid;
         }
 
         private int getValue(piece[,] grid)
         {
             //looks at board and returns a value that indicates how good the computer is doing
+
+            return 0;
         }
 
         private bool isInCheck(string teamInQuestion)
@@ -916,18 +911,7 @@ namespace Chess
 
                 if (onePlayer == false)
                 {
-                    string winningTeam;
-
-                    if (teamInQuestion == "light")
-                    {
-                        winningTeam = "dark";
-                    }
-
-                    else
-                    {
-                        winningTeam = "light";
-                    }
-
+                    string winningTeam = switchTeam(teamInQuestion);
                     message = "The " + winningTeam + " army has slain the " + teamInQuestion + " army's king in battle";
                 }
 
@@ -1043,22 +1027,13 @@ namespace Chess
 
         private void ownCellSelected(coordinate cCell)
         {
-            string defensiveTeam;
             movablePieceSelected = true;
             clearSelectedAndPossible();
             displayArray[cCell.x, cCell.y].tile.Background = Brushes.DeepSkyBlue;
             prevSelected = cCell;
             possible.Clear();
             possible.AddRange(getCheckRestrictedMoves(cCell));
-
-            if (offensiveTeam == "light")
-            {
-                defensiveTeam = "dark";
-            }
-            else
-            {
-                defensiveTeam = "light";
-            }
+            string defensiveTeam = switchTeam(offensiveTeam);
 
             foreach (move m in possible)
             {
@@ -2033,14 +2008,7 @@ namespace Chess
                 castling(m);
             }
 
-            if(offensiveTeam == "dark")
-            {
-                offensiveTeam = "light";
-            }
-            else
-            {
-                offensiveTeam = "dark";
-            }
+            offensiveTeam = switchTeam(offensiveTeam);
             ready = true;
         }
 
@@ -2053,29 +2021,31 @@ namespace Chess
             mWindow.space.ColumnDefinitions.RemoveAt(1);
         }
 
+        public string switchTeam(string input)
+        {
+            if(input == "light")
+            {
+                return "dark";
+            }
+            else
+            {
+                return "light";
+            }
+        }
+
         //the next few functions define the rules for what piece can move where in any situation
         //does not account for check restrictions
         //takes coordinate and returns list of possible moves for that piece
 
         private List<move> rookMoves(coordinate current)
         {
-            string oppositeColor;
             move availableMove = new move();
             int availableX = current.x;             //put coordinate in temp variable to manipulate while preserving original
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate(); //when found possible move, put in this variable to add to list
             string pieceColor = pieceArray[current.x, current.y].color;
-
-            if (pieceColor == "light")
-            {
-                oppositeColor = "dark";
-            }
-
-            else
-            {
-                oppositeColor = "light";
-            }
+            string oppositeColor = switchTeam(pieceColor);
 
             //search up
             availableY++;
@@ -2336,23 +2306,13 @@ namespace Chess
 
         private List<move> bishopMoves(coordinate current)
         {
-            string oppositeColor;
             move availableMove = new move();
             int availableX = current.x;
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate();
             string pieceColor = pieceArray[current.x, current.y].color;
-
-            if (pieceColor == "light")
-            {
-                oppositeColor = "dark";
-            }
-
-            else
-            {
-                oppositeColor = "light";
-            }
+            string oppositeColor = switchTeam(pieceColor);
 
             //search upper right
             availableX++;
@@ -2672,22 +2632,13 @@ namespace Chess
 
         private List<move> pawnMoves(coordinate current)
         {
-            string oppositeColor;
             move availableMove = new move();
             int availableX = current.x;
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate();
             string pieceColor = pieceArray[current.x, current.y].color;
-
-            if (pieceColor == "light")
-            {
-                oppositeColor = "dark";
-            }
-            else
-            {
-                oppositeColor = "light";
-            }
+            string oppositeColor = switchTeam(pieceColor);
 
             if (pieceColor == "dark")
             {
