@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,6 +53,7 @@ namespace Chess
         public int bytesRead;                               //number of bytes received
         public byte[] buffer = new byte[255];               //buffer for tcp
         private static Random rnd = new Random();
+        private Thinking think;
         private List<int> topLevelVal = new List<int>();    //holds move values for original moves
         private List<int> lowLevelVal = new List<int>();    //holds a value for each outcome of move
         public int ply;                                     //how many level deep should comp look?
@@ -683,7 +685,7 @@ namespace Chess
             }
         }
 
-        private move evaluator(piece[,] board, string attacking, int level)
+        public move evaluator(piece[,] board, string attacking, int level)
         {
             //is called recursively for comp to look ahead and return the best move
 
@@ -693,6 +695,10 @@ namespace Chess
             //if not on bottom level, go down
             if(level < ply)
             {
+                double progress;
+
+                string nextTurn = switchTeam(attacking);
+
                 if (attacking == "dark")
                 {
                     foreach (coordinate cell in getDarkPieces())
@@ -708,14 +714,15 @@ namespace Chess
                     }
                 }
 
-                foreach(move m in offensiveMoves)
+                for (int i = 0; i < offensiveMoves.Count; i++)
                 {
-                    board = silentMove(board, m);
-                    attacking = switchTeam(attacking);
-                    evaluator(board, attacking, level);
+                    board = silentMove(board, offensiveMoves[i]);
+                    evaluator(board, nextTurn, level);
                     //get back up from looking at every possible outcome x levels deep for one move
-                    if(level == 1)
+                    if (level == 1)
                     {
+                        progress = ((i + 1) * 100) / offensiveMoves.Count;
+                        think.update(progress);
                         //descending sort
                         lowLevelVal.Sort((x, y) => y.CompareTo(x));
                         topLevelVal.Add(lowLevelVal[0]);
@@ -1219,16 +1226,23 @@ namespace Chess
         private void compTurn()
         {
             //computer's turn
-
+            
             historyNode node;
             move bestMove;
             int r;
-            int iter = 0;
             List<move> possibleWithoutCheck = new List<move>();
 
-            if (medMode == true || hardMode == true)
+            if (medMode == true)
             {
-                bestMove = evaluator(pieceArray, offensiveTeam, iter);
+                bestMove = evaluator(pieceArray, offensiveTeam, 0);
+                topLevelVal.Clear();
+            }
+            else if (hardMode == true)
+            {
+                think = new Thinking();
+                think.Owner = mWindow;
+                think.Show();
+                bestMove = evaluator(pieceArray, offensiveTeam, 0);
                 topLevelVal.Clear();
             }
 
