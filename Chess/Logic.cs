@@ -49,9 +49,12 @@ namespace Chess
         private BitmapImage dPawn;
         public TcpClient client;
         public NetworkStream nwStream;
-        public int bytesRead;
-        public byte[] buffer = new byte[255];
+        public int bytesRead;                               //number of bytes received
+        public byte[] buffer = new byte[255];               //buffer for tcp
         private static Random rnd = new Random();
+        private List<int> topLevelVal = new List<int>();    //holds move values for original moves
+        private List<int> lowLevelVal = new List<int>();    //holds a value for each outcome of move
+        public int ply;                                     //how many level deep should comp look?
         public bool rotate = true;                          //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                        //is lastMove menu option checked?
         public bool saveGame = true;                        //Save game on exit?
@@ -138,7 +141,6 @@ namespace Chess
 
             public coordinate pieceSpot { get; set; }   //starting position
             public coordinate moveSpot { get; set; }    //ending position
-            public int value { get; set; }              //how good the move is
 
             public move(coordinate p1, coordinate p2)
             {
@@ -681,230 +683,87 @@ namespace Chess
             }
         }
 
-        private move medLogic(List<move> pos)
+        private move evaluator(piece[,] board, string attacking, int level)
         {
-            //gets executed if player selects medium mode
+            //is called recursively for comp to look ahead and return the best move
 
-            List<move> bestMovesList = new List<move>();
+            List<move> offensiveMoves = new List<move>();
 
-            for (int i = 0; i < pos.Count; i++)
+            level++;
+            //if not on bottom level, go down
+            if(level < ply)
             {
-                switch (pieceArray[pos[i].moveSpot.x, pos[i].moveSpot.y].job)    //what piece can you capture
+                if (attacking == "dark")
                 {
-                    case "Queen":
-                        pos[i].value = 30;
-                        break;
-                    case "Rook":
-                        pos[i].value = 24;
-                        break;
-                    case "Bishop":
-                        pos[i].value = 18;
-                        break;
-                    case "Knight":
-                        pos[i].value = 12;
-                        break;
-                    case "Pawn":
-                        pos[i].value = 6;
-                        break;
-                    default:    //empty cell
-                        pos[i].value = 0;
-                        break;
-                }
-
-                switch (pieceArray[pos[i].pieceSpot.x, pos[i].pieceSpot.y].job)    //what piece does that capturing
-                {
-                    case "King":
-                        pos[i].value -= 5;
-                        break;
-                    case "Queen":
-                        pos[i].value -= 4;
-                        break;
-                    case "Rook":
-                        pos[i].value -= 3;
-                        break;
-                    case "Bishop":
-                        pos[i].value -= 2;
-                        break;
-                    case "Knight":
-                        pos[i].value -= 1;
-                        break;
-                    default:    //pawn
-                        break;
-                }
-            }
-            pos.Sort((x, y) => y.value.CompareTo(x.value)); //descending order sort
-
-            for (int j = 0; j < pos.Count; j++)
-            {
-                if (pos[j].value != pos[0].value)    //find all moves with highest value
-                {
-                    break;
-                }
-                bestMovesList.Add(pos[j]);  //add them to list
-            }
-            return bestMovesList[rnd.Next(0, bestMovesList.Count)]; //choose random move from bestMovesList
-        }
-
-        private move hardLogic(List<move> pos)
-        {
-            //gets executed if player selects hard mode
-
-            List<move> humanMoves = new List<move>();
-            List<move> bestMovesList = new List<move>();
-            List<coordinate> humanPiecesAfterMove = new List<coordinate>();
-            coordinate to;
-            coordinate from;
-            string fromColor;
-            string toColor;
-            string toJob;
-
-            for (int i = 0; i < pos.Count; i++) //go through all moves
-            {
-                switch (pieceArray[pos[i].moveSpot.x, pos[i].moveSpot.y].job)    //find value of computer move
-                {
-                    case "Queen":
-                        pos[i].value = 60;
-                        break;
-                    case "Rook":
-                        pos[i].value = 48;
-                        break;
-                    case "Bishop":
-                        pos[i].value = 36;
-                        break;
-                    case "Knight":
-                        pos[i].value = 24;
-                        break;
-                    case "Pawn":
-                        pos[i].value = 12;
-                        break;
-                    default:    //empty cell
-                        pos[i].value = 0;
-                        break;
-                }
-
-                switch (pieceArray[pos[i].pieceSpot.x, pos[i].pieceSpot.y].job)    //what piece does the capturing
-                {
-                    case "King":
-                        pos[i].value -= 5;
-                        break;
-                    case "Queen":
-                        pos[i].value -= 4;
-                        break;
-                    case "Rook":
-                        pos[i].value -= 3;
-                        break;
-                    case "Bishop":
-                        pos[i].value -= 2;
-                        break;
-                    case "Knight":
-                        pos[i].value -= 1;
-                        break;
-                    default:    //pawn
-                        break;
-                }
-                to = pos[i].moveSpot;
-                toColor = pieceArray[to.x, to.y].color;
-                toJob = pieceArray[to.x, to.y].job;
-                from = pos[i].pieceSpot;
-                fromColor = pieceArray[from.x, from.y].color;
-
-                //do move
-                pieceArray[to.x, to.y].color = fromColor;
-                pieceArray[to.x, to.y].job = pieceArray[from.x, from.y].job.ToString();
-                pieceArray[from.x, from.y].color = null;
-                pieceArray[from.x, from.y].job = null;
-
-                //human turn
-                if (opponent == "dark")
-                {
-                    humanPiecesAfterMove = getLightPieces();
+                    foreach (coordinate cell in getDarkPieces())
+                    {
+                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell));
+                    }
                 }
                 else
                 {
-                    humanPiecesAfterMove = getDarkPieces();
-                }
-
-                foreach (coordinate c in humanPiecesAfterMove)   //go through each human piece
-                {
-                    humanMoves.AddRange(getCheckRestrictedMoves(c));
-                }
-
-                for (int j = 0; j < humanMoves.Count; j++)
-                {
-                    switch (pieceArray[humanMoves[j].moveSpot.x, humanMoves[j].moveSpot.y].job)
+                    foreach (coordinate cell in getLightPieces())
                     {
-                        case "Queen":
-                            humanMoves[j].value = 30;
-                            break;
-                        case "Rook":
-                            humanMoves[j].value = 24;
-                            break;
-                        case "Bishop":
-                            humanMoves[j].value = 18;
-                            break;
-                        case "Knight":
-                            humanMoves[j].value = 12;
-                            break;
-                        case "Pawn":
-                            humanMoves[j].value = 6;
-                            break;
-                        default:    //empty cell
-                            humanMoves[j].value = 0;
-                            break;
-                    }
-                    //what piece does the capturing
-                    switch (pieceArray[humanMoves[j].pieceSpot.x, humanMoves[j].pieceSpot.y].job)
-                    {
-                        case "King":
-                            humanMoves[j].value -= 5;
-                            break;
-                        case "Queen":
-                            humanMoves[j].value -= 4;
-                            break;
-                        case "Rook":
-                            humanMoves[j].value -= 3;
-                            break;
-                        case "Bishop":
-                            humanMoves[j].value -= 2;
-                            break;
-                        case "Knight":
-                            humanMoves[j].value -= 1;
-                            break;
-                        default:    //pawn
-                            break;
+                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell));
                     }
                 }
-                humanMoves.Sort((x, y) => x.value.CompareTo(y.value));  //sort ascending
 
-                for (int j = 0; j < humanMoves.Count; j++)
+                foreach(move m in offensiveMoves)
                 {
-                    if (humanMoves[j].value != humanMoves[0].value)    //find all moves with lowest value
-                    {
-                        break;
-                    }
-                    bestMovesList.Add(humanMoves[j]);  //add them to list
-                }
-                //score of computer move - human reaction move
-                pos[i].value -= bestMovesList[rnd.Next(0, bestMovesList.Count)].value;
+                    board = silentMove(board, m);
 
-                //reset pieces
-                pieceArray[from.x, from.y].color = pieceArray[to.x, to.y].color;
-                pieceArray[from.x, from.y].job = pieceArray[to.x, to.y].job;
-                pieceArray[to.x, to.y].color = toColor;
-                pieceArray[to.x, to.y].job = toJob;
+                    if(attacking == "light")
+                    {
+                        attacking = "dark";
+                    }
+                    else
+                    {
+                        attacking = "light";
+                    }
+
+                    evaluator(board, attacking, level);
+                    //get back up from looking at every possible outcome x levels deep for one move
+                    if(level == 1)
+                    {
+                        //descending sort
+                        lowLevelVal.Sort((x, y) => y.CompareTo(x));
+                        topLevelVal.Add(lowLevelVal[0]);
+                        lowLevelVal.Clear();
+                    }
+                }
             }
-            pos.Sort((x, y) => y.value.CompareTo(x.value)); //descending order sort
-            bestMovesList.Clear();
-
-            for (int i = 0; i < pos.Count; i++)
+            //bottom level
+            else if(level == ply)
             {
-                if (pos[i].value != pos[0].value)    //find all moves with highest value
-                {
-                    break;
-                }
-                bestMovesList.Add(pos[i]);  //add them to list
+                int val = getValue(board);
+                lowLevelVal.Add(val);
             }
-            return bestMovesList[rnd.Next(0, bestMovesList.Count)]; //choose random move from bestMovesList
+            //top level after gone through all moves
+            if(level == 1)
+            {
+                int indexOfMax = -1;
+                int maxValue = int.MinValue;
+                for (int i = 0; i < topLevelVal.Count; i++)
+                {
+                    if ((indexOfMax < 0) || (topLevelVal[i] > maxValue))
+                    {
+                        maxValue = topLevelVal[i];
+                        indexOfMax = i;
+                    }
+                }
+                return offensiveMoves[indexOfMax];
+            }
+            return new move();
+        }
+
+        private piece[,] silentMove(piece[,] grid, move mv)
+        {
+            //does a move without visuals on a private board
+        }
+
+        private int getValue(piece[,] grid)
+        {
+            //looks at board and returns a value that indicates how good the computer is doing
         }
 
         private bool isInCheck(string teamInQuestion)
@@ -1335,7 +1194,6 @@ namespace Chess
         {
             //In between light and dark's turns
 
-            List<move> possibleWithoutCheck = new List<move>();
             bool endOfGame;
 
             //change teams
@@ -1346,12 +1204,7 @@ namespace Chess
 
                 if (endOfGame == false && onePlayer == true)
                 {
-                    foreach (coordinate cell in getDarkPieces())
-                    {
-                        possibleWithoutCheck.AddRange(getCheckRestrictedMoves(cell));
-                    }
-
-                    compTurn(possibleWithoutCheck);
+                    compTurn();
                     endOfGame = isInCheckmate("light", getLightPieces()); //did computer turn put player in checkmate?
                     offensiveTeam = "light";
                 }
@@ -1363,12 +1216,7 @@ namespace Chess
 
                 if (endOfGame == false && onePlayer == true)
                 {
-                    foreach (coordinate cell in getLightPieces())
-                    {
-                        possibleWithoutCheck.AddRange(getCheckRestrictedMoves(cell));
-                    }
-
-                    compTurn(possibleWithoutCheck);
+                    compTurn();
                     endOfGame = isInCheckmate("dark", getDarkPieces()); //did computer turn put player in checkmate?
                     offensiveTeam = "dark";
                 }
@@ -1393,28 +1241,41 @@ namespace Chess
             }
         }
 
-        private void compTurn(List<move> poss)
+        private void compTurn()
         {
             //computer's turn
 
             historyNode node;
             move bestMove;
             int r;
+            int iter = 0;
+            List<move> possibleWithoutCheck = new List<move>();
 
-            if (medMode == true)
+            if (medMode == true || hardMode == true)
             {
-                bestMove = medLogic(poss);
-            }
-
-            else if (hardMode == true)
-            {
-                bestMove = hardLogic(poss);
+                bestMove = evaluator(pieceArray, offensiveTeam, iter);
+                topLevelVal.Clear();
             }
 
             else
             {
-                r = rnd.Next(0, poss.Count);//choose random move
-                bestMove = poss[r];
+                if (offensiveTeam == "dark")
+                {
+                    foreach (coordinate cell in getDarkPieces())
+                    {
+                        possibleWithoutCheck.AddRange(getCheckRestrictedMoves(cell));
+                    }
+                }
+                else
+                {
+                    foreach (coordinate cell in getLightPieces())
+                    {
+                        possibleWithoutCheck.AddRange(getCheckRestrictedMoves(cell));
+                    }
+                }
+
+                r = rnd.Next(0, possibleWithoutCheck.Count);//choose random move
+                bestMove = possibleWithoutCheck[r];
             }
 
             coordinate newSpot = new coordinate(bestMove.moveSpot.x, bestMove.moveSpot.y);

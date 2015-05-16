@@ -78,6 +78,15 @@ namespace Chess
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
 
+                if(game.medMode == true)
+                {
+                    game.ply = 1;
+                }
+                else if(game.hardMode == true)
+                {
+                    game.ply = 3;
+                }
+
                 if (game.offensiveTeam != game.opponent)
                 {
                     game.ready = true;
