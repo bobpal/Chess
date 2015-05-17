@@ -4,6 +4,6 @@
         Height="150" Width="300" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner" WindowStyle="None" BorderThickness="2">
     <Grid>
         <ProgressBar x:Name="thinkBar" Height="30" Margin="10,25,10,0" VerticalAlignment="Top" Minimum="0" Maximum="100"/>
-        <Label Margin="20,0,20,50" Content="Determining the best way to obliterate you . . ." HorizontalContentAlignment="Center" Height="20" VerticalAlignment="Bottom" Padding="0"/>
+        <Label Margin="20,0,20,40" Content="Determining the best way to obliterate you . . ." HorizontalContentAlignment="Center" Height="20" VerticalAlignment="Bottom" Padding="0"/>
     </Grid>
 </Window>

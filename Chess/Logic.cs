@@ -685,7 +685,7 @@ namespace Chess
             }
         }
 
-        public move evaluator(piece[,] board, string attacking, int level)
+        public move evaluator(piece[,] board, string attacking, int level, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
 
@@ -695,8 +695,6 @@ namespace Chess
             //if not on bottom level, go down
             if(level < ply)
             {
-                double progress;
-
                 string nextTurn = switchTeam(attacking);
 
                 if (attacking == "dark")
@@ -717,12 +715,14 @@ namespace Chess
                 for (int i = 0; i < offensiveMoves.Count; i++)
                 {
                     board = silentMove(board, offensiveMoves[i]);
-                    evaluator(board, nextTurn, level);
+                    evaluator(board, nextTurn, level, null);
                     //get back up from looking at every possible outcome x levels deep for one move
                     if (level == 1)
                     {
-                        progress = ((i + 1) * 100) / offensiveMoves.Count;
-                        think.update(progress);
+                        if(progress != null)
+                        {
+                            progress.Report(((i + 1) * 100) / offensiveMoves.Count);
+                        }
                         //descending sort
                         lowLevelVal.Sort((x, y) => y.CompareTo(x));
                         topLevelVal.Add(lowLevelVal[0]);
@@ -1223,7 +1223,7 @@ namespace Chess
             }
         }
 
-        private void compTurn()
+        private async void compTurn()
         {
             //computer's turn
             
@@ -1234,15 +1234,17 @@ namespace Chess
 
             if (medMode == true)
             {
-                bestMove = evaluator(pieceArray, offensiveTeam, 0);
+                bestMove = evaluator(pieceArray, offensiveTeam, 0, null);
                 topLevelVal.Clear();
             }
             else if (hardMode == true)
             {
+                Progress<int> percent = new Progress<int>();
+                percent.ProgressChanged += (sender, e) => { think.update(e); };
                 think = new Thinking();
                 think.Owner = mWindow;
                 think.Show();
-                bestMove = evaluator(pieceArray, offensiveTeam, 0);
+                bestMove = await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, percent));
                 topLevelVal.Clear();
             }
 
