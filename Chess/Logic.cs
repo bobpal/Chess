@@ -685,7 +685,7 @@ namespace Chess
             }
         }
 
-        public move evaluator(piece[,] board, string attacking, int level, IProgress<int> progress)
+        private move evaluator(piece[,] board, string attacking, int level, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
             
@@ -695,27 +695,28 @@ namespace Chess
             //if not on bottom level, go down
             if(level < ply)
             {
-                piece[,] newBoard = deepCopy(board);
+                piece[,] newBoard;
 
                 string nextTurn = switchTeam(attacking);
 
                 if (attacking == "dark")
                 {
-                    foreach (coordinate cell in getDarkPieces(newBoard))
+                    foreach (coordinate cell in getDarkPieces(board))
                     {
-                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell, newBoard));
+                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell, board));
                     }
                 }
                 else
                 {
-                    foreach (coordinate cell in getLightPieces(newBoard))
+                    foreach (coordinate cell in getLightPieces(board))
                     {
-                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell, newBoard));
+                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell, board));
                     }
                 }
 
                 for (int i = 0; i < offensiveMoves.Count; i++)
                 {
+                    newBoard = deepCopy(board);
                     newBoard = silentMove(newBoard, offensiveMoves[i]);
                     evaluator(newBoard, nextTurn, level, null);
                     //get back up from looking at every possible outcome x levels deep for one move
@@ -1103,7 +1104,7 @@ namespace Chess
             }
         }
 
-        public void clicker(coordinate currentCell)
+        public async Task clicker(coordinate currentCell)
         {
             //human player's turn, gets called when player clicks on spot
 
@@ -1124,7 +1125,7 @@ namespace Chess
                 //if selected movable spot
                 else if (movablePieceSelected == true)
                 {
-                    movableCellSelected(currentCell);
+                    await movableCellSelected(currentCell);
                 }
             }
             else if(networkGame == true && client != null)
@@ -1160,7 +1161,7 @@ namespace Chess
             }
         }
 
-        private void movableCellSelected(coordinate cCell)
+        private async Task movableCellSelected(coordinate cCell)
         {
             move curTurn = new move();
             bool movableSpot = false;
@@ -1268,7 +1269,7 @@ namespace Chess
                 {
                     d.tile.Cursor = Cursors.Arrow;
                 }
-                betweenTurns();
+                await betweenTurns();
             }
             else    //if didn't select movable spot
             {
@@ -1277,7 +1278,7 @@ namespace Chess
             }
         }
 
-        private void betweenTurns()
+        private async Task betweenTurns()
         {
             //In between light and dark's turns
 
@@ -1291,7 +1292,7 @@ namespace Chess
 
                 if (endOfGame == false && onePlayer == true)
                 {
-                    compTurn();
+                    await compTurn();
                     endOfGame = isInCheckmate("light", getLightPieces(pieceArray)); //did computer turn put player in checkmate?
                     offensiveTeam = "light";
                 }
@@ -1303,7 +1304,7 @@ namespace Chess
 
                 if (endOfGame == false && onePlayer == true)
                 {
-                    compTurn();
+                    await compTurn();
                     endOfGame = isInCheckmate("dark", getDarkPieces(pieceArray)); //did computer turn put player in checkmate?
                     offensiveTeam = "dark";
                 }
@@ -1328,7 +1329,7 @@ namespace Chess
             }
         }
 
-        private async void compTurn()
+        private async Task compTurn()
         {
             //computer's turn
             
@@ -1339,14 +1340,13 @@ namespace Chess
 
             if (hardMode == true || medMode == true)
             {
-                piece[,] grid = deepCopy(pieceArray);
                 Progress<int> percent = new Progress<int>();
                 percent.ProgressChanged += (sender, e) => { think.update(e); };
                 think = new Thinking();
                 think.Owner = mWindow;
                 think.Show();
                 ready = false;
-                bestMove = await Task.Run(() => evaluator(grid, offensiveTeam, 0, percent));
+                bestMove = await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, percent));
                 ready = true;
                 topLevelVal.Clear();
             }

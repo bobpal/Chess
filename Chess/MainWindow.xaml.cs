@@ -85,12 +85,12 @@ namespace Chess
             this.Height = 721;
         }
 
-        private void cell_Click(object sender, RoutedEventArgs e)
+        private async void cell_Click(object sender, RoutedEventArgs e)
         {
             Canvas cell = (sender as Canvas);
             int row = Grid.GetRow(cell);
             int col = Grid.GetColumn(cell);
-            game.clicker(new Logic.coordinate(col, row));
+            await game.clicker(new Logic.coordinate(col, row));
         }
 
         private void cell_MouseMove(object sender, RoutedEventArgs e)
