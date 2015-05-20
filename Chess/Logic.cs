@@ -50,13 +50,12 @@ namespace Chess
         private BitmapImage dPawn;
         public TcpClient client;
         public NetworkStream nwStream;
-        public int bytesRead;                                   //number of bytes received
         public byte[] buffer = new byte[255];                   //buffer for tcp
-        private static Random rnd = new Random();
+        private static Random rnd = new Random();               //used for all random situations
+        public int bottom;                                      //how many levels deep should comp look?
         private Thinking think;                                 //progress bar window for hardMode
         private List<double> topLevelVal = new List<double>();  //holds move values for original moves
         private List<int> lowLevelVal = new List<int>();        //holds a value for each outcome of move
-        public int ply;                                         //how many level deep should comp look?
         public bool rotate = true;                              //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                            //is lastMove menu option checked?
         public bool saveGame = true;                            //Save game on exit?
@@ -693,7 +692,7 @@ namespace Chess
 
             level++;
             //if not on bottom level, go down
-            if(level < ply)
+            if(level < bottom)
             {
                 piece[,] newBoard;
 
@@ -726,14 +725,13 @@ namespace Chess
                         {
                             progress.Report(((i + 1) * 100) / offensiveMoves.Count);
                         }
-                        lowLevelVal.Average();
-                        topLevelVal.Add(lowLevelVal[0]);
+                        topLevelVal.Add(lowLevelVal.Average());
                         lowLevelVal.Clear();
                     }
                 }
             }
             //bottom level
-            else if(level == ply)
+            else if(level == bottom)
             {
                 int val = getValue(board);
                 lowLevelVal.Add(val);
@@ -742,7 +740,7 @@ namespace Chess
             if(level == 1)
             {
                 int indexOfMax = 0;
-                double maxValue = 0;
+                double maxValue = -30;
                 for (int i = 0; i < topLevelVal.Count; i++)
                 {
                     if (topLevelVal[i] > maxValue)
@@ -769,12 +767,12 @@ namespace Chess
             //move to new cell
             grid[toX, toY].color = offense;
             grid[toX, toY].job = grid[fromX, fromY].job;
+            grid[toX, toY].virgin = false;
 
             //clear old cell
             grid[fromX, fromY].color = null;
             grid[fromX, fromY].job = null;
-
-            grid[toX, toY].virgin = false;
+            grid[fromX, fromY].virgin = false;
 
             //check for pawnTransform
             if (grid[toX, toY].job == "Pawn")
@@ -916,7 +914,6 @@ namespace Chess
                         break;
                 }
             }
-
             return total;
         }
 
@@ -1615,20 +1612,16 @@ namespace Chess
             //overwrite current cell
             pieceArray[newCell.x, newCell.y].color = pPiece.color;
             pieceArray[newCell.x, newCell.y].job = pPiece.job;
+            pieceArray[newCell.x, newCell.y].virgin = false;
+            displayArray[newCell.x, newCell.y].top.Source = matchPicture(pPiece);
 
             //delete prev cell
             pieceArray[oldCell.x, oldCell.y].color = null;
             pieceArray[oldCell.x, oldCell.y].job = null;
-
-            //overwrite current image
-            //take previous piece picture and put it in current cell picture box
-            displayArray[newCell.x, newCell.y].top.Source = matchPicture(pPiece);
-
-            //delete prev image
+            pieceArray[oldCell.x, oldCell.y].virgin = false;
             displayArray[oldCell.x, oldCell.y].top.Source = null;
 
             movablePieceSelected = false;
-            pieceArray[newCell.x, newCell.y].virgin = false;
         }
 
         public void undo()
@@ -2079,6 +2072,8 @@ namespace Chess
 
         public async void continuousReader()
         {
+            int bytesRead;
+
             while(true)
             {
                 try
