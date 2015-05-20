@@ -50,21 +50,21 @@ namespace Chess
         private BitmapImage dPawn;
         public TcpClient client;
         public NetworkStream nwStream;
-        public int bytesRead;                               //number of bytes received
-        public byte[] buffer = new byte[255];               //buffer for tcp
+        public int bytesRead;                                   //number of bytes received
+        public byte[] buffer = new byte[255];                   //buffer for tcp
         private static Random rnd = new Random();
-        private Thinking think;
-        private List<int> topLevelVal = new List<int>();    //holds move values for original moves
-        private List<int> lowLevelVal = new List<int>();    //holds a value for each outcome of move
-        public int ply;                                     //how many level deep should comp look?
-        public bool rotate = true;                          //Rotate board between turns on 2Player mode?
-        public bool lastMove = true;                        //is lastMove menu option checked?
-        public bool saveGame = true;                        //Save game on exit?
-        public string IP = "127.0.0.1";                     //IP address of server
-        public int port = 54321;                            //port of server
-        public double rotationDuration = 3;                 //how long the rotation animation takes
-        public bool movablePieceSelected = false;           //if true, the next click will move the selected piece if possible
-        private List<move> possible = new List<move>();     //list of all possible moves
+        private Thinking think;                                 //progress bar window for hardMode
+        private List<double> topLevelVal = new List<double>();  //holds move values for original moves
+        private List<int> lowLevelVal = new List<int>();        //holds a value for each outcome of move
+        public int ply;                                         //how many level deep should comp look?
+        public bool rotate = true;                              //Rotate board between turns on 2Player mode?
+        public bool lastMove = true;                            //is lastMove menu option checked?
+        public bool saveGame = true;                            //Save game on exit?
+        public string IP = "127.0.0.1";                         //IP address of server
+        public int port = 54321;                                //port of server
+        public double rotationDuration = 3;                     //how long the rotation animation takes
+        public bool movablePieceSelected = false;               //if true, the next click will move the selected piece if possible
+        private List<move> possible = new List<move>();         //list of all possible moves
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private string pwd = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private BitmapImage bmpTo = new BitmapImage(new Uri("pack://application:,,,/Resources/to.png"));
@@ -726,8 +726,7 @@ namespace Chess
                         {
                             progress.Report(((i + 1) * 100) / offensiveMoves.Count);
                         }
-                        //descending sort
-                        lowLevelVal.Sort((x, y) => y.CompareTo(x));
+                        lowLevelVal.Average();
                         topLevelVal.Add(lowLevelVal[0]);
                         lowLevelVal.Clear();
                     }
@@ -743,7 +742,7 @@ namespace Chess
             if(level == 1)
             {
                 int indexOfMax = 0;
-                int maxValue = 0;
+                double maxValue = 0;
                 for (int i = 0; i < topLevelVal.Count; i++)
                 {
                     if (topLevelVal[i] > maxValue)
@@ -855,7 +854,70 @@ namespace Chess
         {
             //looks at board and returns a value that indicates how good the computer is doing
 
-            return 0;
+            int total = 0;
+            List<coordinate> compPieces = new List<coordinate>();
+            List<coordinate> humanPieces = new List<coordinate>();
+
+            if(opponent == "light")
+            {
+                compPieces = getLightPieces(grid);
+                humanPieces = getDarkPieces(grid);
+            }
+            else
+            {
+                compPieces = getDarkPieces(grid);
+                humanPieces = getLightPieces(grid);
+            }
+
+            foreach(coordinate c in compPieces)
+            {
+                switch(grid[c.x, c.y].job)
+                {
+                    case "Queen":
+                        total += 5;
+                        break;
+                    case "Rook":
+                        total += 3;
+                        break;
+                    case "Bishop":
+                        total += 3;
+                        break;
+                    case "Knight":
+                        total += 2;
+                        break;
+                    case "Pawn":
+                        total += 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            foreach (coordinate c in humanPieces)
+            {
+                switch (grid[c.x, c.y].job)
+                {
+                    case "Queen":
+                        total -= 5;
+                        break;
+                    case "Rook":
+                        total -= 3;
+                        break;
+                    case "Bishop":
+                        total -= 3;
+                        break;
+                    case "Knight":
+                        total -= 2;
+                        break;
+                    case "Pawn":
+                        total -= 1;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return total;
         }
 
         private piece[,] deepCopy(piece[,] source)
@@ -1340,11 +1402,17 @@ namespace Chess
 
             if (hardMode == true || medMode == true)
             {
-                Progress<int> percent = new Progress<int>();
-                percent.ProgressChanged += (sender, e) => { think.update(e); };
-                think = new Thinking();
-                think.Owner = mWindow;
-                think.Show();
+                Progress<int> percent = null;
+
+                if (hardMode == true)
+                {
+                    percent = new Progress<int>();
+                    percent.ProgressChanged += (sender, e) => { think.update(e); };
+                    think = new Thinking(rnd);
+                    think.Owner = mWindow;
+                    think.Show();
+                }
+                
                 ready = false;
                 bestMove = await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, percent));
                 ready = true;
