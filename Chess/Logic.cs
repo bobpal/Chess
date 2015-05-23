@@ -725,8 +725,12 @@ namespace Chess
                         {
                             progress.Report(((i + 1) * 100) / offensiveMoves.Count);
                         }
-                        topLevelVal.Add(lowLevelVal.Average());
-                        lowLevelVal.Clear();
+
+                        if(lowLevelVal.Count > 0)
+                        {
+                            topLevelVal.Add(lowLevelVal.Average());
+                            lowLevelVal.Clear();
+                        }
                     }
                 }
             }
