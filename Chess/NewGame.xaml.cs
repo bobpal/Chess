@@ -80,7 +80,7 @@ namespace Chess
 
                 if(game.medMode == true)
                 {
-                    game.bottom = 3;
+                    game.bottom = 4;
                 }
                 else if(game.hardMode == true)
                 {

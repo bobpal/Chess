@@ -53,9 +53,8 @@ namespace Chess
         public byte[] buffer = new byte[255];                   //buffer for tcp
         private static Random rnd = new Random();               //used for all random situations
         public int bottom;                                      //how many levels deep should comp look?
+        private move bestMove;                                  //ultimate return for evaluator()
         private Thinking think;                                 //progress bar window for hardMode
-        private List<double> topLevelVal = new List<double>();  //holds move values for original moves
-        private List<int> lowLevelVal = new List<int>();        //holds a value for each outcome of move
         public bool rotate = true;                              //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                            //is lastMove menu option checked?
         public bool saveGame = true;                            //Save game on exit?
@@ -684,10 +683,12 @@ namespace Chess
             }
         }
 
-        private move evaluator(piece[,] board, string attacking, int level, IProgress<int> progress)
+        private int evaluator(piece[,] board, string attacking, int level, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
             
+            int val;
+            List<int> childValues = new List<int>();
             List<move> offensiveMoves = new List<move>();
 
             level++;
@@ -717,45 +718,43 @@ namespace Chess
                 {
                     newBoard = deepCopy(board);
                     newBoard = silentMove(newBoard, offensiveMoves[i]);
-                    evaluator(newBoard, nextTurn, level, null);
-                    //get back up from looking at every possible outcome x levels deep for one move
+                    val = evaluator(newBoard, nextTurn, level, null);
+                    childValues.Add(val);
+
+                    //every top-level move
                     if (level == 1)
                     {
                         if(progress != null)
                         {
                             progress.Report(((i + 1) * 100) / offensiveMoves.Count);
                         }
-
-                        if(lowLevelVal.Count > 0)
-                        {
-                            topLevelVal.Add(lowLevelVal.Average());
-                            lowLevelVal.Clear();
-                        }
                     }
+                }
+                //After loop is done for this node
+
+                //if odd, choose max
+                if(level % 2 == 1)
+                {
+                    val = childValues.Max();
+                }
+                else
+                {
+                    val = childValues.Min();
                 }
             }
             //bottom level
-            else if(level == bottom)
+            else
             {
-                int val = getValue(board);
-                lowLevelVal.Add(val);
+                val = getValue(board);
             }
-            //top level after gone through all moves
-            if(level == 1)
+
+            //top level after went through all moves
+            if (level == 1)
             {
-                int indexOfMax = 0;
-                double maxValue = -30;
-                for (int i = 0; i < topLevelVal.Count; i++)
-                {
-                    if (topLevelVal[i] > maxValue)
-                    {
-                        maxValue = topLevelVal[i];
-                        indexOfMax = i;
-                    }
-                }
-                return offensiveMoves[indexOfMax];
+                int indexOfMax = childValues.IndexOf(val);
+                bestMove = offensiveMoves[indexOfMax];
             }
-            return new move();
+            return val;
         }
 
         private piece[,] silentMove(piece[,] grid, move mv)
@@ -1397,7 +1396,6 @@ namespace Chess
             //computer's turn
             
             historyNode node;
-            move bestMove;
             int r;
             List<move> possibleWithoutCheck = new List<move>();
 
@@ -1415,9 +1413,8 @@ namespace Chess
                 }
                 
                 ready = false;
-                bestMove = await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, percent));
+                await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, percent));
                 ready = true;
-                topLevelVal.Clear();
             }
 
             else
