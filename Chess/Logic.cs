@@ -714,32 +714,47 @@ namespace Chess
                     }
                 }
 
-                for (int i = 0; i < offensiveMoves.Count; i++)
+                //if checkmate
+                if(offensiveMoves.Count == 0)
                 {
-                    newBoard = deepCopy(board);
-                    newBoard = silentMove(newBoard, offensiveMoves[i]);
-                    val = evaluator(newBoard, nextTurn, level, null);
-                    childValues.Add(val);
-
-                    //every top-level move
-                    if (level == 1)
+                    if (level % 2 == 0)
                     {
-                        if(progress != null)
-                        {
-                            progress.Report(((i + 1) * 100) / offensiveMoves.Count);
-                        }
+                        val = 30;
                     }
-                }
-                //After loop is done for this node
-
-                //if odd, choose max
-                if(level % 2 == 1)
-                {
-                    val = childValues.Max();
+                    else
+                    {
+                        val = -30;
+                    }
                 }
                 else
                 {
-                    val = childValues.Min();
+                    for (int i = 0; i < offensiveMoves.Count; i++)
+                    {
+                        newBoard = deepCopy(board);
+                        newBoard = silentMove(newBoard, offensiveMoves[i]);
+                        val = evaluator(newBoard, nextTurn, level, null);
+                        childValues.Add(val);
+
+                        //every top-level move
+                        if (level == 1)
+                        {
+                            if (progress != null)
+                            {
+                                progress.Report(((i + 1) * 100) / offensiveMoves.Count);
+                            }
+                        }
+                    }
+                    //After loop is done for this node
+
+                    //if odd, choose max
+                    if (level % 2 == 1)
+                    {
+                        val = childValues.Max();
+                    }
+                    else
+                    {
+                        val = childValues.Min();
+                    }
                 }
             }
             //bottom level
