@@ -683,7 +683,8 @@ namespace Chess
             }
         }
 
-        private int evaluator(piece[,] board, string attacking, int level, bool computerTurn, IProgress<int> progress)
+        private int evaluator(
+            piece[,] board, string attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
 
@@ -729,18 +730,29 @@ namespace Chess
                             {
                                 newBoard = deepCopy(board);
                                 newBoard = silentMove(newBoard, offensiveMoves[i]);
-                                val = evaluator(newBoard, nextTurn, level, false, null);
+                                val = evaluator(newBoard, nextTurn, level, false, alpha, beta, null);
                                 if (val > bestVal)
                                 {
                                     bestVal = val;
                                     indexOfBest = i;
                                 }
+                                //null = medMode
                                 if (progress != null)
                                 {
-                                    progress.Report(((i + 1) * 100) / offensiveMoves.Count);
+                                    progress.Report((i * 100) / offensiveMoves.Count);
+                                }
+
+                                alpha = Math.Max(alpha, bestVal);
+                                if (beta <= alpha)
+                                {
+                                    break;
                                 }
                             }
                             bestMove = offensiveMoves[indexOfBest];
+                            if (progress != null)
+                            {
+                                progress.Report(100);
+                            }
                         }
                         else
                         {
@@ -748,8 +760,13 @@ namespace Chess
                             {
                                 newBoard = deepCopy(board);
                                 newBoard = silentMove(newBoard, offensiveMoves[i]);
-                                val = evaluator(newBoard, nextTurn, level, false, null);
+                                val = evaluator(newBoard, nextTurn, level, false, alpha, beta, null);
                                 bestVal = Math.Max(bestVal, val);
+                                alpha = Math.Max(alpha, bestVal);
+                                if (beta <= alpha)
+                                {
+                                    break;
+                                }
                             }
                         }
                     }
@@ -766,8 +783,13 @@ namespace Chess
                         {
                             newBoard = deepCopy(board);
                             newBoard = silentMove(newBoard, offensiveMoves[i]);
-                            val = evaluator(newBoard, nextTurn, level, true, null);
+                            val = evaluator(newBoard, nextTurn, level, true, alpha, beta, null);
                             bestVal = Math.Min(bestVal, val);
+                            beta = Math.Min(beta, bestVal);
+                            if(beta <= alpha)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
@@ -1436,7 +1458,7 @@ namespace Chess
                 }
                 
                 ready = false;
-                await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, true, percent));
+                await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, true, -30, 30, percent));
                 ready = true;
             }
 
