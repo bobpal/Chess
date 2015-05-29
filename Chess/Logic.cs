@@ -683,12 +683,13 @@ namespace Chess
             }
         }
 
-        private int evaluator(piece[,] board, string attacking, int level, IProgress<int> progress)
+        private int evaluator(piece[,] board, string attacking, int level, bool computerTurn, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
-            
+
             int val;
-            List<int> childValues = new List<int>();
+            int bestVal;
+            int indexOfBest = 0;
             List<move> offensiveMoves = new List<move>();
 
             level++;
@@ -714,62 +715,69 @@ namespace Chess
                     }
                 }
 
-                //if checkmate
-                if(offensiveMoves.Count == 0)
+                if (computerTurn == true)
                 {
-                    if (level % 2 == 0)
-                    {
-                        val = 30;
-                    }
+                    bestVal = -30;
+
+                    //if checkmate
+                    if (offensiveMoves.Count == 0){}
                     else
                     {
-                        val = -30;
+                        if (level == 1)
+                        {
+                            for (int i = 0; i < offensiveMoves.Count; i++)
+                            {
+                                newBoard = deepCopy(board);
+                                newBoard = silentMove(newBoard, offensiveMoves[i]);
+                                val = evaluator(newBoard, nextTurn, level, false, null);
+                                if (val > bestVal)
+                                {
+                                    bestVal = val;
+                                    indexOfBest = i;
+                                }
+                                if (progress != null)
+                                {
+                                    progress.Report(((i + 1) * 100) / offensiveMoves.Count);
+                                }
+                            }
+                            bestMove = offensiveMoves[indexOfBest];
+                        }
+                        else
+                        {
+                            for (int i = 0; i < offensiveMoves.Count; i++)
+                            {
+                                newBoard = deepCopy(board);
+                                newBoard = silentMove(newBoard, offensiveMoves[i]);
+                                val = evaluator(newBoard, nextTurn, level, false, null);
+                                bestVal = Math.Max(bestVal, val);
+                            }
+                        }
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < offensiveMoves.Count; i++)
-                    {
-                        newBoard = deepCopy(board);
-                        newBoard = silentMove(newBoard, offensiveMoves[i]);
-                        val = evaluator(newBoard, nextTurn, level, null);
-                        childValues.Add(val);
+                    bestVal = 30;
 
-                        //every top-level move
-                        if (level == 1)
-                        {
-                            if (progress != null)
-                            {
-                                progress.Report(((i + 1) * 100) / offensiveMoves.Count);
-                            }
-                        }
-                    }
-                    //After loop is done for this node
-
-                    //if odd, choose max
-                    if (level % 2 == 1)
-                    {
-                        val = childValues.Max();
-                    }
+                    //if checkmate
+                    if (offensiveMoves.Count == 0){}
                     else
                     {
-                        val = childValues.Min();
+                        for (int i = 0; i < offensiveMoves.Count; i++)
+                        {
+                            newBoard = deepCopy(board);
+                            newBoard = silentMove(newBoard, offensiveMoves[i]);
+                            val = evaluator(newBoard, nextTurn, level, true, null);
+                            bestVal = Math.Min(bestVal, val);
+                        }
                     }
                 }
             }
             //bottom level
             else
             {
-                val = getValue(board);
+                bestVal = getValue(board);
             }
-
-            //top level after went through all moves
-            if (level == 1)
-            {
-                int indexOfMax = childValues.IndexOf(val);
-                bestMove = offensiveMoves[indexOfMax];
-            }
-            return val;
+            return bestVal;
         }
 
         private piece[,] silentMove(piece[,] grid, move mv)
@@ -1428,7 +1436,7 @@ namespace Chess
                 }
                 
                 ready = false;
-                await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, percent));
+                await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, true, percent));
                 ready = true;
             }
 
