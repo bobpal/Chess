@@ -683,7 +683,7 @@ namespace Chess
             }
         }
 
-        private int evaluator(
+        public int evaluator(
             piece[,] board, string attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
@@ -1446,19 +1446,10 @@ namespace Chess
 
             if (hardMode == true || medMode == true)
             {
-                Progress<int> percent = null;
-
-                if (hardMode == true)
-                {
-                    percent = new Progress<int>();
-                    percent.ProgressChanged += (sender, e) => { think.update(e); };
-                    think = new Thinking(rnd);
-                    think.Owner = mWindow;
-                    think.Show();
-                }
-                
                 ready = false;
-                await Task.Run(() => evaluator(pieceArray, offensiveTeam, 0, true, -30, 30, percent));
+                think = new Thinking(this, rnd.Next(0, 40));
+                think.Owner = mWindow;
+                think.ShowDialog();
                 ready = true;
             }
 

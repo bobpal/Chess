@@ -80,11 +80,11 @@ namespace Chess
 
                 if(game.medMode == true)
                 {
-                    game.bottom = 4;
+                    game.bottom = 5;
                 }
                 else if(game.hardMode == true)
                 {
-                    game.bottom = 5;
+                    game.bottom = 6;
                 }
 
                 if (game.offensiveTeam != game.opponent)

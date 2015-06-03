@@ -12,14 +12,20 @@ namespace Chess
 {
     public partial class Thinking : Window
     {
-        public Thinking(Random r)
+        private Logic game;
+        private Progress<int> progress;
+
+        public Thinking(Logic l, int r)
         {
             InitializeComponent();
             this.MouseDown += delegate { DragMove(); };
             writeMessage(r);
+            this.game = l;
+            progress = new Progress<int>();
+            progress.ProgressChanged += (sender, e) => { update(e); };
         }
 
-        private void writeMessage(Random rand)
+        private void writeMessage(int i)
         {
             string[] message = new string[40];
 
@@ -64,7 +70,6 @@ namespace Chess
             message[38] = "dispense";
             message[39] = "outdo";
 
-            int i = rand.Next(0, 40);
             taunt.Content = "Determining the best way to " + message[i] + " you...";
         }
 
@@ -76,6 +81,11 @@ namespace Chess
             {
                 this.Close();
             }
+        }
+
+        private async void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            await Task.Run(() => game.evaluator(game.pieceArray, game.offensiveTeam, 0, true, -30, 30, progress));
         }
     }
 }
