@@ -29,8 +29,7 @@ namespace Chess
         public bool networkGame;            //playing over a network
         public string opponent;             //color of computer or 2nd player
         public string offensiveTeam;        //which side is on the offense
-        public bool medMode;                //difficulty level
-        public bool hardMode;               //difficulty level
+        public int difficulty;              //difficulty level
         public bool ready;                  //blocks functionality for unwanted circumstances
         private coordinate prevSelected;    //where the cursor clicked previously
         public List<string> themeList;      //list of themes
@@ -52,7 +51,6 @@ namespace Chess
         public NetworkStream nwStream;
         public byte[] buffer = new byte[255];                   //buffer for tcp
         private static Random rnd = new Random();               //used for all random situations
-        public int bottom;                                      //how many levels deep should comp look?
         private move bestMove;                                  //ultimate return for evaluator()
         private Thinking think;                                 //progress bar window for hardMode
         public bool rotate = true;                              //Rotate board between turns on 2Player mode?
@@ -81,8 +79,7 @@ namespace Chess
             public string sTheme { get; private set; }
             public bool sOnePlayer { get; private set; }
             public bool sNetwork { get; private set; }
-            public bool sMedMode { get; private set; }
-            public bool sHardMode { get; private set; }
+            public int sDifficulty { get; private set; }
             public bool sLastMove { get; private set; }
             public bool sSaveGame { get; private set; }
             public bool sReady { get; private set; }
@@ -90,7 +87,7 @@ namespace Chess
             public double sRduration { get; private set; }
 
             public saveData(piece[,] p1, string p2, string p3, string p4, bool p5,
-                bool p6, bool p7, bool p8, bool p9, bool p10, bool p11, bool p12, double p13)
+                bool p6, int p7, bool p8, bool p9, bool p10, bool p11, double p12)
             {
                 this.sBoard = p1;
                 this.sOffensiveTeam = p2;
@@ -98,13 +95,12 @@ namespace Chess
                 this.sTheme = p4;
                 this.sOnePlayer = p5;
                 this.sNetwork = p6;
-                this.sMedMode = p7;
-                this.sHardMode = p8;
-                this.sLastMove = p9;
-                this.sSaveGame = p10;
-                this.sReady = p11;
-                this.sRotate = p12;
-                this.sRduration = p13;
+                this.sDifficulty = p7;
+                this.sLastMove = p8;
+                this.sSaveGame = p9;
+                this.sReady = p10;
+                this.sRotate = p11;
+                this.sRduration = p12;
             }
         }
 
@@ -695,7 +691,7 @@ namespace Chess
 
             level++;
             //if not on bottom level, go down
-            if(level < bottom)
+            if(level < difficulty)
             {
                 piece[,] newBoard;
 
@@ -724,7 +720,7 @@ namespace Chess
                     if (offensiveMoves.Count == 0){}
                     else
                     {
-                        if (level == 1)
+                        if (level == 0)
                         {
                             for (int i = 0; i < offensiveMoves.Count; i++)
                             {
@@ -1441,39 +1437,20 @@ namespace Chess
             //computer's turn
             
             historyNode node;
-            int r;
-            List<move> possibleWithoutCheck = new List<move>();
+            ready = false;
 
-            if (hardMode == true || medMode == true)
+            if (difficulty > 3)
             {
-                ready = false;
                 think = new Thinking(this, rnd.Next(0, 40));
                 think.Owner = mWindow;
                 think.ShowDialog();
-                ready = true;
             }
-
             else
             {
-                if (offensiveTeam == "dark")
-                {
-                    foreach (coordinate cell in getDarkPieces(pieceArray))
-                    {
-                        possibleWithoutCheck.AddRange(getCheckRestrictedMoves(cell, pieceArray));
-                    }
-                }
-                else
-                {
-                    foreach (coordinate cell in getLightPieces(pieceArray))
-                    {
-                        possibleWithoutCheck.AddRange(getCheckRestrictedMoves(cell, pieceArray));
-                    }
-                }
-
-                r = rnd.Next(0, possibleWithoutCheck.Count);//choose random move
-                bestMove = possibleWithoutCheck[r];
+                await Task.Run(() => evaluator(pieceArray, offensiveTeam, -1, true, -30, 30, null));
             }
 
+            ready = true;
             coordinate newSpot = new coordinate(bestMove.moveSpot.x, bestMove.moveSpot.y);
             coordinate oldSpot = new coordinate(bestMove.pieceSpot.x, bestMove.pieceSpot.y);
 
@@ -1483,7 +1460,7 @@ namespace Chess
 
             if (pieceArray[newSpot.x, newSpot.y].job == "Pawn" && newSpot.y == 0)//if pawn makes it to last row
             {
-                r = rnd.Next(0, 10); //choose random piece to transform into
+                int r = rnd.Next(0, 10); //choose random piece to transform into
 
                 if (opponent == "dark")
                 {
@@ -1956,7 +1933,7 @@ namespace Chess
             //if save game unchecked, saves preferences, but not game state
 
             string theme = themeList[themeIndex];
-            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, networkGame, medMode, hardMode,
+            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, networkGame, difficulty,
                 lastMove, saveGame, ready, rotate, rotationDuration);
 
             System.IO.Directory.CreateDirectory(dirPath);
@@ -1995,8 +1972,7 @@ namespace Chess
                         offensiveTeam = lData.sOffensiveTeam;
                         opponent = lData.sOpponent;
                         onePlayer = lData.sOnePlayer;
-                        medMode = lData.sMedMode;
-                        hardMode = lData.sHardMode;
+                        difficulty = lData.sDifficulty;
                         //if 2Player local, rotate is on, and opponent's turn
                         if(rotate == true && offensiveTeam == opponent && onePlayer == false)
                         {

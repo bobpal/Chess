@@ -22,3 +22,4 @@ C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Connecting.baml
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Connecting.g.cs
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Thinking.baml
 C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\Thinking.g.cs
+C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\GeneratedInternalTypeHelper.g.cs

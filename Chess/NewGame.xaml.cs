@@ -1,10 +1,10 @@
-﻿using System.Net;
+﻿using System;
+using System.Globalization;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using System.Windows.Data;
 
 namespace Chess
 {
@@ -71,21 +71,11 @@ namespace Chess
             {
                 game.onePlayer = onePlayerBtn.IsChecked.Value;
                 game.networkGame = networkBtn.IsChecked.Value;
-                game.medMode = mediumBtn.IsChecked.Value;
-                game.hardMode = hardBtn.IsChecked.Value;
+                game.difficulty = (int)AI.Value;
                 game.history.Clear();
                 game.clearToAndFrom();
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
-
-                if(game.medMode == true)
-                {
-                    game.bottom = 5;
-                }
-                else if(game.hardMode == true)
-                {
-                    game.bottom = 6;
-                }
 
                 if (game.offensiveTeam != game.opponent)
                 {
@@ -214,6 +204,47 @@ namespace Chess
         {
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
+        }
+    }
+
+    public class SliderToString : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            switch ((int)(double)value)
+            {
+                case 1:
+                    return "Very Easy";
+                case 2:
+                    return "Easy";
+                case 3:
+                    return "Medium";
+                case 4:
+                    return "Hard";
+                case 5:
+                    return "Very Hard";
+                default:
+                    return "";
+            }
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            switch ((string)value)
+            {
+                case "Very Easy":
+                    return 1.0;
+                case "Easy":
+                    return 2.0;
+                case "Medium":
+                    return 3.0;
+                case "Hard":
+                    return 4.0;
+                case "Very Hard":
+                    return 5.0;
+                default:
+                    return 0.0;
+            }
         }
     }
 }
