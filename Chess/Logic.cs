@@ -684,16 +684,16 @@ namespace Chess
         {
             //is called recursively for comp to look ahead and return the best move
 
-            int val;
             int bestVal;
-            int indexOfBest = 0;
             List<move> offensiveMoves = new List<move>();
 
             level++;
             //if not on bottom level, go down
             if(level < difficulty)
             {
+                int val;
                 piece[,] newBoard;
+                int indexOfBest = 0;
 
                 string nextTurn = switchTeam(attacking);
 
@@ -897,18 +897,51 @@ namespace Chess
             //looks at board and returns a value that indicates how good the computer is doing
 
             int total = 0;
+            coordinate temp = new coordinate();
             List<coordinate> compPieces = new List<coordinate>();
             List<coordinate> humanPieces = new List<coordinate>();
 
             if(opponent == "light")
             {
-                compPieces = getLightPieces(grid);
-                humanPieces = getDarkPieces(grid);
+                for (int y = 0; y < 8; y++)
+                {
+                    for (int x = 0; x < 8; x++)
+                    {
+                        if (grid[x, y].color == "light")
+                        {
+                            temp.x = x;
+                            temp.y = y;
+                            compPieces.Add(temp);
+                        }
+                        else if (grid[x, y].color == "dark")
+                        {
+                            temp.x = x;
+                            temp.y = y;
+                            humanPieces.Add(temp);
+                        }
+                    }
+                }
             }
             else
             {
-                compPieces = getDarkPieces(grid);
-                humanPieces = getLightPieces(grid);
+                for (int y = 0; y < 8; y++)
+                {
+                    for (int x = 0; x < 8; x++)
+                    {
+                        if (grid[x, y].color == "light")
+                        {
+                            temp.x = x;
+                            temp.y = y;
+                            humanPieces.Add(temp);
+                        }
+                        else if (grid[x, y].color == "dark")
+                        {
+                            temp.x = x;
+                            temp.y = y;
+                            compPieces.Add(temp);
+                        }
+                    }
+                }
             }
 
             foreach(coordinate c in compPieces)

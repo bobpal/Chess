@@ -214,15 +214,15 @@ namespace Chess
             switch ((int)(double)value)
             {
                 case 1:
-                    return "Very Easy";
+                    return "Novice";
                 case 2:
-                    return "Easy";
+                    return "Apprentice";
                 case 3:
-                    return "Medium";
+                    return "Veteran";
                 case 4:
-                    return "Hard";
+                    return "Expert";
                 case 5:
-                    return "Very Hard";
+                    return "Master";
                 default:
                     return "";
             }
@@ -232,15 +232,15 @@ namespace Chess
         {
             switch ((string)value)
             {
-                case "Very Easy":
+                case "Novice":
                     return 1.0;
-                case "Easy":
+                case "Apprentice":
                     return 2.0;
-                case "Medium":
+                case "Veteran":
                     return 3.0;
-                case "Hard":
+                case "Expert":
                     return 4.0;
-                case "Very Hard":
+                case "Master":
                     return 5.0;
                 default:
                     return 0.0;
