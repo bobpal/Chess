@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\Robert\Documents\GitHub\Chess\Chess\obj\Release\
+C:\Users\rober\Documents\GitHub\Chess\Chess\obj\Release\
 Chess
 none
 false
 TRACE
-C:\Users\Robert\Documents\GitHub\Chess\Chess\App.xaml
+C:\Users\rober\Documents\GitHub\Chess\Chess\App.xaml
 61650534088
 
-151429784515
-14-294613841
+151563093355
+141445696402
 Connecting.xaml;Options.xaml;MainWindow.xaml;NewGame.xaml;PawnTransformation.xaml;Thinking.xaml;
 
-False
+True
 

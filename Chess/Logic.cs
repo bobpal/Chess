@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -85,9 +83,11 @@ namespace Chess
             public bool sReady { get; private set; }
             public bool sRotate { get; private set; }
             public double sRduration { get; private set; }
+            public int sSizeX { get; private set; }
+            public int sSizeY { get; private set; }
 
             public saveData(piece[,] p1, string p2, string p3, string p4, bool p5,
-                bool p6, int p7, bool p8, bool p9, bool p10, bool p11, double p12)
+                bool p6, int p7, bool p8, bool p9, bool p10, bool p11, double p12, int p13, int p14)
             {
                 this.sBoard = p1;
                 this.sOffensiveTeam = p2;
@@ -101,6 +101,8 @@ namespace Chess
                 this.sReady = p10;
                 this.sRotate = p11;
                 this.sRduration = p12;
+                this.sSizeX = p13;
+                this.sSizeY = p14;
             }
         }
 
@@ -1965,9 +1967,17 @@ namespace Chess
             //saves game on exit
             //if save game unchecked, saves preferences, but not game state
 
+            int sizeX = (int)mWindow.ActualWidth;
+            int sizeY = (int)mWindow.ActualHeight;
+
+            if(networkGame == true)
+            {
+                sizeX -= 300;
+            }
+
             string theme = themeList[themeIndex];
             saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, networkGame, difficulty,
-                lastMove, saveGame, ready, rotate, rotationDuration);
+                lastMove, saveGame, ready, rotate, rotationDuration, sizeX, sizeY);
 
             System.IO.Directory.CreateDirectory(dirPath);
             BinaryFormatter writer = new BinaryFormatter();
@@ -1993,6 +2003,8 @@ namespace Chess
                 rotate = lData.sRotate;
                 rotationDuration = lData.sRduration;
                 string theme = lData.sTheme;
+                mWindow.Width = lData.sSizeX;
+                mWindow.Height = lData.sSizeY;
 
                 if (lData.sSaveGame == true)
                 {

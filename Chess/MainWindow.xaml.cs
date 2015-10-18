@@ -82,7 +82,7 @@ namespace Chess
             {
                 this.Width = 728;
             }
-            this.Height = 721;
+            this.Height = 700;
         }
 
         private async void cell_Click(object sender, RoutedEventArgs e)
