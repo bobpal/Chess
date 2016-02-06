@@ -1476,7 +1476,7 @@ namespace Chess
 
             if (difficulty > 3)
             {
-                think = new Thinking(this, rnd.Next(0, 40));
+                think = new Thinking(this, rnd.Next(0, 41));
                 think.Owner = mWindow;
                 think.ShowDialog();
             }

@@ -27,7 +27,7 @@ namespace Chess
 
         private void writeMessage(int i)
         {
-            string[] message = new string[40];
+            string[] message = new string[41];
 
             message[0] = "obliterate";
             message[1] = "crush";
@@ -69,6 +69,7 @@ namespace Chess
             message[37] = "wipe the floor with";
             message[38] = "dispense";
             message[39] = "outdo";
+            message[40] = "trounce";
 
             taunt.Content = "Determining the best way to " + message[i] + " you...";
         }
