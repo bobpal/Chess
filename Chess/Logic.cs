@@ -20,9 +20,10 @@ namespace Chess
     [Serializable]
     public class Logic
     {
+        [NonSerialized]
+        public MainWindow mWindow;          //window with chess board on it
         public piece[,] pieceArray;         //8x8 array of pieces
         public display[,] displayArray;     //8x8 array of display objects
-        public MainWindow mWindow;          //window with chess board on it
         public bool onePlayer;              //versus computer
         public bool networkGame;            //playing over a network
         public string opponent;             //color of computer or 2nd player
@@ -33,24 +34,24 @@ namespace Chess
         public List<string> themeList;      //list of themes
         public int themeIndex;              //which theme is currently in use
         private List<string> ignore;        //list of which dll files to ignore
-        public BitmapImage lKing;
-        public BitmapImage lQueen;
-        public BitmapImage lBishop;
-        public BitmapImage lKnight;
-        public BitmapImage lRook;
-        private BitmapImage lPawn;
-        private BitmapImage dKing;
-        public BitmapImage dQueen;
-        public BitmapImage dBishop;
-        public BitmapImage dKnight;
-        public BitmapImage dRook;
-        private BitmapImage dPawn;
-        public TcpClient client;
-        public NetworkStream nwStream;
+        [NonSerialized] public BitmapImage lKing;
+        [NonSerialized] public BitmapImage lQueen;
+        [NonSerialized] public BitmapImage lBishop;
+        [NonSerialized] public BitmapImage lKnight;
+        [NonSerialized] public BitmapImage lRook;
+        [NonSerialized] private BitmapImage lPawn;
+        [NonSerialized] private BitmapImage dKing;
+        [NonSerialized] public BitmapImage dQueen;
+        [NonSerialized] public BitmapImage dBishop;
+        [NonSerialized] public BitmapImage dKnight;
+        [NonSerialized] public BitmapImage dRook;
+        [NonSerialized] private BitmapImage dPawn;
+        [NonSerialized] public TcpClient client;
+        [NonSerialized] public NetworkStream nwStream;
         public byte[] buffer = new byte[255];                   //buffer for tcp
         private static Random rnd = new Random();               //used for all random situations
         private move bestMove;                                  //ultimate return for evaluator()
-        private Thinking think;                                 //progress bar window for hardMode
+        [NonSerialized] private Thinking think;                 //progress bar window for hardMode
         public bool rotate = true;                              //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                            //is lastMove menu option checked?
         public bool saveGame = true;                            //Save game on exit?
@@ -61,7 +62,9 @@ namespace Chess
         private List<move> possible = new List<move>();         //list of all possible moves
         public Stack<historyNode> history = new Stack<historyNode>();   //stores all moves on a stack
         private string pwd = System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        [NonSerialized]
         private BitmapImage bmpTo = new BitmapImage(new Uri("pack://application:,,,/Resources/to.png"));
+        [NonSerialized]
         private BitmapImage bmpFrom = new BitmapImage(new Uri("pack://application:,,,/Resources/from.png"));
         private string dirPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Chess";
         public string filePath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\Chess\\chess.sav";
@@ -1618,12 +1621,14 @@ namespace Chess
                 {
                     rotation = new DoubleAnimation(0, 180, TimeSpan.FromSeconds(time));
                     ft.ScaleY = -1;
+                    ft.ScaleX = -1;
                 }
                 
                 else
                 {
                     rotation = new DoubleAnimation(180, 360, TimeSpan.FromSeconds(time));
                     ft.ScaleY = 1;
+                    ft.ScaleX = 1;
                 }
 
                 //shrink
@@ -2018,18 +2023,24 @@ namespace Chess
                         opponent = lData.sOpponent;
                         onePlayer = lData.sOnePlayer;
                         difficulty = lData.sDifficulty;
-                        //if 2Player local, rotate is on, and opponent's turn
-                        if(rotate == true && offensiveTeam == opponent && onePlayer == false)
+
+                        //If 1Player -OR- 2Player and rotate is on, then OffensiveTeam on bottom
+                        if(onePlayer == true || onePlayer == false && rotate == true)
                         {
                             if(offensiveTeam == "dark")
                             {
                                 rotateBoard(true, 0);
                             }
-                            else
+                        }
+                        //2Player and rotate is off, then Oponnent on top
+                        else
+                        {
+                            if(opponent == "light")
                             {
-                                rotateBoard(false, 0);
+                                rotateBoard(true, 0);
                             }
                         }
+
                     }
                     else    //Exit while game not being played
                     {
