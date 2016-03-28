@@ -2905,9 +2905,29 @@ namespace Chess
 
             if (pieceColor == "dark")
             {
-                //search down
                 availableY--;
-                if (availableY >= 0)
+                //search first move
+                if (pArray[current.x, current.y].virgin == true)
+                {
+                    if (pArray[availableX, 5].color == null)
+                    {
+                        moveCoor.x = availableX;
+                        moveCoor.y = 5;
+                        availableMove = new move(current, moveCoor);
+                        availableList.Add(availableMove);
+
+                        if (pArray[availableX, 4].color == null)
+                        {
+                            moveCoor.x = availableX;
+                            moveCoor.y = 4;
+                            availableMove = new move(current, moveCoor);
+                            availableList.Add(availableMove);
+                        }
+                    }
+                }
+
+                //search down
+                else if (availableY >= 0)
                 {
                     if (pArray[availableX, availableY].color == null)
                     {
@@ -2915,20 +2935,6 @@ namespace Chess
                         moveCoor.y = availableY;
                         availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
-
-                        //search first move
-                        availableY--;
-                        if (availableY >= 0 && pArray[current.x, current.y].virgin == true)
-                        {
-                            if (pArray[availableX, availableY].color == null)
-                            {
-                                moveCoor.x = availableX;
-                                moveCoor.y = availableY;
-                                availableMove = new move(current, moveCoor);
-                                availableList.Add(availableMove);
-                            }
-                        }
-                        availableY++;
                     }
                 }
 
@@ -2961,9 +2967,29 @@ namespace Chess
 
             else
             {
-                //search up
                 availableY++;
-                if (availableY < 8)
+                //search first move
+                if (pArray[current.x, current.y].virgin == true)
+                {
+                    if (pArray[availableX, 2].color == null)
+                    {
+                        moveCoor.x = availableX;
+                        moveCoor.y = 2;
+                        availableMove = new move(current, moveCoor);
+                        availableList.Add(availableMove);
+
+                        if (pArray[availableX, 3].color == null)
+                        {
+                            moveCoor.x = availableX;
+                            moveCoor.y = 3;
+                            availableMove = new move(current, moveCoor);
+                            availableList.Add(availableMove);
+                        }
+                    }
+                }
+
+                //search up
+                else if (availableY < 8)
                 {
                     if (pArray[availableX, availableY].color == null)
                     {
@@ -2971,20 +2997,6 @@ namespace Chess
                         moveCoor.y = availableY;
                         availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
-
-                        //search first move
-                        availableY++;
-                        if (availableY < 8 && pArray[current.x, current.y].virgin == true)
-                        {
-                            if (pArray[availableX, availableY].color == null)
-                            {
-                                moveCoor.x = availableX;
-                                moveCoor.y = availableY;
-                                availableMove = new move(current, moveCoor);
-                                availableList.Add(availableMove);
-                            }
-                        }
-                        availableY--;
                     }
                 }
 
