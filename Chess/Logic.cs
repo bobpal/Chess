@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using Trinet.Core.IO.Ntfs;
 
 namespace Chess
 {
@@ -1879,20 +1878,6 @@ namespace Chess
         {
             //Initializes all dlls
 
-            MessageBoxResult result;
-
-            while (!File.Exists(pwd + "//Trinet.Core.IO.Ntfs.dll"))
-            {
-                result = MessageBox.Show(
-                    "Required dll not found.\n\nPlace 'Trinet.Core.IO.Ntfs.dll'\nin directory containing 'Chess.exe'\n\nTry Again?",
-                    "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
-
-                if(result == MessageBoxResult.No)
-                {
-                    Environment.Exit(1);
-                }
-            }
-
             addDllsToList();
 
             //find default theme
@@ -1927,7 +1912,7 @@ namespace Chess
                     foreach (string dllFilePath in dllFilePathArray.Except(ignore))
                     {
                         file = new FileInfo(dllFilePath);
-                        file.DeleteAlternateDataStream("Zone.Identifier");
+                        Unblock.DeleteAlternateDataStream(file, "Zone.Identifier");
                         an = AssemblyName.GetAssemblyName(dllFilePath);
                         name = an.Name;
                         Assembly.Load(an);

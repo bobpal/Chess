@@ -48,10 +48,6 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
-    <Reference Include="Trinet.Core.IO.Ntfs, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Release\Trinet.Core.IO.Ntfs.dll</HintPath>
-    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -64,6 +60,7 @@
     <Compile Include="Thinking.xaml.cs">
       <DependentUpon>Thinking.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Unblock.cs" />
     <Page Include="Connecting.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
