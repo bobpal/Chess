@@ -1851,21 +1851,32 @@ namespace Chess
         {
             //sets image variables based on themeIndex
 
+            string uriPath;
             string themeName = themeList[themeIndex];
+
+            if (themeIndex == 0)
+            {
+                uriPath = "pack://application:,,,/Resources/";
+            }
+            else
+            {
+                uriPath = "pack://application:,,,/" + themeName + ";component/";
+            }
+            
             try
             {
-                lKing = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKing.png"));
-                lQueen = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lQueen.png"));
-                lBishop = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lBishop.png"));
-                lKnight = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lKnight.png"));
-                lRook = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lRook.png"));
-                lPawn = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/lPawn.png"));
-                dKing = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKing.png"));
-                dQueen = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dQueen.png"));
-                dBishop = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dBishop.png"));
-                dKnight = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dKnight.png"));
-                dRook = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dRook.png"));
-                dPawn = new BitmapImage(new Uri("pack://application:,,,/" + themeName + ";component/dPawn.png"));
+                lKing = new BitmapImage(new Uri(uriPath + "lKing.png"));
+                lQueen = new BitmapImage(new Uri(uriPath + "lQueen.png"));
+                lBishop = new BitmapImage(new Uri(uriPath + "lBishop.png"));
+                lKnight = new BitmapImage(new Uri(uriPath + "lKnight.png"));
+                lRook = new BitmapImage(new Uri(uriPath + "lRook.png"));
+                lPawn = new BitmapImage(new Uri(uriPath + "lPawn.png"));
+                dKing = new BitmapImage(new Uri(uriPath + "dKing.png"));
+                dQueen = new BitmapImage(new Uri(uriPath + "dQueen.png"));
+                dBishop = new BitmapImage(new Uri(uriPath + "dBishop.png"));
+                dKnight = new BitmapImage(new Uri(uriPath + "dKnight.png"));
+                dRook = new BitmapImage(new Uri(uriPath + "dRook.png"));
+                dPawn = new BitmapImage(new Uri(uriPath + "dPawn.png"));
             }
             catch (IOException)
             {
@@ -1874,29 +1885,12 @@ namespace Chess
             }
         }
 
-        public void initializeDlls()
-        {
-            //Initializes all dlls
-
-            addDllsToList();
-
-            //find default theme
-            themeIndex = themeList.FindIndex(x => x == "Figure");
-
-            if (themeIndex == -1)    //if can't find default
-            {
-                themeIndex = 0;
-            }
-            changeThemeInternally();
-        }
-
-        private void addDllsToList()
+        public void populateThemeList()
         {
             //searches dlls in working directory and puts in themeList
 
             AssemblyName an;
             FileInfo file;
-            string name;
             themeList = new List<string>();
             ignore = new List<string>();
             string[] dllFilePathArray = null;
@@ -1906,20 +1900,20 @@ namespace Chess
             {
                 try
                 {
+                    themeList.Add("Figure");
                     dllFilePathArray = Directory.GetFiles(pwd, "*.dll");
-                    themeIndex = 0;
+                    themeIndex = 1;
 
                     foreach (string dllFilePath in dllFilePathArray.Except(ignore))
                     {
                         file = new FileInfo(dllFilePath);
                         Unblock.DeleteAlternateDataStream(file, "Zone.Identifier");
                         an = AssemblyName.GetAssemblyName(dllFilePath);
-                        name = an.Name;
                         Assembly.Load(an);
 
-                        if (!themeList.Contains(name))  //check for duplicates
+                        if (!themeList.Contains(an.Name))  //check for duplicates
                         {
-                            themeList.Add(name);
+                            themeList.Add(an.Name);
                             changeThemeInternally();    //check to see if can set to variable
                             themeIndex++;
                         }
@@ -1932,23 +1926,9 @@ namespace Chess
                     continue;
                 }
 
-                if (themeList.Count == 0)    //if 0 good themes
-                {
-                    MessageBoxResult result = MessageBox.Show(
-                    "No themes found.\n\nPlace theme dll in directory containing 'Chess.exe'\n\nTry Again?",
-                    "Missing Dll", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.Yes);
-
-                    if (result == MessageBoxResult.No)
-                    {
-                        Environment.Exit(1);
-                    }
-                    ignore.Clear();
-                    themeList.Clear();
-                }
-                else
-                {
-                    themesFound = true;
-                }
+                themesFound = true;
+                themeIndex = 0;
+                changeThemeInternally();
             }
         }
 

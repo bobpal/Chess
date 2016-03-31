@@ -10,7 +10,7 @@
         <RadioButton x:Name="onePlayerBtn" Content="1 Player vs. Computer" HorizontalAlignment="Left" Height="20" Margin="15,30,0,0" VerticalAlignment="Top" Width="150" Padding="5,0,0,0" IsChecked="True"/>
         <RadioButton x:Name="twoPlayerBtn" Content="2 Player Local" HorizontalAlignment="Left" Height="20" Margin="15,55,0,0" VerticalAlignment="Top" Width="150" Padding="5,0,0,0"/>
         <RadioButton x:Name="networkBtn" Content="2 Player Online" HorizontalAlignment="Left" Height="20" Margin="15,80,0,0" VerticalAlignment="Top" Width="150" Padding="5,0,0,0"/>
-        <Image Height="80" Margin="0,22,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Source="pack://application:,,,/Resources/logo.png"/>
+        <Image Height="80" Margin="0,22,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="80" Source="pack://application:,,,/Resources/lKnight.png"/>
         <Border BorderThickness="1" HorizontalAlignment="Left" Height="112" Margin="14,109,0,0" VerticalAlignment="Top" Width="152" BorderBrush="Black"/>
         <Canvas x:Name="Difficulty" HorizontalAlignment="Left" Height="110" Margin="15,110,0,0" VerticalAlignment="Top" Width="150"
                 Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" IsEnabled="{Binding ElementName=onePlayerBtn, Path=IsChecked}" Panel.ZIndex="1">

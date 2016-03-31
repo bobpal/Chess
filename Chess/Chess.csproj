@@ -124,6 +124,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -141,10 +142,43 @@
     <Resource Include="Resources\from.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\logo.png" />
+    <Resource Include="Resources\to.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\to.png" />
+    <Resource Include="Resources\dBishop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dKing.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dKnight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dPawn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dQueen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\dRook.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lBishop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lKing.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lKnight.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lPawn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lQueen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lRook.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

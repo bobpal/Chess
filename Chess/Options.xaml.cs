@@ -51,7 +51,14 @@ namespace Chess
         private void ThemeBox_Changed(object sender, SelectionChangedEventArgs args)
         {
             index = themeBox.SelectedIndex;
-            previewBox.Source = new BitmapImage(new Uri("pack://application:,,,/" + themeBox.SelectedItem.ToString() + ";component/lKing.png"));
+            if(index == 0)
+            {
+                previewBox.Source = new BitmapImage(new Uri("pack://application:,,,/Resources/lKing.png"));
+            }
+            else
+            {
+                previewBox.Source = new BitmapImage(new Uri("pack://application:,,,/" + themeBox.SelectedItem.ToString() + ";component/lKing.png"));
+            }
         }
 
         private void DurationBox_Changed(object sender, SelectionChangedEventArgs args)

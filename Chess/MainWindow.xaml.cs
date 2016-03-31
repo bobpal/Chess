@@ -24,7 +24,7 @@ namespace Chess
             conversationBox.Document = new FlowDocument(para);
             game = new Logic(this);
             game.createDisplayArray();
-            game.initializeDlls();
+            game.populateThemeList();
             newGameCmd.InputGestures.Add(new KeyGesture(Key.F2));
             undoCmd.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control));
             themeCmd.InputGestures.Add(new KeyGesture(Key.F3));
