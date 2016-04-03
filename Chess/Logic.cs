@@ -1164,7 +1164,7 @@ namespace Chess
                     d.tile.Cursor = Cursors.Arrow;
                 }
 
-                if (onePlayer == false)
+                if (onePlayer == false && networkGame == false)
                 {
                     string winningTeam = switchTeam(teamInQuestion);
                     message = "The " + winningTeam + " army has slain the " + teamInQuestion + " army's king in battle";
@@ -2186,7 +2186,7 @@ namespace Chess
             }
             nwStream.Close();
             client.Close();
-            removeChat();
+            mWindow.removeChat();
             clearToAndFrom();
             clearSelectedAndPossible();
 
@@ -2250,15 +2250,6 @@ namespace Chess
 
             offensiveTeam = switchTeam(offensiveTeam);
             ready = true;
-        }
-
-        public void removeChat()
-        {
-            mWindow.Board.Width -= 300;
-            mWindow.chat.Visibility = Visibility.Hidden;
-            mWindow.split.Visibility = Visibility.Hidden;
-            mWindow.space.ColumnDefinitions.RemoveAt(2);
-            mWindow.space.ColumnDefinitions.RemoveAt(1);
         }
 
         public string switchTeam(string input)

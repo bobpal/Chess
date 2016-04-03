@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 
 namespace Chess
 {
@@ -56,7 +57,7 @@ namespace Chess
                     canceled = connect.ShowDialog();
                     if (canceled == false)
                     {
-                        addChat();
+                        game.mWindow.addChat();
                         game.continuousReader();
                     }
                 }
@@ -183,21 +184,6 @@ namespace Chess
                 game.opponent = "dark";
             }
             game.ready = false;
-        }
-
-        private void addChat()
-        {
-            game.mWindow.Board.Width += 300;
-            game.mWindow.chat.Visibility = Visibility.Visible;
-            game.mWindow.split.Visibility = Visibility.Visible;
-
-            ColumnDefinition c1 = new ColumnDefinition();
-            c1.Width = new GridLength(5, GridUnitType.Pixel);
-            game.mWindow.space.ColumnDefinitions.Add(c1);
-
-            ColumnDefinition c2 = new ColumnDefinition();
-            c2.Width = new GridLength(295, GridUnitType.Star);
-            game.mWindow.space.ColumnDefinitions.Add(c2);
         }
 
         private void portBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)

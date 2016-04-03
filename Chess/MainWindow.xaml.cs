@@ -10,7 +10,7 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Logic game;
-        private Paragraph para;
+        public Paragraph para;
         public static RoutedCommand newGameCmd = new RoutedCommand();
         public static RoutedCommand undoCmd = new RoutedCommand();
         public static RoutedCommand themeCmd = new RoutedCommand();
@@ -20,8 +20,6 @@ namespace Chess
         public MainWindow()
         {
             InitializeComponent();
-            para = new Paragraph();
-            conversationBox.Document = new FlowDocument(para);
             game = new Logic(this);
             game.createDisplayArray();
             game.populateThemeList();
@@ -131,7 +129,7 @@ namespace Chess
 
         private async void sendBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (inputBox.Text != "Type to send message" && inputBox.Text != "")
+            if (inputBox.Foreground == Brushes.Black && inputBox.Text != "")
             {
                 byte[] byteArray;
 
@@ -142,10 +140,11 @@ namespace Chess
                 para.Inlines.Add(inputBox.Text);
                 para.Inlines.Add(new LineBreak());
                 this.DataContext = this;
-
+                
                 byteArray = Encoding.ASCII.GetBytes(inputBox.Text);
                 await game.nwStream.WriteAsync(byteArray, 0, inputBox.Text.Length);
                 inputBox.Text = "";
+                scroller.ScrollToBottom();
             }
         }
 
@@ -158,6 +157,35 @@ namespace Chess
             para.Inlines.Add(message);
             para.Inlines.Add(new LineBreak());
             this.DataContext = this;
+            scroller.ScrollToBottom();
+        }
+
+        public void addChat()
+        {
+            Board.Width += 300;
+            chat.Visibility = Visibility.Visible;
+            split.Visibility = Visibility.Visible;
+
+            ColumnDefinition c1 = new ColumnDefinition();
+            c1.Width = new GridLength(5, GridUnitType.Pixel);
+            space.ColumnDefinitions.Add(c1);
+
+            ColumnDefinition c2 = new ColumnDefinition();
+            c2.Width = new GridLength(295, GridUnitType.Star);
+            space.ColumnDefinitions.Add(c2);
+
+            para = new Paragraph();
+            conversationBox.Document = new FlowDocument(para);
+        }
+
+        public void removeChat()
+        {
+            Board.Width -= 300;
+            chat.Visibility = Visibility.Hidden;
+            split.Visibility = Visibility.Hidden;
+            space.ColumnDefinitions.RemoveAt(2);
+            space.ColumnDefinitions.RemoveAt(1);
+            conversationBox.Document.Blocks.Clear();
         }
 
         private void inputBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

@@ -18,7 +18,7 @@
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            <ScrollViewer Grid.Row="0" Margin="0, 0, 0, 5">
+            <ScrollViewer x:Name="scroller" Grid.Row="0" Margin="0, 0, 0, 5">
                 <RichTextBox x:Name="conversationBox" Background="White" VerticalScrollBarVisibility="Auto" UndoLimit="0"
                              IsUndoEnabled="False" IsReadOnly="True" IsDocumentEnabled="True" AcceptsReturn="False"/>
             </ScrollViewer>
