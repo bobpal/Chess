@@ -49,7 +49,7 @@ namespace Chess
         [NonSerialized] public NetworkStream nwStream;
         public byte[] buffer = new byte[255];                   //buffer for tcp
         private static Random rnd = new Random();               //used for all random situations
-        private move bestMove;                                  //ultimate return for evaluator()
+        private move bestMove;                                  //final return for minimax()
         [NonSerialized] private Thinking think;                 //progress bar window for hardMode
         public bool rotate = true;                              //Rotate board between turns on 2Player mode?
         public bool lastMove = true;                            //is lastMove menu option checked?
@@ -683,7 +683,7 @@ namespace Chess
             }
         }
 
-        public int evaluator(
+        public int minimax(
             piece[,] board, string attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
@@ -729,8 +729,8 @@ namespace Chess
                             for (int i = 0; i < offensiveMoves.Count; i++)
                             {
                                 newBoard = deepCopy(board);
-                                newBoard = silentMove(newBoard, offensiveMoves[i]);
-                                val = evaluator(newBoard, nextTurn, level, false, alpha, beta, null);
+                                newBoard = privateMove(newBoard, offensiveMoves[i]);
+                                val = minimax(newBoard, nextTurn, level, false, alpha, beta, null);
                                 if (val > bestVal)
                                 {
                                     bestVal = val;
@@ -759,8 +759,8 @@ namespace Chess
                             for (int i = 0; i < offensiveMoves.Count; i++)
                             {
                                 newBoard = deepCopy(board);
-                                newBoard = silentMove(newBoard, offensiveMoves[i]);
-                                val = evaluator(newBoard, nextTurn, level, false, alpha, beta, null);
+                                newBoard = privateMove(newBoard, offensiveMoves[i]);
+                                val = minimax(newBoard, nextTurn, level, false, alpha, beta, null);
                                 bestVal = Math.Max(bestVal, val);
                                 alpha = Math.Max(alpha, bestVal);
                                 if (beta <= alpha)
@@ -782,8 +782,8 @@ namespace Chess
                         for (int i = 0; i < offensiveMoves.Count; i++)
                         {
                             newBoard = deepCopy(board);
-                            newBoard = silentMove(newBoard, offensiveMoves[i]);
-                            val = evaluator(newBoard, nextTurn, level, true, alpha, beta, null);
+                            newBoard = privateMove(newBoard, offensiveMoves[i]);
+                            val = minimax(newBoard, nextTurn, level, true, alpha, beta, null);
                             bestVal = Math.Min(bestVal, val);
                             beta = Math.Min(beta, bestVal);
                             if(beta <= alpha)
@@ -797,14 +797,14 @@ namespace Chess
             //bottom level
             else
             {
-                bestVal = getValue(board);
+                bestVal = evaluator(board);
             }
             return bestVal;
         }
 
-        private piece[,] silentMove(piece[,] grid, move mv)
+        private piece[,] privateMove(piece[,] grid, move mv)
         {
-            //does a move without visuals on a private board
+            //does a move without visuals on a private board for computer
 
             int fromX = mv.pieceSpot.x;
             int fromY = mv.pieceSpot.y;
@@ -896,7 +896,7 @@ namespace Chess
             return grid;
         }
 
-        private int getValue(piece[,] grid)
+        private int evaluator(piece[,] grid)
         {
             //looks at board and returns a value that indicates how good the computer is doing
 
@@ -1000,6 +1000,8 @@ namespace Chess
 
         private piece[,] deepCopy(piece[,] source)
         {
+            //Creates a deep copy of board
+
             piece[,] copy = new piece[8,8];
 
             for (int y = 0; y < 8; y++)
@@ -1272,7 +1274,7 @@ namespace Chess
             {
                 if(client.Connected == true)
                 {
-                    MessageBox.Show("It is currently the other player's turn", "Wait",
+                    MessageBox.Show(Application.Current.MainWindow, "It is currently the other player's turn", "Wait",
                     MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
                 }
             }
@@ -1280,6 +1282,8 @@ namespace Chess
 
         private void ownCellSelected(coordinate cCell)
         {
+            //When click on your own team the first time, get possible moves
+
             movablePieceSelected = true;
             clearSelectedAndPossible();
             displayArray[cCell.x, cCell.y].tile.Background = Brushes.DeepSkyBlue;
@@ -1303,12 +1307,15 @@ namespace Chess
 
         private async Task movableCellSelected(coordinate cCell)
         {
+            //If previously clicked on a movable piece
+
             move curTurn = new move();
             bool movableSpot = false;
 
+            //Checks if current click is in possible move list
             foreach (move m in possible)
             {
-                if (cCell.Equals(m.moveSpot))//if selected spot is in possible move list
+                if (cCell.Equals(m.moveSpot))
                 {
                     movableSpot = true;
                     curTurn = m;
@@ -1484,7 +1491,7 @@ namespace Chess
             }
             else
             {
-                await Task.Run(() => evaluator(pieceArray, offensiveTeam, -1, true, -30, 30, null));
+                await Task.Run(() => minimax(pieceArray, offensiveTeam, -1, true, -30, 30, null));
             }
 
             ready = true;
@@ -1940,7 +1947,7 @@ namespace Chess
             int sizeX = (int)mWindow.ActualWidth;
             int sizeY = (int)mWindow.ActualHeight;
 
-            if(networkGame == true)
+            if(networkGame == true && client.Connected == true)
             {
                 sizeX -= 300;
             }
@@ -2032,7 +2039,7 @@ namespace Chess
                     changeThemeVisually();
                 }
             }
-            catch (InvalidCastException) //Error loading data
+            catch (Exception) //Error loading data
             {
                 newGame();
             }
@@ -2106,6 +2113,8 @@ namespace Chess
 
         public async void continuousReader()
         {
+            //Runs constantly in the background for network games to intercept server messages
+
             int bytesRead;
 
             while(true)
@@ -2117,8 +2126,8 @@ namespace Chess
                 //Server crashes during play
                 catch(System.IO.IOException)
                 {
-                    MessageBox.Show("You have been disconnected from the Server", "Disconnected",
-                    MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+                    MessageBox.Show(Application.Current.MainWindow, "You have been disconnected from the Server",
+                        "Disconnected", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
                     ready = false;
                     break;
@@ -2133,15 +2142,16 @@ namespace Chess
                 
                 if (buffer[0] == 3)
                 {
-                    MessageBox.Show("Your opponent has forfeited the match", "Game Over",
-                    MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+                    MessageBox.Show(Application.Current.MainWindow, "Your opponent has forfeited the match",
+                        "Game Over", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
                     ready = false;
                     break;
                 }
                 else if (buffer[0] == 4)
                 {
-                    MessageBox.Show("Sorry\n\nYou gave a valiant effort,\nbut you have been bested in battle by the enemy army",
+                    MessageBox.Show(Application.Current.MainWindow,
+                        "Sorry\n\nYou gave a valiant effort,\nbut you have been bested in battle by the enemy army",
                         "Game Over", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
                     ready = false;
@@ -2165,7 +2175,7 @@ namespace Chess
                     }
 
                     move opponentsMove = new move(p, m);
-                    doMove(opponentsMove, buffer[5]);
+                    networkMove(opponentsMove, buffer[5]);
                 }
                 //message
                 else
@@ -2186,8 +2196,10 @@ namespace Chess
             }
         }
 
-        private void doMove(move m, byte pawn)
+        private void networkMove(move m, byte pawn)
         {
+            //Executes move locally sent from other client
+
             int xMove = m.moveSpot.x;
             int yMove = m.moveSpot.y;
 
@@ -2251,6 +2263,8 @@ namespace Chess
 
         public string switchTeam(string input)
         {
+            //Returns opposite of team given
+
             if(input == "light")
             {
                 return "dark";

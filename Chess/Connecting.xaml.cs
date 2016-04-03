@@ -36,8 +36,8 @@ namespace Chess
             //if server crashes
             catch(System.IO.IOException)
             {
-                MessageBox.Show("You have been disconnected from the Server", "Disconnected",
-                    MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+                MessageBox.Show(Application.Current.MainWindow, "You have been disconnected from the Server",
+                    "Disconnected", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
                 this.DialogResult = true;
                 game.nwStream.Close();

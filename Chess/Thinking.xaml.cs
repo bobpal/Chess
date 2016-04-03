@@ -86,7 +86,7 @@ namespace Chess
 
         private async void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            await Task.Run(() => game.evaluator(game.pieceArray, game.offensiveTeam, -1, true, -30, 30, progress));
+            await Task.Run(() => game.minimax(game.pieceArray, game.offensiveTeam, -1, true, -30, 30, progress));
         }
     }
 }
