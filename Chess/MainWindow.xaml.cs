@@ -10,6 +10,8 @@ namespace Chess
     public partial class MainWindow : Window
     {
         private Logic game;
+        public ColumnDefinition c1;
+        public ColumnDefinition c2;
         public Paragraph para;
         public static RoutedCommand newGameCmd = new RoutedCommand();
         public static RoutedCommand undoCmd = new RoutedCommand();
@@ -74,13 +76,17 @@ namespace Chess
         {
             if(game.networkGame == true)
             {
-                this.Width = 1028;
+                Board.Width = 1028;
+                c0.Width = new GridLength(70, GridUnitType.Star);
+                c1.Width = new GridLength(1, GridUnitType.Star);
+                c2.Width = new GridLength(29, GridUnitType.Star);
             }
             else
             {
-                this.Width = 728;
+                Board.Width = 728;
+                c0.Width = new GridLength(100, GridUnitType.Star);
             }
-            this.Height = 700;
+            Board.Height = 700;
         }
 
         private async void cell_Click(object sender, RoutedEventArgs e)
@@ -163,15 +169,17 @@ namespace Chess
         public void addChat()
         {
             Board.Width += 300;
+            c0.Width = new GridLength(70, GridUnitType.Star);
+
             chat.Visibility = Visibility.Visible;
             split.Visibility = Visibility.Visible;
 
-            ColumnDefinition c1 = new ColumnDefinition();
-            c1.Width = new GridLength(5, GridUnitType.Pixel);
+            c1 = new ColumnDefinition();
+            c1.Width = new GridLength(1, GridUnitType.Star);
             space.ColumnDefinitions.Add(c1);
 
-            ColumnDefinition c2 = new ColumnDefinition();
-            c2.Width = new GridLength(295, GridUnitType.Star);
+            c2 = new ColumnDefinition();
+            c2.Width = new GridLength(29, GridUnitType.Star);
             space.ColumnDefinitions.Add(c2);
 
             para = new Paragraph();
@@ -180,11 +188,12 @@ namespace Chess
 
         public void removeChat()
         {
-            Board.Width -= 300;
             chat.Visibility = Visibility.Hidden;
             split.Visibility = Visibility.Hidden;
             space.ColumnDefinitions.RemoveAt(2);
             space.ColumnDefinitions.RemoveAt(1);
+            Board.Width -= 300;
+            c0.Width = new GridLength(100, GridUnitType.Star);
             conversationBox.Document.Blocks.Clear();
         }
 

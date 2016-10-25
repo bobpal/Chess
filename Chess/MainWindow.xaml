@@ -6,7 +6,7 @@
         Title="Chess" Width="728" Height="700" WindowStartupLocation="CenterScreen" Closing="Board_Closing">
     <Grid Name="space" Background="#FFA08214">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="720*"/>
+            <ColumnDefinition Width="100*" Name="c0"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="18"/>
