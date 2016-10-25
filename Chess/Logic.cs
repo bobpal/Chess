@@ -2208,7 +2208,7 @@ namespace Chess
             //pawnTransform
             if (pieceArray[xMove, yMove].job == "Pawn")
             {
-                if (yMove == 0)
+                if (yMove == 0 || yMove == 7)
                 {
                     string pawnT;
 

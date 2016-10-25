@@ -3,9 +3,7 @@ using System.Globalization;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 
 namespace Chess
 {
@@ -16,7 +14,7 @@ namespace Chess
         public NewGame(Logic l)
         {
             InitializeComponent();
-            this.game = l;
+            game = l;
             this.Owner = game.mWindow;
             ipBox.Text = game.IP;
             portBox.Text = game.port.ToString();

@@ -20,11 +20,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.lQueen;
+                game.displayArray[spot.x, 7].top.Source = game.lQueen;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.dQueen;
+                game.displayArray[spot.x, 0].top.Source = game.dQueen;
             }
             game.pieceArray[spot.x, spot.y].job = "Queen";
             this.Close();
@@ -34,11 +34,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.lRook;
+                game.displayArray[spot.x, 7].top.Source = game.lRook;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.dRook;
+                game.displayArray[spot.x, 0].top.Source = game.dRook;
             }
             game.pieceArray[spot.x, spot.y].job = "Rook";
             this.Close();
@@ -48,11 +48,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.lBishop;
+                game.displayArray[spot.x, 7].top.Source = game.lBishop;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.dBishop;
+                game.displayArray[spot.x, 0].top.Source = game.dBishop;
             }
             game.pieceArray[spot.x, spot.y].job = "Bishop";
             this.Close();
@@ -62,11 +62,11 @@ namespace Chess
         {
             if (game.offensiveTeam == "light")
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.lKnight;
+                game.displayArray[spot.x, 7].top.Source = game.lKnight;
             }
             else
             {
-                game.displayArray[spot.x, spot.y].top.Source = game.dKnight;
+                game.displayArray[spot.x, 0].top.Source = game.dKnight;
             }
             game.pieceArray[spot.x, spot.y].job = "Knight";
             this.Close();
