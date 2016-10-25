@@ -33,18 +33,18 @@ namespace Chess
                 }
             }
             previewBox.Source = game.lKing;
-            durationBox.IsEnabled = game.onePlayer == false && game.rotate == true && game.networkGame == false;
+            durationSlider.IsEnabled = game.onePlayer == false && game.rotate == true && game.networkGame == false;
             rotateBtn.IsEnabled = game.onePlayer == false && game.networkGame == false;
             rotateBtn.IsChecked = game.rotate;
             lastMoveBtn.IsChecked = game.lastMove;
             saveGameBtn.IsChecked = game.saveGame;
-            durationBox.SelectedIndex = (int)game.rotationDuration;
+            durationSlider.Value = game.rotationDuration;
 
             if(game.networkGame == true)
             {
                 rotateBtn.IsEnabled = false;
                 saveGameBtn.IsEnabled = false;
-                durationBox.IsEnabled = false;
+                durationSlider.IsEnabled = false;
             }
         }
 
@@ -61,10 +61,7 @@ namespace Chess
             }
         }
 
-        private void DurationBox_Changed(object sender, SelectionChangedEventArgs args)
-        {
-            rDuration = durationBox.SelectedIndex;
-        }
+        
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -101,7 +98,12 @@ namespace Chess
 
         private void rotateBtn_Click(object sender, RoutedEventArgs e)
         {
-            durationBox.IsEnabled = rotateBtn.IsChecked.Value;
+            durationSlider.IsEnabled = rotateBtn.IsChecked.Value;
+        }
+
+        private void Duration_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            rDuration = durationSlider.Value;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Chess
             this.Owner = game.mWindow;
             ipBox.Text = game.IP;
             portBox.Text = game.port.ToString();
+            NewGameWindow.horse.FlowDirection = FlowDirection.RightToLeft;
         }
 
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
@@ -28,20 +29,20 @@ namespace Chess
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
             bool? canceled = false;
-            whoIsOnBottom();
             
             if (networkBtn.IsChecked == true)
             {
                 if (game.client == null || game.client.Connected == false)
                 {
                     game.IP = ipBox.Text;
-                    game.port = System.Convert.ToInt32(portBox.Text);
+
                     try
                     {
+                        game.port = System.Convert.ToInt32(portBox.Text);
                         game.client = new TcpClient(game.IP, game.port);
                         game.nwStream = game.client.GetStream();
                     }
-                    catch(SocketException)
+                    catch(Exception)
                     {
                         canceled = true;
                         MessageBox.Show("Could not find Server\nCheck the IP Address and port and try again", "Could not find Server",
@@ -59,15 +60,16 @@ namespace Chess
                         game.continuousReader();
                     }
                 }
-                game.mWindow.undoMenu.IsEnabled = false;
             }
-            else
+            else //Not Network Game
             {
                 game.setBoardForNewGame();
             }
-            //always unless clicked cancel on Connecting
+
+            //Always, unless clicked cancel on Network game
             if (canceled == false)
             {
+                whoIsOnBottom();
                 game.onePlayer = onePlayerBtn.IsChecked.Value;
                 game.networkGame = networkBtn.IsChecked.Value;
                 game.difficulty = (int)AI.Value;
@@ -186,8 +188,22 @@ namespace Chess
 
         private void portBox_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
+            Regex regex = new Regex("[0-9]");
+            e.Handled = !regex.IsMatch(e.Text);
+        }
+
+        private void Mouse_Move(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Point mousePosition = e.GetPosition(NewGameWindow);
+
+            if (mousePosition.X > 265)
+            {
+                NewGameWindow.horse.FlowDirection = FlowDirection.LeftToRight;
+            }
+            else
+            {
+                NewGameWindow.horse.FlowDirection = FlowDirection.RightToLeft;
+            }
         }
     }
 
