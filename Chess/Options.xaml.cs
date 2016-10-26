@@ -33,8 +33,8 @@ namespace Chess
                 }
             }
             previewBox.Source = game.lKing;
-            durationSlider.IsEnabled = game.onePlayer == false && game.rotate == true && game.networkGame == false;
-            rotateBtn.IsEnabled = game.onePlayer == false && game.networkGame == false;
+            durationSlider.IsEnabled = game.twoPlayer == true && game.rotate == true;
+            rotateBtn.IsEnabled = game.twoPlayer == true;
             rotateBtn.IsChecked = game.rotate;
             lastMoveBtn.IsChecked = game.lastMove;
             saveGameBtn.IsChecked = game.saveGame;

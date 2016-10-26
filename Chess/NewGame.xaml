@@ -26,7 +26,7 @@
             <Label Content="Port" Height="20" Canvas.Left="10" Canvas.Top="55" Width="110" Padding="0"/>
             <TextBox x:Name="portBox" Height="20" Canvas.Left="10" Canvas.Top="75" Width="110" Padding="0" PreviewTextInput="portBox_PreviewTextInput"/>
         </Canvas>
-        <Canvas x:Name="Color" Height="111" Margin="0,110,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="115">
+        <Canvas x:Name="Color" Height="111" Margin="0,110,36,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="115" IsEnabled="{Binding ElementName=onePlayerBtn, Path=IsChecked}">
             <RadioButton x:Name="lightBtn" Content="Play as light" Height="20" Canvas.Left="10" Canvas.Top="10" Width="95" IsChecked="True" Padding="4,0,0,0"/>
             <RadioButton x:Name="darkBtn" Content="Play as dark" Height="20" Canvas.Left="10" Canvas.Top="35" Width="95" Padding="4,0,0,0"/>
         </Canvas>

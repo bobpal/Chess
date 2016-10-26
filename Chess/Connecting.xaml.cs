@@ -19,7 +19,6 @@ namespace Chess
 
         private async void waitForData()
         {
-            string player1 = game.switchTeam(game.opponent);
             byte[] bArray = new byte[1];
 
             while (game.client.Connected == false){}
@@ -49,12 +48,11 @@ namespace Chess
                 game.setBoardForNewGame();
                 if (bArray[0] == 1)
                 {
-                    game.offensiveTeam = player1;
+                    game.opponent = "dark";
                 }
                 else if (bArray[0] == 2)
                 {
-                    game.offensiveTeam = game.opponent;
-                    game.ready = false;
+                    game.opponent = "light";
                 }
                 this.Close();
             }

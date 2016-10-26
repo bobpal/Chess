@@ -24,9 +24,11 @@ namespace Chess
         public piece[,] pieceArray;         //8x8 array of pieces
         public display[,] displayArray;     //8x8 array of display objects
         public bool onePlayer;              //versus computer
+        public bool twoPlayer;              //2 player local
         public bool networkGame;            //playing over a network
         public string opponent;             //color of computer or 2nd player
         public string offensiveTeam;        //which side is on the offense
+        public string onBottom = "light";   //which team is on the bottom of the screen
         public int difficulty;              //difficulty level
         public bool ready;                  //blocks functionality for unwanted circumstances
         private coordinate prevSelected;    //where the cursor clicked previously
@@ -76,8 +78,10 @@ namespace Chess
             public piece[,] sBoard { get; private set; }
             public string sOffensiveTeam { get; private set; }
             public string sOpponent { get; private set; }
+            public string sOnBottom { get; set; }
             public string sTheme { get; private set; }
             public bool sOnePlayer { get; private set; }
+            public bool sTwoPlayer { get; set; }
             public bool sNetwork { get; private set; }
             public int sDifficulty { get; private set; }
             public bool sLastMove { get; private set; }
@@ -88,23 +92,25 @@ namespace Chess
             public int sSizeX { get; private set; }
             public int sSizeY { get; private set; }
 
-            public saveData(piece[,] p1, string p2, string p3, string p4, bool p5,
-                bool p6, int p7, bool p8, bool p9, bool p10, bool p11, double p12, int p13, int p14)
+            public saveData(piece[,] _board, string _offensiveTeam, string _opponent, string _onBottom, string _theme, bool _onePlayer, bool _twoPlayer,
+                bool _network, int _difficulty, bool _lastMove, bool _saveGame, bool _ready, bool _rotate, double _rDuration, int _sizeX, int _sizeY)
             {
-                this.sBoard = p1;
-                this.sOffensiveTeam = p2;
-                this.sOpponent = p3;
-                this.sTheme = p4;
-                this.sOnePlayer = p5;
-                this.sNetwork = p6;
-                this.sDifficulty = p7;
-                this.sLastMove = p8;
-                this.sSaveGame = p9;
-                this.sReady = p10;
-                this.sRotate = p11;
-                this.sRduration = p12;
-                this.sSizeX = p13;
-                this.sSizeY = p14;
+                this.sBoard = _board;
+                this.sOffensiveTeam = _offensiveTeam;
+                this.sOpponent = _opponent;
+                this.sOnBottom = _onBottom;
+                this.sTheme = _theme;
+                this.sOnePlayer = _onePlayer;
+                this.sTwoPlayer = _twoPlayer;
+                this.sNetwork = _network;
+                this.sDifficulty = _difficulty;
+                this.sLastMove = _lastMove;
+                this.sSaveGame = _saveGame;
+                this.sReady = _ready;
+                this.sRotate = _rotate;
+                this.sRduration = _rDuration;
+                this.sSizeX = _sizeX;
+                this.sSizeY = _sizeY;
             }
         }
 
@@ -126,11 +132,11 @@ namespace Chess
             public int x { get; set; }
             public int y { get; set; }
 
-            public coordinate(int p1, int p2)
+            public coordinate(int _x, int _y)
                 : this()
             {
-                this.x = p1;
-                this.y = p2;
+                this.x = _x;
+                this.y = _y;
             }
         }
 
@@ -142,10 +148,10 @@ namespace Chess
             public coordinate pieceSpot { get; set; }   //starting position
             public coordinate moveSpot { get; set; }    //ending position
 
-            public move(coordinate p1, coordinate p2)
+            public move(coordinate _pieceSpot, coordinate _moveSpot)
             {
-                this.pieceSpot = p1;
-                this.moveSpot = p2;
+                this.pieceSpot = _pieceSpot;
+                this.moveSpot = _moveSpot;
             }
 
             public move() { }
@@ -156,19 +162,19 @@ namespace Chess
         {
             //contains all information needed to undo move
 
-            public move step;               //move that happened previously
-            public piece captured;          //piece that move captured, if no capture, use null
-            public bool pawnTransform;      //did a pawn transformation happen?
-            public bool skip;               //undo next move also if playing against computer
-            public bool firstMove;          //was this the piece's first move?
+            public move step { get; set; }               //move that happened previously
+            public piece captured { get; set; }          //piece that move captured, if no capture, use null
+            public bool pawnTransform { get; set; }      //did a pawn transformation happen?
+            public bool skip { get; set; }               //undo next move also if playing against computer
+            public bool firstMove { get; set; }          //was this the piece's first move?
 
-            public historyNode(move p1, piece p2, bool p3, bool p4, bool p5)
+            public historyNode(move _step, piece _captured, bool _pawnTransform, bool _skip, bool _firstMove)
             {
-                this.step = p1;
-                this.captured = p2;
-                this.pawnTransform = p3;
-                this.skip = p4;
-                this.firstMove = p5;
+                this.step = _step;
+                this.captured = _captured;
+                this.pawnTransform = _pawnTransform;
+                this.skip = _skip;
+                this.firstMove = _firstMove;
             }
         }
 
@@ -179,11 +185,11 @@ namespace Chess
             public Image bottom { get; set; }
             public Image top { get; set; }
 
-            public display(Canvas c, Image b, Image t)
+            public display(Canvas _tile, Image _bottom, Image _top)
             {
-                this.tile = c;
-                this.bottom = b;
-                this.top = t;
+                this.tile = _tile;
+                this.bottom = _bottom;
+                this.top = _top;
             }
         }
 
@@ -1164,7 +1170,7 @@ namespace Chess
                     d.tile.Cursor = Cursors.Arrow;
                 }
 
-                if (onePlayer == false && networkGame == false)
+                if (twoPlayer == true)
                 {
                     string winningTeam = switchTeam(teamInQuestion);
                     message = "The " + winningTeam + " army has slain the " + teamInQuestion + " army's king in battle";
@@ -1463,7 +1469,7 @@ namespace Chess
                 //wait for response move
             }
             //if 2Player local, rotate is on, and didn't end game
-            else if (onePlayer == false && rotate == true && endOfGame == false)
+            else if (twoPlayer == true && rotate == true && endOfGame == false)
             {
                 if(offensiveTeam == "dark")
                 {
@@ -1473,10 +1479,11 @@ namespace Chess
                 {
                     rotateBoard(false, rotationDuration);
                 }
+                onBottom = offensiveTeam;
             }
         }
 
-        private async Task compTurn()
+        public async Task compTurn()
         {
             //computer's turn
             
@@ -1502,71 +1509,75 @@ namespace Chess
             bool virginMove = pieceArray[oldSpot.x, oldSpot.y].virgin;
             movePiece(oldSpot, newSpot);
 
-            if (pieceArray[newSpot.x, newSpot.y].job == "Pawn" && newSpot.y == 0)//if pawn makes it to last row
+            if (pieceArray[newSpot.x, newSpot.y].job == "Pawn")
             {
-                int r = rnd.Next(0, 10); //choose random piece to transform into
+                if(newSpot.y == 0 || newSpot.y == 7)
+                {
+                    int r = rnd.Next(0, 10); //choose random piece to transform into
 
-                if (opponent == "dark")
-                {
-                    switch (r)
+                    if (opponent == "dark")
                     {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                            pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                            displayArray[newSpot.x, newSpot.y].top.Source = dQueen;
-                            break;
-                        case 5:
-                        case 6:
-                            pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                            displayArray[newSpot.x, newSpot.y].top.Source = dRook;
-                            break;
-                        case 7:
-                        case 8:
-                            pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                            displayArray[newSpot.x, newSpot.y].top.Source = dBishop;
-                            break;
-                        case 9:
-                            pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                            displayArray[newSpot.x, newSpot.y].top.Source = dKnight;
-                            break;
-                        default:
-                            break;
+                        switch (r)
+                        {
+                            case 0:
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                pieceArray[newSpot.x, newSpot.y].job = "Queen";
+                                displayArray[newSpot.x, newSpot.y].top.Source = dQueen;
+                                break;
+                            case 5:
+                            case 6:
+                                pieceArray[newSpot.x, newSpot.y].job = "Rook";
+                                displayArray[newSpot.x, newSpot.y].top.Source = dRook;
+                                break;
+                            case 7:
+                            case 8:
+                                pieceArray[newSpot.x, newSpot.y].job = "Bishop";
+                                displayArray[newSpot.x, newSpot.y].top.Source = dBishop;
+                                break;
+                            case 9:
+                                pieceArray[newSpot.x, newSpot.y].job = "Knight";
+                                displayArray[newSpot.x, newSpot.y].top.Source = dKnight;
+                                break;
+                            default:
+                                break;
+                        }
                     }
-                }
-                else
-                {
-                    switch (r)
+                    else
                     {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                            pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                            displayArray[newSpot.x, newSpot.y].top.Source = lQueen;
-                            break;
-                        case 5:
-                        case 6:
-                            pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                            displayArray[newSpot.x, newSpot.y].top.Source = lRook;
-                            break;
-                        case 7:
-                        case 8:
-                            pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                            displayArray[newSpot.x, newSpot.y].top.Source = lBishop;
-                            break;
-                        case 9:
-                            pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                            displayArray[newSpot.x, newSpot.y].top.Source = lKnight;
-                            break;
-                        default:
-                            break;
+                        switch (r)
+                        {
+                            case 0:
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                pieceArray[newSpot.x, newSpot.y].job = "Queen";
+                                displayArray[newSpot.x, newSpot.y].top.Source = lQueen;
+                                break;
+                            case 5:
+                            case 6:
+                                pieceArray[newSpot.x, newSpot.y].job = "Rook";
+                                displayArray[newSpot.x, newSpot.y].top.Source = lRook;
+                                break;
+                            case 7:
+                            case 8:
+                                pieceArray[newSpot.x, newSpot.y].job = "Bishop";
+                                displayArray[newSpot.x, newSpot.y].top.Source = lBishop;
+                                break;
+                            case 9:
+                                pieceArray[newSpot.x, newSpot.y].job = "Knight";
+                                displayArray[newSpot.x, newSpot.y].top.Source = lKnight;
+                                break;
+                            default:
+                                break;
+                        }
                     }
+                    node = new historyNode(bestMove, captured, true, true, false);
                 }
-                node = new historyNode(bestMove, captured, true, true, false);
+                node = new historyNode(bestMove, captured, false, true, virginMove);
             }
 
             else
@@ -1707,7 +1718,7 @@ namespace Chess
             from = pieceArray[xPiece, yPiece];
             offensiveTeam = to.color;
 
-            if (rotate == true && onePlayer == false)
+            if (rotate == true && twoPlayer == true)
             {
                 if(offensiveTeam == "dark")
                 {
@@ -1953,7 +1964,7 @@ namespace Chess
             }
 
             string theme = themeList[themeIndex];
-            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, theme, onePlayer, networkGame, difficulty,
+            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, onBottom, theme, onePlayer, twoPlayer, networkGame, difficulty,
                 lastMove, saveGame, ready, rotate, rotationDuration, sizeX, sizeY);
 
             System.IO.Directory.CreateDirectory(dirPath);
@@ -1993,24 +2004,14 @@ namespace Chess
                         pieceArray = lData.sBoard;
                         offensiveTeam = lData.sOffensiveTeam;
                         opponent = lData.sOpponent;
+                        onBottom = lData.sOnBottom;
                         onePlayer = lData.sOnePlayer;
+                        twoPlayer = lData.sTwoPlayer;
                         difficulty = lData.sDifficulty;
 
-                        //If 1Player -OR- 2Player and rotate is on, then OffensiveTeam on bottom
-                        if(onePlayer == true || onePlayer == false && rotate == true)
+                        if (onBottom == "dark")
                         {
-                            if(offensiveTeam == "dark")
-                            {
-                                rotateBoard(true, 0);
-                            }
-                        }
-                        //2Player and rotate is off, then Oponnent on top
-                        else
-                        {
-                            if(opponent == "light")
-                            {
-                                rotateBoard(true, 0);
-                            }
+                            rotateBoard(true, 0);
                         }
 
                     }

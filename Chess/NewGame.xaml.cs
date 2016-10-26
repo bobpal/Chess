@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -10,6 +11,7 @@ namespace Chess
     public partial class NewGame : Window
     {
         private Logic game;
+        private string colorChecked;
 
         public NewGame(Logic l)
         {
@@ -26,7 +28,7 @@ namespace Chess
             this.Close();
         }
 
-        private void okBtn_Click(object sender, RoutedEventArgs e)
+        private async void okBtn_Click(object sender, RoutedEventArgs e)
         {
             bool? canceled = false;
             
@@ -66,122 +68,89 @@ namespace Chess
                 game.setBoardForNewGame();
             }
 
-            //Always, unless clicked cancel on Network game
+            //Confirmed new game starting
             if (canceled == false)
             {
-                whoIsOnBottom();
+                if (lightBtn.IsChecked == true)
+                {
+                    colorChecked = "light";
+                }
+                else
+                {
+                    colorChecked = "dark";
+                }
+
                 game.onePlayer = onePlayerBtn.IsChecked.Value;
+                game.twoPlayer = twoPlayerBtn.IsChecked.Value;
                 game.networkGame = networkBtn.IsChecked.Value;
                 game.difficulty = (int)AI.Value;
+                game.offensiveTeam = "light";
+                game.mWindow.undoMenu.IsEnabled = false;
                 game.history.Clear();
                 game.clearToAndFrom();
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
+                opponentAndRotate();
+                game.onBottom = game.switchTeam(game.opponent);
 
-                if (game.offensiveTeam != game.opponent)
+                if (game.opponent == "dark")
                 {
                     game.ready = true;
+                }
+                else if(game.onePlayer == true)
+                {
+                    await game.compTurn();
+                    game.offensiveTeam = "dark";
                 }
                 this.Close();
             }
         }
 
-        private void whoIsOnBottom()
+        private void opponentAndRotate()
         {
+            //Determines opponent and whether to rotate
+
+            //Allows for rotation
             game.ready = true;
 
-            if (darkBtn.IsChecked == true)
+            if (game.onePlayer == true)
             {
-                //if bottom != dark, rotate
+                game.opponent = game.switchTeam(colorChecked);
 
-                //if no game has been started
-                if (game.pieceArray == null)
+                if (game.onBottom == game.opponent)
                 {
-                    game.rotateBoard(true, 0);
-                }
-                //coming from 1Player or networkGame
-                else if (game.onePlayer == true || game.networkGame == true)
-                {
-                    if (game.opponent == "dark")
+                    if (game.onBottom == "light")
                     {
                         game.rotateBoard(true, 0);
                     }
-                }
-                //coming from 2Player local
-                else
-                {
-                    if (game.offensiveTeam == game.opponent)
-                    {
-                        if (game.rotate == true)
-                        {
-                            if (game.offensiveTeam == "light")
-                            {
-                                game.rotateBoard(true, 0);
-                            }
-                        }
-                        else
-                        {
-                            if (game.opponent == "dark")
-                            {
-                                game.rotateBoard(true, 0);
-                            }
-                        }
-                    }
-                    //if firstPlayer's turn
                     else
-                    {
-                        if (game.offensiveTeam == "light")
-                        {
-                            game.rotateBoard(true, 0);
-                        }
-                    }
-                }
-                game.offensiveTeam = "dark";
-                game.opponent = "light";
-            }
-            else
-            {
-                //if bottom != light, rotate
-
-                //coming from 1Player or networkGame
-                if (game.onePlayer == true || game.networkGame == true)
-                {
-                    if (game.opponent == "light")
                     {
                         game.rotateBoard(false, 0);
                     }
                 }
-                //coming from 2Player local
-                else
+            }
+            else if (game.twoPlayer == true)
+            {
+                game.opponent = "dark";
+
+                if (game.onBottom != "light")
                 {
-                    if (game.offensiveTeam == game.opponent)
+                    game.rotateBoard(false, 0);
+                }
+            }
+            else //Network Game
+            {
+                if (game.onBottom == game.opponent)
+                {
+                    if (game.onBottom == "light")
                     {
-                        if (game.rotate == true)
-                        {
-                            if (game.offensiveTeam == "dark")
-                            {
-                                game.rotateBoard(false, 0);
-                            }
-                        }
-                        else
-                        {
-                            if (game.opponent == "light")
-                            {
-                                game.rotateBoard(false, 0);
-                            }
-                        }
+                        game.rotateBoard(true, 0);
                     }
-                    //if firstPlayer's turn
                     else
                     {
-                        if (game.offensiveTeam == "dark")
-                        {
-                            game.rotateBoard(false, 0);
-                        }
+                        game.rotateBoard(false, 0);
                     }
                 }
-                game.offensiveTeam = "light";
-                game.opponent = "dark";
             }
             game.ready = false;
         }
