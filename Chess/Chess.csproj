@@ -57,6 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Piece.cs" />
     <Compile Include="Thinking.xaml.cs">
       <DependentUpon>Thinking.xaml</DependentUpon>
     </Compile>

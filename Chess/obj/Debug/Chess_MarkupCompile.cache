@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\robert.palagano\OneDrive - School Board of Polk County, FL\Documents\GitHub\Chess\Chess\obj\Release\
+C:\Users\robert.palagano\OneDrive - School Board of Polk County, FL\Documents\GitHub\Chess\Chess\obj\Debug\
 Chess
 none
 false
-TRACE
+DEBUG;TRACE
 C:\Users\robert.palagano\OneDrive - School Board of Polk County, FL\Documents\GitHub\Chess\Chess\App.xaml
 61650534088
 
-172001590473
+13-1451882012
 131478842535
 Connecting.xaml;Options.xaml;MainWindow.xaml;NewGame.xaml;PawnTransformation.xaml;Thinking.xaml;
 
-False
+True
 

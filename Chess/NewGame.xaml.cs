@@ -91,7 +91,7 @@ namespace Chess
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
                 opponentAndRotate();
-                game.onBottom = game.switchTeam(game.opponent);
+                game.onBottom = Logic.switchTeam(game.opponent);
 
                 if (game.opponent == "dark")
                 {
@@ -115,7 +115,7 @@ namespace Chess
 
             if (game.onePlayer == true)
             {
-                game.opponent = game.switchTeam(colorChecked);
+                game.opponent = Logic.switchTeam(colorChecked);
 
                 if (game.onBottom == game.opponent)
                 {

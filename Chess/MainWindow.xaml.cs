@@ -94,7 +94,7 @@ namespace Chess
             Canvas cell = (sender as Canvas);
             int row = Grid.GetRow(cell);
             int col = Grid.GetColumn(cell);
-            await game.clicker(new Logic.coordinate(col, row));
+            await game.clicker(new Piece.coordinate(col, row));
         }
 
         private void cell_MouseMove(object sender, RoutedEventArgs e)
