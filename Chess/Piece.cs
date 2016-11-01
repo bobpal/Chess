@@ -4,33 +4,34 @@ using static Chess.Logic;
 
 namespace Chess
 {
+    public enum Color
+    {
+        None,
+        Light,
+        Dark
+    }
+    public enum Job
+    {
+        None,
+        Pawn,
+        Knight,
+        Bishop,
+        Rook,
+        Queen,
+        King
+    }
+
     public abstract class Piece
     {
         public coordinate coor { get; set; }    //spot on board
-        public enum color                       //on dark or light team?
-        {
-            none,
-            light,
-            dark
-        };
-        public enum job                         //piece's job
-        {
-            None,
-            Pawn,
-            Knight,
-            Bishop,
-            Rook,
-            Queen,
-            King
-        };
+        public Color color { get; set; }        //on dark or light team?
+        public Job job { get; set; }            //piece's job
         public bool virgin { get; set; }        //has piece ever moved?
 
         public List<move> getCheckRestrictedMoves(Piece[,] grid)
         {
             //returns list of moves that don't put piece's team in check
 
-            Piece origStart;
-            Piece origEnd;
             bool inCheck;
 
             List<move> allPossible = new List<move>();
@@ -40,15 +41,11 @@ namespace Chess
 
             foreach (move m in allPossible)
             {
-                origStart = m.start;
-                origEnd = m.end;
-
                 //do moves
-                m.end = m.start;
-                m.end.coor = origEnd.coor;
-                m.end.virgin = false;
-
-                m.start = new Empty(origStart.coor);
+                grid[m.end.coor.x, m.end.coor.y] = m.start;
+                grid[m.end.coor.x, m.end.coor.y].coor = m.end.coor;
+                grid[m.end.coor.x, m.end.coor.y].virgin = false;
+                grid[m.start.coor.x, m.start.coor.y] = new Empty(m.start.coor);
 
                 //see if in check
                 inCheck = isInCheck(this.color, grid);
@@ -59,8 +56,8 @@ namespace Chess
                 }
 
                 //reset pieces
-                m.start = origStart;
-                m.end = origEnd;
+                grid[m.start.coor.x, m.start.coor.y] = m.start;
+                grid[m.end.coor.x, m.end.coor.y] = m.end;
             }
             return possibleWithoutCheck;
         }
@@ -102,19 +99,19 @@ namespace Chess
 
     public class Pawn : Piece
     {
-        public Pawn(coordinate _coor, string _color)
+        public Pawn(coordinate _coor, Color _color)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Pawn";
+            this.job = Job.Pawn;
             this.virgin = true;
         }
 
-        public Pawn(coordinate _coor, string _color, bool _virgin)
+        public Pawn(coordinate _coor, Color _color, bool _virgin)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Pawn";
+            this.job = Job.Pawn;
             this.virgin = _virgin;
         }
 
@@ -127,20 +124,20 @@ namespace Chess
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
-            string oppositeColor = switchTeam(this.color);
+            Color oppositeColor = switchTeam(this.color);
 
-            if (this.color == "dark")
+            if (this.color == Color.Dark)
             {
                 availableY--;
                 //search first move
                 if (this.virgin == true)
                 {
-                    if (grid[availableX, 5].color == "none")
+                    if (grid[availableX, 5].color == Color.None)
                     {
                         availableMove = new move(this, grid[availableX, 5]);
                         availableList.Add(availableMove);
 
-                        if (grid[availableX, 4].color == "none")
+                        if (grid[availableX, 4].color == Color.None)
                         {
                             availableMove = new move(this, grid[availableX, 4]);
                             availableList.Add(availableMove);
@@ -151,7 +148,7 @@ namespace Chess
                 //search down
                 else if (availableY >= 0)
                 {
-                    if (grid[availableX, availableY].color == "none")
+                    if (grid[availableX, availableY].color == Color.None)
                     {
                         availableMove = new move(this, grid[availableX, availableY]);
                         availableList.Add(availableMove);
@@ -187,12 +184,12 @@ namespace Chess
                 //search first move
                 if (grid[this.coor.x, this.coor.y].virgin == true)
                 {
-                    if (grid[availableX, 2].color == null)
+                    if (grid[availableX, 2].color == Color.None)
                     {
                         availableMove = new move(this, grid[availableX, 2]);
                         availableList.Add(availableMove);
 
-                        if (grid[availableX, 3].color == null)
+                        if (grid[availableX, 3].color == Color.None)
                         {
                             availableMove = new move(this, grid[availableX, 3]);
                             availableList.Add(availableMove);
@@ -203,7 +200,7 @@ namespace Chess
                 //search up
                 else if (availableY < 8)
                 {
-                    if (grid[availableX, availableY].color == null)
+                    if (grid[availableX, availableY].color == Color.None)
                     {
                         availableMove = new move(this, grid[availableX, availableY]);
                         availableList.Add(availableMove);
@@ -238,19 +235,19 @@ namespace Chess
 
     public class Rook : Piece
     {
-        public Rook(coordinate _coor, string _color)
+        public Rook(coordinate _coor, Color _color)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Rook";
+            this.job = Job.Rook;
             this.virgin = true;
         }
 
-        public Rook(coordinate _coor, string _color, bool _virgin)
+        public Rook(coordinate _coor, Color _color, bool _virgin)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Rook";
+            this.job = Job.Rook;
             this.virgin = _virgin;
         }
 
@@ -263,7 +260,7 @@ namespace Chess
             int availableX = this.coor.x;             //put coordinate in temp variable to manipulate while preserving original
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
-            string oppositeColor = switchTeam(this.color);
+            Color oppositeColor = switchTeam(this.color);
 
             //search up
             availableY++;
@@ -372,11 +369,11 @@ namespace Chess
 
     public class Knight : Piece
     {
-        public Knight(coordinate _coor, string _color)
+        public Knight(coordinate _coor, Color _color)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Knight";
+            this.job = Job.Knight;
         }
 
         public override List<move> getMoves(Piece[,] grid)
@@ -504,11 +501,11 @@ namespace Chess
 
     public class Bishop : Piece
     {
-        public Bishop(coordinate _coor, string _color)
+        public Bishop(coordinate _coor, Color _color)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Bishop";
+            this.job = Job.Bishop;
         }
 
         public override List<move> getMoves(Piece[,] grid)
@@ -520,7 +517,7 @@ namespace Chess
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
-            string oppositeColor = switchTeam(this.color);
+            Color oppositeColor = switchTeam(this.color);
 
             //search upper right
             availableX++;
@@ -637,11 +634,11 @@ namespace Chess
 
     public class Queen : Piece
     {
-        public Queen(coordinate _coor, string _color)
+        public Queen(coordinate _coor, Color _color)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "Queen";
+            this.job = Job.Queen;
         }
 
         public override List<move> getMoves(Piece[,] grid)
@@ -653,8 +650,8 @@ namespace Chess
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
-            string pieceColor = this.color;
-            string oppositeColor = switchTeam(pieceColor);
+            Color pieceColor = this.color;
+            Color oppositeColor = switchTeam(pieceColor);
 
             //search upper right
             availableX++;
@@ -874,19 +871,19 @@ namespace Chess
 
     public class King : Piece
     {
-        public King(coordinate _coor, string _color)
+        public King(coordinate _coor, Color _color)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "King";
+            this.job = Job.King;
             this.virgin = true;
         }
 
-        public King(coordinate _coor, string _color, bool _virgin)
+        public King(coordinate _coor, Color _color, bool _virgin)
         {
             this.coor = _coor;
             this.color = _color;
-            this.job = "King";
+            this.job = Job.King;
             this.virgin = _virgin;
         }
 
@@ -899,7 +896,7 @@ namespace Chess
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
-            string pieceColor = this.color;
+            Color pieceColor = this.color;
 
             //search up
             availableY++;
@@ -1010,12 +1007,12 @@ namespace Chess
             //search for castling opportunity
             if (grid[this.coor.x, this.coor.y].virgin == true)//if king's first move
             {
-                if (pieceColor == "dark")
+                if (pieceColor == Color.Dark)
                 {
                     if (grid[0, 7].virgin == true)//if left rook's first move
                     {
                         //if clear path from rook to king
-                        if (grid[1, 7].job == null && grid[2, 7].job == null && grid[3, 7].job == null)
+                        if (grid[1, 7].job == Job.None && grid[2, 7].job == Job.None && grid[3, 7].job == Job.None)
                         {
                             availableMove = new move(this, grid[2, 7]);
                             availableList.Add(availableMove);
@@ -1024,7 +1021,7 @@ namespace Chess
 
                     if (grid[7, 7].virgin == true)//if right rook's first move
                     {
-                        if (grid[6, 7].job == null && grid[5, 7].job == null)
+                        if (grid[6, 7].job == Job.None && grid[5, 7].job == Job.None)
                         {
                             availableMove = new move(this, grid[6, 7]);
                             availableList.Add(availableMove);
@@ -1036,7 +1033,7 @@ namespace Chess
                 {
                     if (grid[0, 0].virgin == true)//if left rook's first move
                     {
-                        if (grid[1, 0].job == null && grid[2, 0].job == null && grid[3, 0].job == null)
+                        if (grid[1, 0].job == Job.None && grid[2, 0].job == Job.None && grid[3, 0].job == Job.None)
                         {
                             availableMove = new move(this, grid[2, 0]);
                             availableList.Add(availableMove);
@@ -1045,7 +1042,7 @@ namespace Chess
 
                     if (grid[7, 0].virgin == true)//if right rook's first move
                     {
-                        if (grid[6, 0].job == null && grid[5, 0].job == null)
+                        if (grid[6, 0].job == Job.None && grid[5, 0].job == Job.None)
                         {
                             availableMove = new move(this, grid[6, 0]);
                             availableList.Add(availableMove);
@@ -1062,8 +1059,8 @@ namespace Chess
         public Empty(coordinate _coor)
         {
             this.coor = _coor;
-            this.color = "none";
-            this.job = "None";
+            this.color = Color.None;
+            this.job = Job.None;
             this.virgin = false;
         }
 
