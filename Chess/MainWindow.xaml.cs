@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Documents;
+using static Chess.Logic;
 
 namespace Chess
 {
@@ -111,7 +112,7 @@ namespace Chess
                     cell.Cursor = Cursors.Hand;
                 }
 
-                else if (game.pieceArray[col, row].color == game.offensiveTeam)
+                else if (game.pieceArray[getIndex(new Piece.coordinate(col, row), game.pieceArray)].color == game.offensiveTeam)
                 {
                     cell.Cursor = Cursors.Hand;
                 }

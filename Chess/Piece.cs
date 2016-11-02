@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using static Chess.Logic;
 
 namespace Chess
 {
     public enum Color
     {
-        None,
         Light,
         Dark
     }
     public enum Job
     {
-        None,
         Pawn,
         Knight,
         Bishop,
@@ -27,28 +24,32 @@ namespace Chess
         public Color color { get; set; }        //on dark or light team?
         public Job job { get; set; }            //piece's job
         public bool virgin { get; set; }        //has piece ever moved?
+        public bool dead { get; set; }          //is piece dead?
 
-        public List<move> getCheckRestrictedMoves(Piece[,] grid)
+        public List<move> getCheckRestrictedMoves(Piece[] board)
         {
             //returns list of moves that don't put piece's team in check
 
             bool inCheck;
-
+            bool lostV;
+            int index;
             List<move> allPossible = new List<move>();
             List<move> possibleWithoutCheck = new List<move>();
 
-            allPossible = this.getMoves(grid);
+            allPossible = this.getMoves(board);
 
             foreach (move m in allPossible)
             {
+                lostV = this.virgin;
+                index = getIndex(m.end, board);
+
                 //do moves
-                grid[m.end.coor.x, m.end.coor.y] = m.start;
-                grid[m.end.coor.x, m.end.coor.y].coor = m.end.coor;
-                grid[m.end.coor.x, m.end.coor.y].virgin = false;
-                grid[m.start.coor.x, m.start.coor.y] = new Empty(m.start.coor);
+                board[index].dead = true;
+                this.coor = m.end;
+                this.virgin = false;
 
                 //see if in check
-                inCheck = isInCheck(this.color, grid);
+                inCheck = isInCheck(this.color, board);
 
                 if (inCheck == false)//if not in check
                 {
@@ -56,13 +57,26 @@ namespace Chess
                 }
 
                 //reset pieces
-                grid[m.start.coor.x, m.start.coor.y] = m.start;
-                grid[m.end.coor.x, m.end.coor.y] = m.end;
+                board[index].dead = false;
+                this.coor = m.start;
+                this.virgin = lostV;
             }
             return possibleWithoutCheck;
         }
 
-        public abstract List<move> getMoves(Piece[,] grid);
+        public void movePiece(coordinate newCell, Logic game)
+        {
+            game.pieceArray[getIndex(newCell, game.pieceArray)].dead = true;
+            game.displayArray[this.coor.x, this.coor.y].top.Source = null;
+
+            this.coor = newCell;
+            this.virgin = false;
+            game.displayArray[newCell.x, newCell.y].top.Source = game.matchPicture(this);
+
+            game.movablePieceSelected = false;
+        }
+
+        public abstract List<move> getMoves(Piece[] board);
 
         public class coordinate
         {
@@ -84,16 +98,19 @@ namespace Chess
         {
             //represents a move that a piece can do
 
-            public Piece start { get; set; }   //starting position
-            public Piece end { get; set; }    //ending position
+            public coordinate start { get; set; }   //starting position
+            public coordinate end { get; set; }    //ending position
 
-            public move(Piece _start, Piece _end)
+            public move(coordinate _start, coordinate _end)
             {
                 this.start = _start;
                 this.end = _end;
             }
 
-            public move() { }
+            public move()
+            {
+
+            }
         }
     }
 
@@ -105,6 +122,7 @@ namespace Chess
             this.color = _color;
             this.job = Job.Pawn;
             this.virgin = true;
+            this.dead = false;
         }
 
         public Pawn(coordinate _coor, Color _color, bool _virgin)
@@ -113,14 +131,15 @@ namespace Chess
             this.color = _color;
             this.job = Job.Pawn;
             this.virgin = _virgin;
+            this.dead = false;
         }
 
-        public override List<move> getMoves(Piece[,] grid)
+        public override List<move> getMoves(Piece[] board)
         {
             //does not account for check restrictions
             //returns list of possible moves for that piece
 
-            move availableMove = new move();
+            move availableMove;
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
@@ -132,14 +151,14 @@ namespace Chess
                 //search first move
                 if (this.virgin == true)
                 {
-                    if (grid[availableX, 5].color == Color.None)
+                    if (getIndex(new coordinate(availableX, 5), board) == 32)
                     {
-                        availableMove = new move(this, grid[availableX, 5]);
+                        availableMove = new move(this.coor, new coordinate(availableX, 5));
                         availableList.Add(availableMove);
 
-                        if (grid[availableX, 4].color == Color.None)
+                        if (getIndex(new coordinate(availableX, 4), board) == 32)
                         {
-                            availableMove = new move(this, grid[availableX, 4]);
+                            availableMove = new move(this.coor, new coordinate(availableX, 4));
                             availableList.Add(availableMove);
                         }
                     }
@@ -148,9 +167,9 @@ namespace Chess
                 //search down
                 else if (availableY >= 0)
                 {
-                    if (grid[availableX, availableY].color == Color.None)
+                    if (getIndex(new coordinate(availableX, availableY), board) == 32)
                     {
-                        availableMove = new move(this, grid[availableX, availableY]);
+                        availableMove = new move(this.coor, new coordinate(availableX, availableY));
                         availableList.Add(availableMove);
                     }
                 }
@@ -159,9 +178,9 @@ namespace Chess
                 availableX++;
                 if (availableY >= 0 && availableX < 8)
                 {
-                    if (grid[availableX, availableY].color == oppositeColor)
+                    if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                     {
-                        availableMove = new move(this, grid[availableX, availableY]);
+                        availableMove = new move(this.coor, new coordinate(availableX, availableY));
                         availableList.Add(availableMove);
                     }
                 }
@@ -170,9 +189,9 @@ namespace Chess
                 availableX -= 2;
                 if (availableY >= 0 && availableX >= 0)
                 {
-                    if (grid[availableX, availableY].color == oppositeColor)
+                    if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                     {
-                        availableMove = new move(this, grid[availableX, availableY]);
+                        availableMove = new move(this.coor, new coordinate(availableX, availableY));
                         availableList.Add(availableMove);
                     }
                 }
@@ -182,16 +201,16 @@ namespace Chess
             {
                 availableY++;
                 //search first move
-                if (grid[this.coor.x, this.coor.y].virgin == true)
+                if (board[getIndex(this.coor, board)].virgin == true)
                 {
-                    if (grid[availableX, 2].color == Color.None)
+                    if (getIndex(new coordinate(availableX, 2), board) == 32)
                     {
-                        availableMove = new move(this, grid[availableX, 2]);
+                        availableMove = new move(this.coor, new coordinate(availableX, 2));
                         availableList.Add(availableMove);
 
-                        if (grid[availableX, 3].color == Color.None)
+                        if (getIndex(new coordinate(availableX, 3), board) == 32)
                         {
-                            availableMove = new move(this, grid[availableX, 3]);
+                            availableMove = new move(this.coor, new coordinate(availableX, 3));
                             availableList.Add(availableMove);
                         }
                     }
@@ -200,9 +219,9 @@ namespace Chess
                 //search up
                 else if (availableY < 8)
                 {
-                    if (grid[availableX, availableY].color == Color.None)
+                    if (getIndex(new coordinate(availableX, availableY), board) == 32)
                     {
-                        availableMove = new move(this, grid[availableX, availableY]);
+                        availableMove = new move(this.coor, new coordinate(availableX, availableY));
                         availableList.Add(availableMove);
                     }
                 }
@@ -211,9 +230,9 @@ namespace Chess
                 availableX++;
                 if (availableY < 8 && availableX < 8)
                 {
-                    if (grid[availableX, availableY].color == oppositeColor)
+                    if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                     {
-                        availableMove = new move(this, grid[availableX, availableY]);
+                        availableMove = new move(this.coor, new coordinate(availableX, availableY));
                         availableList.Add(availableMove);
                     }
                 }
@@ -222,9 +241,9 @@ namespace Chess
                 availableX -= 2;
                 if (availableY < 8 && availableX >= 0)
                 {
-                    if (grid[availableX, availableY].color == oppositeColor)
+                    if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                     {
-                        availableMove = new move(this, grid[availableX, availableY]);
+                        availableMove = new move(this.coor, new coordinate(availableX, availableY));
                         availableList.Add(availableMove);
                     }
                 }
@@ -241,6 +260,7 @@ namespace Chess
             this.color = _color;
             this.job = Job.Rook;
             this.virgin = true;
+            this.dead = false;
         }
 
         public Rook(coordinate _coor, Color _color, bool _virgin)
@@ -249,14 +269,15 @@ namespace Chess
             this.color = _color;
             this.job = Job.Rook;
             this.virgin = _virgin;
+            this.dead = false;
         }
 
-        public override List<move> getMoves(Piece[,] grid)
+        public override List<move> getMoves(Piece[] board)
         {
             //does not account for check restrictions
             //returns list of possible moves for that piece
 
-            move availableMove = new move();
+            move availableMove;
             int availableX = this.coor.x;             //put coordinate in temp variable to manipulate while preserving original
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
@@ -266,21 +287,21 @@ namespace Chess
             availableY++;
             while (availableY < 8)
             {
-                if (grid[availableX, availableY].color == this.color)           //if same team
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)           //if same team
                 {
                     break;                                                      //can't go past
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)   //if enemy
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)   //if enemy
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);       //add to list
                     break;                                  //can't go past
                 }
 
                 else                                        //if unoccupied
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);       //add to list
                     availableY++;                           //try next spot
                 }
@@ -292,21 +313,21 @@ namespace Chess
             availableX--;
             while (availableX >= 0)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX--;
                 }
@@ -318,21 +339,21 @@ namespace Chess
             availableY--;
             while (availableY >= 0)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableY--;
                 }
@@ -344,21 +365,21 @@ namespace Chess
             availableX++;
             while (availableX < 8)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX++;
                 }
@@ -374,14 +395,15 @@ namespace Chess
             this.coor = _coor;
             this.color = _color;
             this.job = Job.Knight;
+            this.dead = false;
         }
 
-        public override List<move> getMoves(Piece[,] grid)
+        public override List<move> getMoves(Piece[] board)
         {
             //does not account for check restrictions
             //returns list of possible moves for that piece
 
-            move availableMove = new move();
+            move availableMove;
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
@@ -391,9 +413,9 @@ namespace Chess
             availableX++;
             if (availableY < 8 && availableX < 8)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -405,9 +427,9 @@ namespace Chess
             availableX--;
             if (availableY < 8 && availableX >= 0)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -419,9 +441,9 @@ namespace Chess
             availableX -= 2;
             if (availableY < 8 && availableX >= 0)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -433,9 +455,9 @@ namespace Chess
             availableX -= 2;
             if (availableY >= 0 && availableX >= 0)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -447,9 +469,9 @@ namespace Chess
             availableX--;
             if (availableY >= 0 && availableX >= 0)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -461,9 +483,9 @@ namespace Chess
             availableX++;
             if (availableY >= 0 && availableX < 8)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -475,9 +497,9 @@ namespace Chess
             availableX += 2;
             if (availableY >= 0 && availableX < 8)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -489,9 +511,9 @@ namespace Chess
             availableX += 2;
             if (availableY < 8 && availableX < 8)
             {
-                if (grid[availableX, availableY].color != this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != this.color)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -506,14 +528,15 @@ namespace Chess
             this.coor = _coor;
             this.color = _color;
             this.job = Job.Bishop;
+            this.dead = false;
         }
 
-        public override List<move> getMoves(Piece[,] grid)
+        public override List<move> getMoves(Piece[] board)
         {
             //does not account for check restrictions
             //returns list of possible moves for that piece
 
-            move availableMove = new move();
+            move availableMove;
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
@@ -524,21 +547,21 @@ namespace Chess
             availableY++;
             while (availableX < 8 && availableY < 8)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX++;
                     availableY++;
@@ -552,21 +575,21 @@ namespace Chess
             availableY++;
             while (availableX >= 0 && availableY < 8)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX--;
                     availableY++;
@@ -580,21 +603,21 @@ namespace Chess
             availableY--;
             while (availableX >= 0 && availableY >= 0)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX--;
                     availableY--;
@@ -608,21 +631,21 @@ namespace Chess
             availableY--;
             while (availableX < 8 && availableY >= 0)
             {
-                if (grid[availableX, availableY].color == this.color)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == this.color)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX++;
                     availableY--;
@@ -639,14 +662,15 @@ namespace Chess
             this.coor = _coor;
             this.color = _color;
             this.job = Job.Queen;
+            this.dead = false;
         }
 
-        public override List<move> getMoves(Piece[,] grid)
+        public override List<move> getMoves(Piece[] board)
         {
             //does not account for check restrictions
             //returns list of possible moves for that piece
 
-            move availableMove = new move();
+            move availableMove;
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
@@ -658,21 +682,21 @@ namespace Chess
             availableY++;
             while (availableX < 8 && availableY < 8)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX++;
                     availableY++;
@@ -686,21 +710,21 @@ namespace Chess
             availableY++;
             while (availableX >= 0 && availableY < 8)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX--;
                     availableY++;
@@ -714,21 +738,21 @@ namespace Chess
             availableY--;
             while (availableX >= 0 && availableY >= 0)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX--;
                     availableY--;
@@ -742,21 +766,21 @@ namespace Chess
             availableY--;
             while (availableX < 8 && availableY >= 0)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX++;
                     availableY--;
@@ -767,21 +791,21 @@ namespace Chess
             availableY++;
             while (availableY < 8)
             {
-                if (grid[availableX, availableY].color == pieceColor)  //if same team
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)  //if same team
                 {
                     break;                                              //can't go past
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)   //if enemy
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)   //if enemy
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);       //add to list
                     break;                                  //can't go past
                 }
 
                 else                                        //if unoccupied
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);       //add to list
                     availableY++;                           //try next spot
                 }
@@ -793,21 +817,21 @@ namespace Chess
             availableX--;
             while (availableX >= 0)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX--;
                 }
@@ -819,21 +843,21 @@ namespace Chess
             availableY--;
             while (availableY >= 0)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableY--;
                 }
@@ -845,21 +869,21 @@ namespace Chess
             availableX++;
             while (availableX < 8)
             {
-                if (grid[availableX, availableY].color == pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color == pieceColor)
                 {
                     break;
                 }
 
-                else if (grid[availableX, availableY].color == oppositeColor)
+                else if (board[getIndex(new coordinate(availableX, availableY), board)].color == oppositeColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     break;
                 }
 
                 else
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                     availableX++;
                 }
@@ -877,6 +901,7 @@ namespace Chess
             this.color = _color;
             this.job = Job.King;
             this.virgin = true;
+            this.dead = false;
         }
 
         public King(coordinate _coor, Color _color, bool _virgin)
@@ -885,14 +910,15 @@ namespace Chess
             this.color = _color;
             this.job = Job.King;
             this.virgin = _virgin;
+            this.dead = false;
         }
 
-        public override List<move> getMoves(Piece[,] grid)
+        public override List<move> getMoves(Piece[] board)
         {
             //does not account for check restrictions
             //returns list of possible moves for that piece
 
-            move availableMove = new move();
+            move availableMove;
             int availableX = this.coor.x;
             int availableY = this.coor.y;
             List<move> availableList = new List<move>();
@@ -902,9 +928,9 @@ namespace Chess
             availableY++;
             if (availableY < 8)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -916,9 +942,9 @@ namespace Chess
             availableX--;
             if (availableY < 8 && availableX >= 0)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -929,9 +955,9 @@ namespace Chess
             availableX--;
             if (availableX >= 0)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -943,9 +969,9 @@ namespace Chess
             availableX--;
             if (availableY >= 0 && availableX >= 0)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -956,9 +982,9 @@ namespace Chess
             availableY--;
             if (availableY >= 0)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -970,9 +996,9 @@ namespace Chess
             availableX++;
             if (availableY >= 0 && availableX < 8)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -983,9 +1009,9 @@ namespace Chess
             availableX++;
             if (availableX < 8)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
@@ -997,33 +1023,36 @@ namespace Chess
             availableX++;
             if (availableY < 8 && availableX < 8)
             {
-                if (grid[availableX, availableY].color != pieceColor)
+                if (board[getIndex(new coordinate(availableX, availableY), board)].color != pieceColor)
                 {
-                    availableMove = new move(this, grid[availableX, availableY]);
+                    availableMove = new move(this.coor, new coordinate(availableX, availableY));
                     availableList.Add(availableMove);
                 }
             }
 
             //search for castling opportunity
-            if (grid[this.coor.x, this.coor.y].virgin == true)//if king's first move
+            if (board[getIndex(new coordinate(availableX, availableY), board)].virgin == true)//if king's first move
             {
                 if (pieceColor == Color.Dark)
                 {
-                    if (grid[0, 7].virgin == true)//if left rook's first move
+                    if (board[getIndex(new coordinate(), board)].virgin == true)//if left rook's first move
                     {
                         //if clear path from rook to king
-                        if (grid[1, 7].job == Job.None && grid[2, 7].job == Job.None && grid[3, 7].job == Job.None)
+                        if (getIndex(new coordinate(1, 7), board) == 32 &&
+                            getIndex(new coordinate(2, 7), board) == 32 &&
+                            getIndex(new coordinate(3, 7), board) == 32)
                         {
-                            availableMove = new move(this, grid[2, 7]);
+                            availableMove = new move(this.coor, new coordinate(2, 7));
                             availableList.Add(availableMove);
                         }
                     }
 
-                    if (grid[7, 7].virgin == true)//if right rook's first move
+                    if (board[getIndex(new coordinate(7, 7), board)].virgin == true)//if right rook's first move
                     {
-                        if (grid[6, 7].job == Job.None && grid[5, 7].job == Job.None)
+                        if (getIndex(new coordinate(6, 7), board) == 32 &&
+                            getIndex(new coordinate(5, 7), board) == 32)
                         {
-                            availableMove = new move(this, grid[6, 7]);
+                            availableMove = new move(this.coor, new coordinate(6, 7));
                             availableList.Add(availableMove);
                         }
                     }
@@ -1031,42 +1060,29 @@ namespace Chess
 
                 else
                 {
-                    if (grid[0, 0].virgin == true)//if left rook's first move
+                    if (board[getIndex(new coordinate(0, 0), board)].virgin == true)//if left rook's first move
                     {
-                        if (grid[1, 0].job == Job.None && grid[2, 0].job == Job.None && grid[3, 0].job == Job.None)
+                        if (getIndex(new coordinate(1, 0), board) == 32 &&
+                            getIndex(new coordinate(2, 0), board) == 32 &&
+                            getIndex(new coordinate(3, 0), board) == 32)
                         {
-                            availableMove = new move(this, grid[2, 0]);
+                            availableMove = new move(this.coor, new coordinate(2, 0));
                             availableList.Add(availableMove);
                         }
                     }
 
-                    if (grid[7, 0].virgin == true)//if right rook's first move
+                    if (board[getIndex(new coordinate(7, 0), board)].virgin == true)//if right rook's first move
                     {
-                        if (grid[6, 0].job == Job.None && grid[5, 0].job == Job.None)
+                        if (getIndex(new coordinate(6, 0), board) == 32 &&
+                            getIndex(new coordinate(5, 0), board) == 32)
                         {
-                            availableMove = new move(this, grid[6, 0]);
+                            availableMove = new move(this.coor, new coordinate(6, 0));
                             availableList.Add(availableMove);
                         }
                     }
                 }
             }
             return availableList;
-        }
-    }
-
-    public class Empty : Piece
-    {
-        public Empty(coordinate _coor)
-        {
-            this.coor = _coor;
-            this.color = Color.None;
-            this.job = Job.None;
-            this.virgin = false;
-        }
-
-        public override List<move> getMoves(Piece[,] grid)
-        {
-            return null;
         }
     }
 }

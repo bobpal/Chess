@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using static Chess.Logic;
 
 namespace Chess
 {
@@ -6,6 +7,7 @@ namespace Chess
     {
         private Piece.coordinate spot;
         private Logic game;
+        private int index;
 
         public PawnTransformation(Piece.coordinate c, Logic l)
         {
@@ -14,6 +16,7 @@ namespace Chess
             this.spot = c;
             this.game = l;
             this.Owner = game.mWindow;
+            this.index = getIndex(c, l.pieceArray);
         }
 
         private void QueenBtn_Click(object sender, RoutedEventArgs e)
@@ -21,12 +24,12 @@ namespace Chess
             if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lQueen;
-                game.pieceArray[spot.x, spot.y] = new Queen(spot, Color.Light);
+                game.pieceArray[index] = new Queen(spot, Color.Light);
             }
             else
             {
                 game.displayArray[spot.x, 0].top.Source = game.dQueen;
-                game.pieceArray[spot.x, spot.y] = new Queen(spot, Color.Dark);
+                game.pieceArray[index] = new Queen(spot, Color.Dark);
             }
             this.Close();
         }
@@ -36,12 +39,12 @@ namespace Chess
             if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lRook;
-                game.pieceArray[spot.x, spot.y] = new Rook(spot, Color.Light, false);
+                game.pieceArray[index] = new Rook(spot, Color.Light, false);
             }
             else
             {
                 game.displayArray[spot.x, 0].top.Source = game.dRook;
-                game.pieceArray[spot.x, spot.y] = new Rook(spot, Color.Dark, false);
+                game.pieceArray[index] = new Rook(spot, Color.Dark, false);
             }
             this.Close();
         }
@@ -51,12 +54,12 @@ namespace Chess
             if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lBishop;
-                game.pieceArray[spot.x, spot.y] = new Bishop(spot, Color.Light);
+                game.pieceArray[index] = new Bishop(spot, Color.Light);
             }
             else
             {
                 game.displayArray[spot.x, 0].top.Source = game.dBishop;
-                game.pieceArray[spot.x, spot.y] = new Bishop(spot, Color.Dark);
+                game.pieceArray[index] = new Bishop(spot, Color.Dark);
             }
             this.Close();
         }
@@ -66,12 +69,12 @@ namespace Chess
             if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lKnight;
-                game.pieceArray[spot.x, spot.y] = new Knight(spot, Color.Light);
+                game.pieceArray[index] = new Knight(spot, Color.Light);
             }
             else
             {
                 game.displayArray[spot.x, 0].top.Source = game.dKnight;
-                game.pieceArray[spot.x, spot.y] = new Knight(spot, Color.Dark);
+                game.pieceArray[index] = new Knight(spot, Color.Dark);
             }
             this.Close();
         }
