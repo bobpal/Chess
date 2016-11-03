@@ -61,8 +61,6 @@ namespace Chess
             }
         }
 
-        
-
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
             game.themeIndex = index;

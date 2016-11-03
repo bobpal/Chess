@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using static Chess.Logic;
 
 namespace Chess
 {
@@ -18,7 +19,7 @@ namespace Chess
 
         private void QueenBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == "light")
+            if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lQueen;
             }
@@ -26,13 +27,13 @@ namespace Chess
             {
                 game.displayArray[spot.x, 0].top.Source = game.dQueen;
             }
-            game.pieceArray[spot.x, spot.y].job = "Queen";
+            game.pieceArray[spot.x, spot.y].job = Job.Queen;
             this.Close();
         }
 
         private void RookBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == "light")
+            if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lRook;
             }
@@ -40,13 +41,13 @@ namespace Chess
             {
                 game.displayArray[spot.x, 0].top.Source = game.dRook;
             }
-            game.pieceArray[spot.x, spot.y].job = "Rook";
+            game.pieceArray[spot.x, spot.y].job = Job.Rook;
             this.Close();
         }
 
         private void BishopBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == "light")
+            if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lBishop;
             }
@@ -54,13 +55,13 @@ namespace Chess
             {
                 game.displayArray[spot.x, 0].top.Source = game.dBishop;
             }
-            game.pieceArray[spot.x, spot.y].job = "Bishop";
+            game.pieceArray[spot.x, spot.y].job = Job.Bishop;
             this.Close();
         }
 
         private void KnightBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == "light")
+            if (game.offensiveTeam == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lKnight;
             }
@@ -68,7 +69,7 @@ namespace Chess
             {
                 game.displayArray[spot.x, 0].top.Source = game.dKnight;
             }
-            game.pieceArray[spot.x, spot.y].job = "Knight";
+            game.pieceArray[spot.x, spot.y].job = Job.Knight;
             this.Close();
         }
     }

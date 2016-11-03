@@ -16,25 +16,43 @@ using System.Windows.Media.Imaging;
 
 namespace Chess
 {
+    public enum Color
+    {
+        None,
+        Light,
+        Dark
+    }
+
+    public enum Job
+    {
+        None,
+        Pawn,
+        Knight,
+        Bishop,
+        Rook,
+        Queen,
+        King
+    }
+
     [Serializable]
     public class Logic
     {
         [NonSerialized]
-        public MainWindow mWindow;          //window with chess board on it
-        public piece[,] pieceArray;         //8x8 array of pieces
-        public display[,] displayArray;     //8x8 array of display objects
-        public bool onePlayer;              //versus computer
-        public bool twoPlayer;              //2 player local
-        public bool networkGame;            //playing over a network
-        public string opponent;             //color of computer or 2nd player
-        public string offensiveTeam;        //which side is on the offense
-        public string onBottom = "light";   //which team is on the bottom of the screen
-        public int difficulty;              //difficulty level
-        public bool ready;                  //blocks functionality for unwanted circumstances
-        private coordinate prevSelected;    //where the cursor clicked previously
-        public List<string> themeList;      //list of themes
-        public int themeIndex;              //which theme is currently in use
-        private List<string> ignore;        //list of which dll files to ignore
+        public MainWindow mWindow;              //window with chess board on it
+        public piece[,] pieceArray;             //8x8 array of pieces
+        public display[,] displayArray;         //8x8 array of display objects
+        public bool onePlayer;                  //versus computer
+        public bool twoPlayer;                  //2 player local
+        public bool networkGame;                //playing over a network
+        public Color opponent;                  //color of computer or 2nd player
+        public Color offensiveTeam;             //which side is on the offense
+        public Color onBottom = Color.Light;    //which team is on the bottom of the screen
+        public int difficulty;                  //difficulty level
+        public bool ready;                      //blocks functionality for unwanted circumstances
+        private coordinate prevSelected;        //where the cursor clicked previously
+        public List<string> themeList;          //list of themes
+        public int themeIndex;                  //which theme is currently in use
+        private List<string> ignore;            //list of which dll files to ignore
         [NonSerialized] public BitmapImage lKing;
         [NonSerialized] public BitmapImage lQueen;
         [NonSerialized] public BitmapImage lBishop;
@@ -76,9 +94,9 @@ namespace Chess
             //contains all the information needed to save the game
 
             public piece[,] sBoard { get; private set; }
-            public string sOffensiveTeam { get; private set; }
-            public string sOpponent { get; private set; }
-            public string sOnBottom { get; set; }
+            public Color sOffensiveTeam { get; private set; }
+            public Color sOpponent { get; private set; }
+            public Color sOnBottom { get; set; }
             public string sTheme { get; private set; }
             public bool sOnePlayer { get; private set; }
             public bool sTwoPlayer { get; set; }
@@ -92,7 +110,7 @@ namespace Chess
             public int sSizeX { get; private set; }
             public int sSizeY { get; private set; }
 
-            public saveData(piece[,] _board, string _offensiveTeam, string _opponent, string _onBottom, string _theme, bool _onePlayer, bool _twoPlayer,
+            public saveData(piece[,] _board, Color _offensiveTeam, Color _opponent, Color _onBottom, string _theme, bool _onePlayer, bool _twoPlayer,
                 bool _network, int _difficulty, bool _lastMove, bool _saveGame, bool _ready, bool _rotate, double _rDuration, int _sizeX, int _sizeY)
             {
                 this.sBoard = _board;
@@ -119,8 +137,8 @@ namespace Chess
         {
             //represents a movable piece
 
-            public string color { get; set; }   //on dark or light team?
-            public string job { get; set; }     //piece's job
+            public Color color { get; set; }    //on dark or light team?
+            public Job job { get; set; }        //piece's job
             public bool virgin { get; set; }    //has piece never moved?
         }
 
@@ -145,13 +163,13 @@ namespace Chess
         {
             //represents a move that a piece can do
 
-            public coordinate pieceSpot { get; set; }   //starting position
-            public coordinate moveSpot { get; set; }    //ending position
+            public coordinate start { get; set; }   //starting position
+            public coordinate end { get; set; }    //ending position
 
-            public move(coordinate _pieceSpot, coordinate _moveSpot)
+            public move(coordinate _start, coordinate _end)
             {
-                this.pieceSpot = _pieceSpot;
-                this.moveSpot = _moveSpot;
+                this.start = _start;
+                this.end = _end;
             }
 
             public move() { }
@@ -523,28 +541,28 @@ namespace Chess
                 {
                     if (y == 0)
                     {
-                        pieceArray[x, 0].color = "light";
+                        pieceArray[x, 0].color = Color.Light;
                     }
 
                     else if (y == 1)
                     {
-                        pieceArray[x, 1].color = "light";
-                        pieceArray[x, 1].job = "Pawn";
+                        pieceArray[x, 1].color = Color.Light;
+                        pieceArray[x, 1].job = Job.Pawn;
                         pieceArray[x, 1].virgin = true;
                         displayArray[x, 1].top.Source = matchPicture(pieceArray[x, 1]);
                     }
 
                     else if (y == 6)
                     {
-                        pieceArray[x, 6].color = "dark";
-                        pieceArray[x, 6].job = "Pawn";
+                        pieceArray[x, 6].color = Color.Dark;
+                        pieceArray[x, 6].job = Job.Pawn;
                         pieceArray[x, 6].virgin = true;
                         displayArray[x, 6].top.Source = matchPicture(pieceArray[x, 6]);
                     }
 
                     else if (y == 7)
                     {
-                        pieceArray[x, 7].color = "dark";
+                        pieceArray[x, 7].color = Color.Dark;
                     }
 
                     else
@@ -560,22 +578,22 @@ namespace Chess
             pieceArray[4, 7].virgin = true;
             pieceArray[7, 7].virgin = true;
 
-            pieceArray[0, 0].job = "Rook";
-            pieceArray[1, 0].job = "Knight";
-            pieceArray[2, 0].job = "Bishop";
-            pieceArray[3, 0].job = "Queen";
-            pieceArray[4, 0].job = "King";
-            pieceArray[5, 0].job = "Bishop";
-            pieceArray[6, 0].job = "Knight";
-            pieceArray[7, 0].job = "Rook";
-            pieceArray[0, 7].job = "Rook";
-            pieceArray[1, 7].job = "Knight";
-            pieceArray[2, 7].job = "Bishop";
-            pieceArray[3, 7].job = "Queen";
-            pieceArray[4, 7].job = "King";
-            pieceArray[5, 7].job = "Bishop";
-            pieceArray[6, 7].job = "Knight";
-            pieceArray[7, 7].job = "Rook";
+            pieceArray[0, 0].job = Job.Rook;
+            pieceArray[1, 0].job = Job.Knight;
+            pieceArray[2, 0].job = Job.Bishop;
+            pieceArray[3, 0].job = Job.Queen;
+            pieceArray[4, 0].job = Job.King;
+            pieceArray[5, 0].job = Job.Bishop;
+            pieceArray[6, 0].job = Job.Knight;
+            pieceArray[7, 0].job = Job.Rook;
+            pieceArray[0, 7].job = Job.Rook;
+            pieceArray[1, 7].job = Job.Knight;
+            pieceArray[2, 7].job = Job.Bishop;
+            pieceArray[3, 7].job = Job.Queen;
+            pieceArray[4, 7].job = Job.King;
+            pieceArray[5, 7].job = Job.Bishop;
+            pieceArray[6, 7].job = Job.Knight;
+            pieceArray[7, 7].job = Job.Rook;
 
             displayArray[0, 0].top.Source = lRook;
             displayArray[1, 0].top.Source = lKnight;
@@ -606,7 +624,7 @@ namespace Chess
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    if (board[x, y].color == "dark")
+                    if (board[x, y].color == Color.Dark)
                     {
                         temp.x = x;
                         temp.y = y;
@@ -628,7 +646,7 @@ namespace Chess
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    if (board[x, y].color == "light")
+                    if (board[x, y].color == Color.Light)
                     {
                         temp.x = x;
                         temp.y = y;
@@ -650,7 +668,7 @@ namespace Chess
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    if (board[x, y].color != null)
+                    if (board[x, y].color != Color.None)
                     {
                         temp.x = x;
                         temp.y = y;
@@ -670,19 +688,19 @@ namespace Chess
 
             switch (grid[spot.x, spot.y].job)
             {
-                case "Rook":
+                case Job.Rook:
                     return rookMoves(spot, grid);
-                case "Knight":
+                case Job.Knight:
                     return knightMoves(spot, grid);
-                case "Bishop":
+                case Job.Bishop:
                     return bishopMoves(spot, grid);
-                case "Queen":
+                case Job.Queen:
                     temp.AddRange(bishopMoves(spot, grid));
                     temp.AddRange(rookMoves(spot, grid));
                     return temp;
-                case "King":
+                case Job.King:
                     return kingMoves(spot, grid);
-                case "Pawn":
+                case Job.Pawn:
                     return pawnMoves(spot, grid);
                 default:
                     return temp;    //temp should be empty
@@ -690,7 +708,7 @@ namespace Chess
         }
 
         public int minimax(
-            piece[,] board, string attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
+            piece[,] board, Color attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
 
@@ -705,9 +723,9 @@ namespace Chess
                 piece[,] newBoard;
                 int indexOfBest = 0;
 
-                string nextTurn = switchTeam(attacking);
+                Color nextTurn = switchTeam(attacking);
 
-                if (attacking == "dark")
+                if (attacking == Color.Dark)
                 {
                     foreach (coordinate cell in getDarkPieces(board))
                     {
@@ -724,7 +742,7 @@ namespace Chess
 
                 if (computerTurn == true)
                 {
-                    bestVal = -30;
+                    bestVal = -99;
 
                     //if checkmate
                     if (offensiveMoves.Count == 0){}
@@ -742,7 +760,7 @@ namespace Chess
                                     bestVal = val;
                                     indexOfBest = i;
                                 }
-                                //null = medMode
+                                //null = easyMode
                                 if (progress != null)
                                 {
                                     progress.Report((i * 100) / offensiveMoves.Count);
@@ -779,7 +797,7 @@ namespace Chess
                 }
                 else
                 {
-                    bestVal = 30;
+                    bestVal = 99;
 
                     //if checkmate
                     if (offensiveMoves.Count == 0){}
@@ -812,90 +830,66 @@ namespace Chess
         {
             //does a move without visuals on a private board for computer
 
-            int fromX = mv.pieceSpot.x;
-            int fromY = mv.pieceSpot.y;
-            int toX = mv.moveSpot.x;
-            int toY = mv.moveSpot.y;
-            string offense = grid[fromX, fromY].color;
+            Color offense = grid[mv.start.x, mv.start.y].color;
 
             //move to new cell
-            grid[toX, toY].color = offense;
-            grid[toX, toY].job = grid[fromX, fromY].job;
-            grid[toX, toY].virgin = false;
+            grid[mv.end.x, mv.end.y].color = offense;
+            grid[mv.end.x, mv.end.y].job = grid[mv.start.x, mv.start.y].job;
+            grid[mv.end.x, mv.end.y].virgin = false;
 
             //clear old cell
-            grid[fromX, fromY].color = null;
-            grid[fromX, fromY].job = null;
-            grid[fromX, fromY].virgin = false;
+            grid[mv.start.x, mv.start.y].color = Color.None;
+            grid[mv.start.x, mv.start.y].job = Job.None;
+            grid[mv.start.x, mv.start.y].virgin = false;
 
             //check for pawnTransform
-            if (grid[toX, toY].job == "Pawn")
+            if (grid[mv.end.x, mv.end.y].job == Job.Pawn)
             {
-                if (offense == "dark" && toY == 0 || offense == "light" && toY == 7)
+                if (offense == Color.Dark && mv.end.y == 0 || offense == Color.Light && mv.end.y == 7)
                 {
-                    int r = rnd.Next(0, 10);
-
-                    switch (r)
-                    {
-                        case 0:
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                            grid[toX, toY].job = "Queen";
-                            break;
-                        case 5:
-                        case 6:
-                            grid[toX, toY].job = "Rook";
-                            break;
-                        case 7:
-                        case 8:
-                            grid[toX, toY].job = "Bishop";
-                            break;
-                        case 9:
-                            grid[toX, toY].job = "Knight";
-                            break;
-                        default:
-                            break;
-                    }
+                    grid[mv.end.x, mv.end.y].job = Job.Queen;
                 }
             }
             //check for castling
-            else if (grid[toX, toY].job == "King")
+            else if (grid[mv.end.x, mv.end.y].job == Job.King)
             {
-                int yCoor;
+                int castleY;
 
-                if (offense == "dark")
+                if (offense == Color.Dark)
                 {
-                    yCoor = 7;
+                    castleY = 7;
                 }
                 else
                 {
-                    yCoor = 0;
+                    castleY = 0;
                 }
 
-                if (fromX == 4 && fromY == yCoor)  //if moving from King default position
+                if (mv.start.x == 4 && mv.start.y == castleY)  //if moving from King default position
                 {
-                    if (toX == 2 && toY == yCoor)  //if moving two spaces to the left
+                    if (mv.end.x == 2 && mv.end.y == castleY)  //if moving two spaces to the left
                     {
                         //move to new cell
-                        grid[3, yCoor].color = offense;
-                        grid[3, yCoor].job = "Rook";
+                        grid[3, castleY].color = offense;
+                        grid[3, castleY].job = Job.Rook;
+                        grid[3, castleY].virgin = false;
 
                         //clear old cell
-                        grid[0, yCoor].color = null;
-                        grid[0, yCoor].job = null;
+                        grid[0, castleY].color = Color.None;
+                        grid[0, castleY].job = Job.None;
+                        grid[0, castleY].virgin = false;
                     }
 
-                    else if (toX == 6 && toY == yCoor) //if moving two spaces to the right
+                    else if (mv.end.x == 6 && mv.end.y == castleY) //if moving two spaces to the right
                     {
                         //move to new cell
-                        grid[5, yCoor].color = offense;
-                        grid[5, yCoor].job = "Rook";
+                        grid[5, castleY].color = offense;
+                        grid[5, castleY].job = Job.Rook;
+                        grid[5, castleY].virgin = false;
 
                         //clear old cell
-                        grid[7, yCoor].color = null;
-                        grid[7, yCoor].job = null;
+                        grid[7, castleY].color = Color.None;
+                        grid[7, castleY].job = Job.None;
+                        grid[7, castleY].virgin = false;
                     }
                 }
             }
@@ -907,27 +901,22 @@ namespace Chess
             //looks at board and returns a value that indicates how good the computer is doing
 
             int total = 0;
-            coordinate temp = new coordinate();
-            List<coordinate> compPieces = new List<coordinate>();
-            List<coordinate> humanPieces = new List<coordinate>();
 
-            if(opponent == "light")
+            if (opponent == Color.Light)
             {
                 for (int y = 0; y < 8; y++)
                 {
                     for (int x = 0; x < 8; x++)
                     {
-                        if (grid[x, y].color == "light")
+                        if (grid[x, y].color == Color.Light)
                         {
-                            temp.x = x;
-                            temp.y = y;
-                            compPieces.Add(temp);
+                            //computer pieces
+                            total += evalAdd(grid[x, y].job);
                         }
-                        else if (grid[x, y].color == "dark")
+                        else if (grid[x, y].color == Color.Dark)
                         {
-                            temp.x = x;
-                            temp.y = y;
-                            humanPieces.Add(temp);
+                            //human pieces
+                            total -= evalAdd(grid[x, y].job);
                         }
                     }
                 }
@@ -938,70 +927,39 @@ namespace Chess
                 {
                     for (int x = 0; x < 8; x++)
                     {
-                        if (grid[x, y].color == "light")
+                        if (grid[x, y].color == Color.Light)
                         {
-                            temp.x = x;
-                            temp.y = y;
-                            humanPieces.Add(temp);
+                            //human pieces
+                            total -= evalAdd(grid[x, y].job);
                         }
-                        else if (grid[x, y].color == "dark")
+                        else if (grid[x, y].color == Color.Dark)
                         {
-                            temp.x = x;
-                            temp.y = y;
-                            compPieces.Add(temp);
+                            //computer pieces
+                            total += evalAdd(grid[x, y].job);
                         }
                     }
                 }
             }
-
-            foreach(coordinate c in compPieces)
-            {
-                switch(grid[c.x, c.y].job)
-                {
-                    case "Queen":
-                        total += 5;
-                        break;
-                    case "Rook":
-                        total += 3;
-                        break;
-                    case "Bishop":
-                        total += 3;
-                        break;
-                    case "Knight":
-                        total += 2;
-                        break;
-                    case "Pawn":
-                        total += 1;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            foreach (coordinate c in humanPieces)
-            {
-                switch (grid[c.x, c.y].job)
-                {
-                    case "Queen":
-                        total -= 5;
-                        break;
-                    case "Rook":
-                        total -= 3;
-                        break;
-                    case "Bishop":
-                        total -= 3;
-                        break;
-                    case "Knight":
-                        total -= 2;
-                        break;
-                    case "Pawn":
-                        total -= 1;
-                        break;
-                    default:
-                        break;
-                }
-            }
             return total;
+        }
+
+        private int evalAdd(Job j)
+        {
+            switch (j)
+            {
+                case Job.Queen:
+                    return 9;
+                case Job.Rook:
+                    return 5;
+                case Job.Bishop:
+                    return 3;
+                case Job.Knight:
+                    return 3;
+                case Job.Pawn:
+                    return 1;
+                default:
+                    return 0;
+            }
         }
 
         private piece[,] deepCopy(piece[,] source)
@@ -1022,36 +980,36 @@ namespace Chess
             return copy;
         }
 
-        private bool isInCheck(string teamInQuestion, piece[,] pArray)
+        private bool isInCheck(Color teamInQuestion, piece[,] board)
         {
             //returns whether or not team in question is in check
 
-            List<coordinate> spots;
             List<move> poss = new List<move>();
 
-            if (teamInQuestion == "dark")
+            //get all of opposing team's pieces
+            //get possible moves of opposing team,
+            //doesn't matter if opposing team move gets them in check,
+            //still a valid move for current team
+            if (teamInQuestion == Color.Dark)
             {
-                spots = getLightPieces(pArray);//get all opposing team's pieces
+                foreach (coordinate c in getLightPieces(board))
+                {
+                    poss.AddRange(getMoves(c, board));
+                }
             }
-
             else
             {
-                spots = getDarkPieces(pArray);//get all opposing team's pieces
-            }
-
-            foreach (coordinate c in spots)
-            {
-                //get possible moves of opposing team,
-                //doesn't matter if opposing team move gets them in check,
-                //still a valid move for current team
-                poss.AddRange(getMoves(c, pArray));
+                foreach (coordinate c in getDarkPieces(board))
+                {
+                    poss.AddRange(getMoves(c, board));
+                }
             }
 
             foreach (move m in poss)
             {
                 //if opposing team's move can capture your king, you're in check
-                if (pArray[m.moveSpot.x, m.moveSpot.y].job == "King" &&
-                    pArray[m.moveSpot.x, m.moveSpot.y].color == teamInQuestion)
+                if (board[m.end.x, m.end.y].job == Job.King &&
+                    board[m.end.x, m.end.y].color == teamInQuestion)
                 {
                     return true;
                 }
@@ -1065,28 +1023,78 @@ namespace Chess
 
             List<move> allPossible = new List<move>();
             List<move> possibleWithoutCheck = new List<move>();
-            coordinate to;
-            coordinate from;
-            string fromColor;
-            string toColor;
-            string toJob;
+            move rookMove = null;
+            coordinate rookStart = new coordinate();
+            coordinate rookEnd = new coordinate();
+            int castleY;
+            Color fromColor;
+            bool fromVirgin;
+            Color toColor;
+            Job toJob;
+            bool toVirgin;
             bool inCheck;
+
+            if (offensiveTeam == Color.Dark)
+            {
+                castleY = 7;
+            }
+            else
+            {
+                castleY = 0;
+            }
 
             allPossible = getMoves(aPiece, grid);
 
             foreach (move m in allPossible)
             {
-                to = m.moveSpot;
-                toColor = grid[to.x, to.y].color;
-                toJob = grid[to.x, to.y].job;
-                from = m.pieceSpot;
-                fromColor = grid[from.x, from.y].color;
+                toColor = grid[m.end.x, m.end.y].color;
+                toJob = grid[m.end.x, m.end.y].job;
+                toVirgin = grid[m.end.x, m.end.y].virgin;
+                fromColor = grid[m.start.x, m.start.y].color;
+                fromVirgin = grid[m.start.x, m.start.y].virgin;
+
+                if (grid[m.start.x, m.start.y].job == Job.King)
+                {
+                    if (m.start.x == 4 && m.start.y == castleY)  //if moving from King default position
+                    {
+                        if (m.end.x == 2 && m.end.y == castleY)  //if moving two spaces to the left
+                        {
+                            rookStart.x = 0;
+                            rookStart.y = castleY;
+                            rookEnd.x = 3;
+                            rookEnd.y = castleY;
+                            rookMove = new move(rookStart, rookEnd);
+                        }
+
+                        else if (m.end.x == 6 && m.end.y == castleY) //if moving two spaces to the right
+                        {
+                            rookStart.x = 7;
+                            rookStart.y = castleY;
+                            rookEnd.x = 5;
+                            rookEnd.y = castleY;
+                            rookMove = new move(rookStart, rookEnd);
+                        }
+                    }
+                }
 
                 //do moves
-                grid[to.x, to.y].color = fromColor;
-                grid[to.x, to.y].job = grid[from.x, from.y].job.ToString();
-                grid[from.x, from.y].color = null;
-                grid[from.x, from.y].job = null;
+                //main
+                grid[m.end.x, m.end.y].color = fromColor;
+                grid[m.end.x, m.end.y].job = grid[m.start.x, m.start.y].job;
+                grid[m.end.x, m.end.y].virgin = false;
+                grid[m.start.x, m.start.y].color = Color.None;
+                grid[m.start.x, m.start.y].job = Job.None;
+                grid[m.start.x, m.start.y].virgin = false;
+                //rook
+                if (rookMove != null)
+                {
+                    grid[rookEnd.x, rookEnd.y].color = grid[rookStart.x, rookStart.y].color;
+                    grid[rookEnd.x, rookEnd.y].job = Job.Rook;
+                    grid[rookEnd.x, rookEnd.y].virgin = false;
+                    grid[rookStart.x, rookStart.y].color = Color.None;
+                    grid[rookStart.x, rookStart.y].job = Job.None;
+                    grid[rookStart.x, rookStart.y].virgin = false;
+                }
 
                 //see if in check
                 inCheck = isInCheck(fromColor, grid);
@@ -1097,25 +1105,53 @@ namespace Chess
                 }
 
                 //reset pieces
-                grid[from.x, from.y].color = grid[to.x, to.y].color;
-                grid[from.x, from.y].job = grid[to.x, to.y].job;
-                grid[to.x, to.y].color = toColor;
-                grid[to.x, to.y].job = toJob;
+                //main
+                grid[m.start.x, m.start.y].color = fromColor;
+                grid[m.start.x, m.start.y].job = grid[m.end.x, m.end.y].job;
+                grid[m.start.x, m.start.y].virgin = fromVirgin;
+                grid[m.end.x, m.end.y].color = toColor;
+                grid[m.end.x, m.end.y].job = toJob;
+                grid[m.end.x, m.end.y].virgin = toVirgin;
+                //rook
+                if (rookMove != null)
+                {
+                    grid[rookStart.x, rookStart.y].color = grid[rookEnd.x, rookEnd.y].color;
+                    grid[rookStart.x, rookStart.y].job = Job.Rook;
+                    grid[rookStart.x, rookStart.y].virgin = true;
+                    grid[rookEnd.x, rookEnd.y].color = Color.None;
+                    grid[rookEnd.x, rookEnd.y].job = Job.None;
+                    grid[rookEnd.x, rookEnd.y].virgin = false;
+                }
+                rookMove = null;
             }
             return possibleWithoutCheck;
         }
 
-        private bool isInCheckmate(string teamInQuestion, List<coordinate> availablePieces)
+        private bool isInCheckmate(Color teamInQuestion, List<coordinate> availablePieces)
         {
             //takes list of pieces and returns whether or not player is in checkmate
 
             List<move> allPossible = new List<move>();
             List<move> possibleWithoutCheck = new List<move>();
-            coordinate to;
-            coordinate from;
-            string toColor;
-            string toJob;
+            move rookMove = null;
+            coordinate rookStart = new coordinate();
+            coordinate rookEnd = new coordinate();
+            int castleY;
+            Color fromColor;
+            bool fromVirgin;
+            Color toColor;
+            Job toJob;
+            bool toVirgin;
             bool inCheck;
+
+            if (offensiveTeam == Color.Dark)
+            {
+                castleY = 7;
+            }
+            else
+            {
+                castleY = 0;
+            }
 
             //find all moves that can be done without going into check
             foreach (coordinate aPiece in availablePieces)
@@ -1124,16 +1160,54 @@ namespace Chess
 
                 foreach (move m in allPossible)
                 {
-                    to = m.moveSpot;
-                    toColor = pieceArray[to.x, to.y].color;
-                    toJob = pieceArray[to.x, to.y].job;
-                    from = m.pieceSpot;
+                    toColor = pieceArray[m.end.x, m.end.y].color;
+                    toJob = pieceArray[m.end.x, m.end.y].job;
+                    toVirgin = pieceArray[m.end.x, m.end.y].virgin;
+                    fromColor = pieceArray[m.start.x, m.start.y].color;
+                    fromVirgin = pieceArray[m.start.x, m.start.y].virgin;
+
+                    if (pieceArray[m.start.x, m.start.y].job == Job.King)
+                    {
+                        if (m.start.x == 4 && m.start.y == castleY)  //if moving from King default position
+                        {
+                            if (m.end.x == 2 && m.end.y == castleY)  //if moving two spaces to the left
+                            {
+                                rookStart.x = 0;
+                                rookStart.y = castleY;
+                                rookEnd.x = 3;
+                                rookEnd.y = castleY;
+                                rookMove = new move(rookStart, rookEnd);
+                            }
+
+                            else if (m.end.x == 6 && m.end.y == castleY) //if moving two spaces to the right
+                            {
+                                rookStart.x = 7;
+                                rookStart.y = castleY;
+                                rookEnd.x = 5;
+                                rookEnd.y = castleY;
+                                rookMove = new move(rookStart, rookEnd);
+                            }
+                        }
+                    }
 
                     //do moves
-                    pieceArray[to.x, to.y].color = teamInQuestion;
-                    pieceArray[to.x, to.y].job = pieceArray[from.x, from.y].job.ToString();
-                    pieceArray[from.x, from.y].color = null;
-                    pieceArray[from.x, from.y].job = null;
+                    //main
+                    pieceArray[m.end.x, m.end.y].color = fromColor;
+                    pieceArray[m.end.x, m.end.y].job = pieceArray[m.start.x, m.start.y].job;
+                    pieceArray[m.end.x, m.end.y].virgin = false;
+                    pieceArray[m.start.x, m.start.y].color = Color.None;
+                    pieceArray[m.start.x, m.start.y].job = Job.None;
+                    pieceArray[m.start.x, m.start.y].virgin = false;
+                    //rook
+                    if (rookMove != null)
+                    {
+                        pieceArray[rookEnd.x, rookEnd.y].color = pieceArray[rookStart.x, rookStart.y].color;
+                        pieceArray[rookEnd.x, rookEnd.y].job = Job.Rook;
+                        pieceArray[rookEnd.x, rookEnd.y].virgin = false;
+                        pieceArray[rookStart.x, rookStart.y].color = Color.None;
+                        pieceArray[rookStart.x, rookStart.y].job = Job.None;
+                        pieceArray[rookStart.x, rookStart.y].virgin = false;
+                    }
 
                     //see if in check
                     inCheck = isInCheck(teamInQuestion, pieceArray);
@@ -1144,10 +1218,24 @@ namespace Chess
                     }
 
                     //reset pieces
-                    pieceArray[from.x, from.y].color = pieceArray[to.x, to.y].color;
-                    pieceArray[from.x, from.y].job = pieceArray[to.x, to.y].job;
-                    pieceArray[to.x, to.y].color = toColor;
-                    pieceArray[to.x, to.y].job = toJob;
+                    //main
+                    pieceArray[m.start.x, m.start.y].color = fromColor;
+                    pieceArray[m.start.x, m.start.y].job = pieceArray[m.end.x, m.end.y].job;
+                    pieceArray[m.start.x, m.start.y].virgin = fromVirgin;
+                    pieceArray[m.end.x, m.end.y].color = toColor;
+                    pieceArray[m.end.x, m.end.y].job = toJob;
+                    pieceArray[m.end.x, m.end.y].virgin = toVirgin;
+                    //rook
+                    if (rookMove != null)
+                    {
+                        pieceArray[rookStart.x, rookStart.y].color = pieceArray[rookEnd.x, rookEnd.y].color;
+                        pieceArray[rookStart.x, rookStart.y].job = Job.Rook;
+                        pieceArray[rookStart.x, rookStart.y].virgin = true;
+                        pieceArray[rookEnd.x, rookEnd.y].color = Color.None;
+                        pieceArray[rookEnd.x, rookEnd.y].job = Job.None;
+                        pieceArray[rookEnd.x, rookEnd.y].virgin = false;
+                    }
+                    rookMove = null;
                 }
             }
 
@@ -1172,8 +1260,8 @@ namespace Chess
 
                 if (twoPlayer == true)
                 {
-                    string winningTeam = switchTeam(teamInQuestion);
-                    message = "The " + winningTeam + " army has slain the " + teamInQuestion + " army's king in battle";
+                    Color winningTeam = switchTeam(teamInQuestion);
+                    message = "The " + winningTeam.ToString().ToLower() + " army has slain the " + teamInQuestion.ToString().ToLower() + " army's king in battle";
                 }
 
                 else
@@ -1204,10 +1292,8 @@ namespace Chess
             historyNode node;
             move castleMove = new move();
             int yCoor;                              //which row the move is being conducted in
-            coordinate toSpot = shift.moveSpot;
-            coordinate fromSpot = shift.pieceSpot;
 
-            if (offensiveTeam == "dark")
+            if (offensiveTeam == Color.Dark)
             {
                 yCoor = 7;
             }
@@ -1216,14 +1302,12 @@ namespace Chess
                 yCoor = 0;
             }
 
-            if (fromSpot.x == 4 && fromSpot.y == yCoor)  //if moving from King default position
+            if (shift.start.x == 4 && shift.start.y == yCoor)  //if moving from King default position
             {
-                if (toSpot.x == 2 && toSpot.y == yCoor)  //if moving two spaces to the left
+                if (shift.end.x == 2 && shift.end.y == yCoor)  //if moving two spaces to the left
                 {
-                    coordinate newCastleCoor = new coordinate(3, yCoor);
-                    coordinate oldCastleCoor = new coordinate(0, yCoor);
-                    castleMove.moveSpot = newCastleCoor;
-                    castleMove.pieceSpot = oldCastleCoor;
+                    castleMove.end = new coordinate(3, yCoor);
+                    castleMove.start = new coordinate(0, yCoor);
 
                     if(networkGame == false)
                     {
@@ -1231,15 +1315,13 @@ namespace Chess
                         history.Push(node);
                     }
                     
-                    movePiece(oldCastleCoor, newCastleCoor);
+                    movePiece(castleMove.start, castleMove.end);
                 }
 
-                else if (toSpot.x == 6 && toSpot.y == yCoor) //if moving two spaces to the right
+                else if (shift.end.x == 6 && shift.end.y == yCoor) //if moving two spaces to the right
                 {
-                    coordinate newCastleCoor = new coordinate(5, yCoor);
-                    coordinate oldCastleCoor = new coordinate(7, yCoor);
-                    castleMove.moveSpot = newCastleCoor;
-                    castleMove.pieceSpot = oldCastleCoor;
+                    castleMove.end = new coordinate(5, yCoor);
+                    castleMove.start = new coordinate(7, yCoor);
 
                     if(networkGame == false)
                     {
@@ -1247,7 +1329,7 @@ namespace Chess
                         history.Push(node);
                     }
 
-                    movePiece(oldCastleCoor, newCastleCoor);
+                    movePiece(castleMove.start, castleMove.end);
                 }
             }
         }
@@ -1296,17 +1378,17 @@ namespace Chess
             prevSelected = cCell;
             possible.Clear();
             possible.AddRange(getCheckRestrictedMoves(cCell, pieceArray));
-            string defensiveTeam = switchTeam(offensiveTeam);
+            Color defensiveTeam = switchTeam(offensiveTeam);
 
             foreach (move m in possible)
             {
-                if (pieceArray[m.moveSpot.x, m.moveSpot.y].color == defensiveTeam)
+                if (pieceArray[m.end.x, m.end.y].color == defensiveTeam)
                 {
-                    displayArray[m.moveSpot.x, m.moveSpot.y].tile.Background = Brushes.DarkOrange;
+                    displayArray[m.end.x, m.end.y].tile.Background = Brushes.DarkOrange;
                 }
                 else
                 {
-                    displayArray[m.moveSpot.x, m.moveSpot.y].tile.Background = Brushes.LawnGreen;
+                    displayArray[m.end.x, m.end.y].tile.Background = Brushes.LawnGreen;
                 }
             }
         }
@@ -1321,7 +1403,7 @@ namespace Chess
             //Checks if current click is in possible move list
             foreach (move m in possible)
             {
-                if (cCell.Equals(m.moveSpot))
+                if (cCell.Equals(m.end))
                 {
                     movableSpot = true;
                     curTurn = m;
@@ -1331,13 +1413,13 @@ namespace Chess
             if (movableSpot == true)
             {
                 historyNode node;
-                string pawnTrans = "Pawn";
+                Job pawnTrans = Job.Pawn;
                 piece captured = pieceArray[cCell.x, cCell.y];
                 bool virginMove = pieceArray[prevSelected.x, prevSelected.y].virgin;
                 movePiece(prevSelected, cCell);
                 clearSelectedAndPossible();
 
-                if (pieceArray[cCell.x, cCell.y].job == "Pawn")
+                if (pieceArray[cCell.x, cCell.y].job == Job.Pawn)
                 {
                     if (cCell.y == 0 || cCell.y == 7)
                     {
@@ -1366,54 +1448,34 @@ namespace Chess
                 //send move to server
                 else
                 {
-                    byte pawnT;
-
-                    switch(pawnTrans)
-                    {
-                        case "Queen":
-                            pawnT = 2;
-                            break;
-                        case "Rook":
-                            pawnT = 3;
-                            break;
-                        case "Bishop":
-                            pawnT = 4;
-                            break;
-                        case "Knight":
-                            pawnT = 5;
-                            break;
-                        default:
-                            pawnT = 6;
-                            break;
-                    }
                     buffer[0] = 7;
 
-                    if(opponent == "light")
+                    if(opponent == Color.Light)
                     {
-                        buffer[1] = (byte)(curTurn.pieceSpot.x);
-                        buffer[2] = (byte)(curTurn.pieceSpot.y);
-                        buffer[3] = (byte)(curTurn.moveSpot.x);
-                        buffer[4] = (byte)(curTurn.moveSpot.y);
+                        buffer[1] = (byte)(curTurn.start.x);
+                        buffer[2] = (byte)(curTurn.start.y);
+                        buffer[3] = (byte)(curTurn.end.x);
+                        buffer[4] = (byte)(curTurn.end.y);
                     }
                     else
                     {
-                        buffer[1] = (byte)(curTurn.pieceSpot.x);
-                        buffer[2] = (byte)(7 - curTurn.pieceSpot.y);
-                        buffer[3] = (byte)(curTurn.moveSpot.x);
-                        buffer[4] = (byte)(7 - curTurn.moveSpot.y);
+                        buffer[1] = (byte)(curTurn.start.x);
+                        buffer[2] = (byte)(7 - curTurn.start.y);
+                        buffer[3] = (byte)(curTurn.end.x);
+                        buffer[4] = (byte)(7 - curTurn.end.y);
                     }
-                    buffer[5] = pawnT;
+                    buffer[5] = (byte)pawnTrans;
                     nwStream.Write(buffer, 0, 6);
                 }
 
                 if (lastMove == true)
                 {
                     clearToAndFrom();
-                    displayArray[curTurn.pieceSpot.x, curTurn.pieceSpot.y].bottom.Source = bmpFrom;
-                    displayArray[curTurn.moveSpot.x, curTurn.moveSpot.y].bottom.Source = bmpTo;
+                    displayArray[curTurn.start.x, curTurn.start.y].bottom.Source = bmpFrom;
+                    displayArray[curTurn.end.x, curTurn.end.y].bottom.Source = bmpTo;
                 }
 
-                if (pieceArray[cCell.x, cCell.y].job == "King")
+                if (pieceArray[cCell.x, cCell.y].job == Job.King)
                 {
                     castling(curTurn);//check if move is a castling
                 }
@@ -1438,28 +1500,28 @@ namespace Chess
             bool endOfGame;
 
             //change teams
-            if (offensiveTeam == "light")
+            if (offensiveTeam == Color.Light)
             {
-                offensiveTeam = "dark";
+                offensiveTeam = Color.Dark;
                 endOfGame = isInCheckmate(offensiveTeam, getDarkPieces(pieceArray));  //did previous turn put other team in checkmate?
 
                 if (endOfGame == false && onePlayer == true)
                 {
                     await compTurn();
-                    endOfGame = isInCheckmate("light", getLightPieces(pieceArray)); //did computer turn put player in checkmate?
-                    offensiveTeam = "light";
+                    endOfGame = isInCheckmate(Color.Light, getLightPieces(pieceArray)); //did computer turn put player in checkmate?
+                    offensiveTeam = Color.Light;
                 }
             }
             else
             {
-                offensiveTeam = "light";
+                offensiveTeam = Color.Light;
                 endOfGame = isInCheckmate(offensiveTeam, getLightPieces(pieceArray)); //did previous turn put other team in checkmate?
 
                 if (endOfGame == false && onePlayer == true)
                 {
                     await compTurn();
-                    endOfGame = isInCheckmate("dark", getDarkPieces(pieceArray)); //did computer turn put player in checkmate?
-                    offensiveTeam = "dark";
+                    endOfGame = isInCheckmate(Color.Dark, getDarkPieces(pieceArray)); //did computer turn put player in checkmate?
+                    offensiveTeam = Color.Dark;
                 }
             }
 
@@ -1471,7 +1533,7 @@ namespace Chess
             //if 2Player local, rotate is on, and didn't end game
             else if (twoPlayer == true && rotate == true && endOfGame == false)
             {
-                if(offensiveTeam == "dark")
+                if(offensiveTeam == Color.Dark)
                 {
                     rotateBoard(true, rotationDuration);
                 }
@@ -1498,88 +1560,33 @@ namespace Chess
             }
             else
             {
-                await Task.Run(() => minimax(pieceArray, offensiveTeam, -1, true, -30, 30, null));
+                await Task.Run(() => minimax(pieceArray, offensiveTeam, -1, true, -99, 99, null));
             }
 
             ready = true;
-            coordinate newSpot = new coordinate(bestMove.moveSpot.x, bestMove.moveSpot.y);
-            coordinate oldSpot = new coordinate(bestMove.pieceSpot.x, bestMove.pieceSpot.y);
+            coordinate newSpot = new coordinate(bestMove.end.x, bestMove.end.y);
+            coordinate oldSpot = new coordinate(bestMove.start.x, bestMove.start.y);
 
             piece captured = pieceArray[newSpot.x, newSpot.y];
             bool virginMove = pieceArray[oldSpot.x, oldSpot.y].virgin;
             movePiece(oldSpot, newSpot);
 
-            if (pieceArray[newSpot.x, newSpot.y].job == "Pawn")
+            if (pieceArray[newSpot.x, newSpot.y].job == Job.Pawn)
             {
-                if(newSpot.y == 0 || newSpot.y == 7)
+                if (newSpot.y == 0)
                 {
-                    int r = rnd.Next(0, 10); //choose random piece to transform into
-
-                    if (opponent == "dark")
-                    {
-                        switch (r)
-                        {
-                            case 0:
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                                pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                                displayArray[newSpot.x, newSpot.y].top.Source = dQueen;
-                                break;
-                            case 5:
-                            case 6:
-                                pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                                displayArray[newSpot.x, newSpot.y].top.Source = dRook;
-                                break;
-                            case 7:
-                            case 8:
-                                pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                                displayArray[newSpot.x, newSpot.y].top.Source = dBishop;
-                                break;
-                            case 9:
-                                pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                                displayArray[newSpot.x, newSpot.y].top.Source = dKnight;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        switch (r)
-                        {
-                            case 0:
-                            case 1:
-                            case 2:
-                            case 3:
-                            case 4:
-                                pieceArray[newSpot.x, newSpot.y].job = "Queen";
-                                displayArray[newSpot.x, newSpot.y].top.Source = lQueen;
-                                break;
-                            case 5:
-                            case 6:
-                                pieceArray[newSpot.x, newSpot.y].job = "Rook";
-                                displayArray[newSpot.x, newSpot.y].top.Source = lRook;
-                                break;
-                            case 7:
-                            case 8:
-                                pieceArray[newSpot.x, newSpot.y].job = "Bishop";
-                                displayArray[newSpot.x, newSpot.y].top.Source = lBishop;
-                                break;
-                            case 9:
-                                pieceArray[newSpot.x, newSpot.y].job = "Knight";
-                                displayArray[newSpot.x, newSpot.y].top.Source = lKnight;
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+                    pieceArray[newSpot.x, newSpot.y].job = Job.Queen;
+                    displayArray[newSpot.x, newSpot.y].top.Source = dQueen;
+                    node = new historyNode(bestMove, captured, true, true, false);
+                }
+                else if (newSpot.y == 7)
+                {
+                    pieceArray[newSpot.x, newSpot.y].job = Job.Queen;
+                    displayArray[newSpot.x, newSpot.y].top.Source = lQueen;
                     node = new historyNode(bestMove, captured, true, true, false);
                 }
                 node = new historyNode(bestMove, captured, false, true, virginMove);
             }
-
             else
             {
                 node = new historyNode(bestMove, captured, false, true, virginMove);
@@ -1593,11 +1600,11 @@ namespace Chess
             if (lastMove == true)
             {
                 clearToAndFrom();
-                displayArray[bestMove.pieceSpot.x, bestMove.pieceSpot.y].bottom.Source = bmpFrom;
-                displayArray[bestMove.moveSpot.x, bestMove.moveSpot.y].bottom.Source = bmpTo;
+                displayArray[bestMove.start.x, bestMove.start.y].bottom.Source = bmpFrom;
+                displayArray[bestMove.end.x, bestMove.end.y].bottom.Source = bmpTo;
             }
 
-            if (pieceArray[newSpot.x, newSpot.y].job == "King")
+            if (pieceArray[newSpot.x, newSpot.y].job == Job.King)
             {
                 castling(bestMove);//check if move is a castling
             }
@@ -1687,8 +1694,8 @@ namespace Chess
             displayArray[newCell.x, newCell.y].top.Source = matchPicture(pPiece);
 
             //delete prev cell
-            pieceArray[oldCell.x, oldCell.y].color = null;
-            pieceArray[oldCell.x, oldCell.y].job = null;
+            pieceArray[oldCell.x, oldCell.y].color = Color.None;
+            pieceArray[oldCell.x, oldCell.y].job = Job.None;
             pieceArray[oldCell.x, oldCell.y].virgin = false;
             displayArray[oldCell.x, oldCell.y].top.Source = null;
 
@@ -1702,25 +1709,25 @@ namespace Chess
             BitmapImage pawnPic = new BitmapImage();
             piece to;
             piece from;
-            int xMove;
-            int yMove;
-            int xPiece;
-            int yPiece;
+            int xEnd;
+            int yEnd;
+            int xStart;
+            int yStart;
 
             historyNode node = history.Pop();
 
-            xMove = node.step.moveSpot.x;
-            yMove = node.step.moveSpot.y;
-            xPiece = node.step.pieceSpot.x;
-            yPiece = node.step.pieceSpot.y;
+            xEnd = node.step.end.x;
+            yEnd = node.step.end.y;
+            xStart = node.step.start.x;
+            yStart = node.step.start.y;
 
-            to = pieceArray[xMove, yMove];
-            from = pieceArray[xPiece, yPiece];
+            to = pieceArray[xEnd, yEnd];
+            from = pieceArray[xStart, yStart];
             offensiveTeam = to.color;
 
             if (rotate == true && twoPlayer == true)
             {
-                if(offensiveTeam == "dark")
+                if(offensiveTeam == Color.Dark)
                 {
                     rotateBoard(true, rotationDuration);
                 }
@@ -1732,7 +1739,7 @@ namespace Chess
 
             if (node.pawnTransform == true)
             {
-                if (to.color == "light")
+                if (to.color == Color.Light)
                 {
                     pawnPic = lPawn;
                 }
@@ -1742,24 +1749,24 @@ namespace Chess
                     pawnPic = dPawn;
                 }
 
-                pieceArray[xPiece, yPiece].job = "Pawn";
-                displayArray[xPiece, yPiece].top.Source = pawnPic;
+                pieceArray[xStart, yStart].job = Job.Pawn;
+                displayArray[xStart, yStart].top.Source = pawnPic;
             }
 
             else
             {
-                pieceArray[xPiece, yPiece].job = to.job;
-                displayArray[xPiece, yPiece].top.Source = matchPicture(to);
+                pieceArray[xStart, yStart].job = to.job;
+                displayArray[xStart, yStart].top.Source = matchPicture(to);
             }
 
-            pieceArray[xPiece, yPiece].color = to.color;
-            pieceArray[xPiece, yPiece].virgin = node.firstMove;
+            pieceArray[xStart, yStart].color = to.color;
+            pieceArray[xStart, yStart].virgin = node.firstMove;
 
             //put captured piece back
-            pieceArray[xMove, yMove].job = node.captured.job;
-            displayArray[xMove, yMove].top.Source = matchPicture(node.captured);
-            pieceArray[xMove, yMove].color = node.captured.color;
-            pieceArray[xMove, yMove].virgin = node.captured.virgin;
+            pieceArray[xEnd, yEnd].job = node.captured.job;
+            displayArray[xEnd, yEnd].top.Source = matchPicture(node.captured);
+            pieceArray[xEnd, yEnd].color = node.captured.color;
+            pieceArray[xEnd, yEnd].virgin = node.captured.virgin;
 
 
             if (node.skip == true)
@@ -1779,21 +1786,21 @@ namespace Chess
         {
             //returns image based on what piece it is
 
-            if (figure.color == "dark")
+            if (figure.color == Color.Dark)
             {
                 switch (figure.job)
                 {
-                    case "King":
+                    case Job.King:
                         return dKing;
-                    case "Queen":
+                    case Job.Queen:
                         return dQueen;
-                    case "Bishop":
+                    case Job.Bishop:
                         return dBishop;
-                    case "Knight":
+                    case Job.Knight:
                         return dKnight;
-                    case "Rook":
+                    case Job.Rook:
                         return dRook;
-                    case "Pawn":
+                    case Job.Pawn:
                         return dPawn;
                     default:
                         return null;
@@ -1803,17 +1810,17 @@ namespace Chess
             {
                 switch (figure.job)
                 {
-                    case "King":
+                    case Job.King:
                         return lKing;
-                    case "Queen":
+                    case Job.Queen:
                         return lQueen;
-                    case "Bishop":
+                    case Job.Bishop:
                         return lBishop;
-                    case "Knight":
+                    case Job.Knight:
                         return lKnight;
-                    case "Rook":
+                    case Job.Rook:
                         return lRook;
-                    case "Pawn":
+                    case Job.Pawn:
                         return lPawn;
                     default:
                         return null;
@@ -2009,7 +2016,7 @@ namespace Chess
                         twoPlayer = lData.sTwoPlayer;
                         difficulty = lData.sDifficulty;
 
-                        if (onBottom == "dark")
+                        if (onBottom == Color.Dark)
                         {
                             rotateBoard(true, 0);
                         }
@@ -2056,7 +2063,7 @@ namespace Chess
                 //if toggled on
                 if(rotate == false)
                 {
-                    if(offensiveTeam == "dark")
+                    if(offensiveTeam == Color.Dark)
                     {
                         rotateBoard(true, 0);
                     }
@@ -2068,7 +2075,7 @@ namespace Chess
                 //toggled off
                 else
                 {
-                    if (offensiveTeam == "dark")
+                    if (offensiveTeam == Color.Dark)
                     {
                         rotateBoard(false, 0);
                     }
@@ -2164,7 +2171,7 @@ namespace Chess
                     coordinate p;
                     coordinate m;
 
-                    if(opponent == "light")
+                    if(opponent == Color.Light)
                     {
                         p = new coordinate(buffer[1], 7 - buffer[2]);
                         m = new coordinate(buffer[3], 7 - buffer[4]);
@@ -2176,7 +2183,7 @@ namespace Chess
                     }
 
                     move opponentsMove = new move(p, m);
-                    networkMove(opponentsMove, buffer[5]);
+                    networkMove(opponentsMove, (int)buffer[5]);
                 }
                 //message
                 else
@@ -2197,42 +2204,21 @@ namespace Chess
             }
         }
 
-        private void networkMove(move m, byte pawn)
+        private void networkMove(move m, int pawn)
         {
             //Executes move locally sent from other client
 
-            int xMove = m.moveSpot.x;
-            int yMove = m.moveSpot.y;
+            int xMove = m.end.x;
+            int yMove = m.end.y;
 
             //movePiece
-            movePiece(m.pieceSpot, m.moveSpot);
+            movePiece(m.start, m.end);
             //pawnTransform
-            if (pieceArray[xMove, yMove].job == "Pawn")
+            if (pieceArray[xMove, yMove].job == Job.Pawn)
             {
                 if (yMove == 0 || yMove == 7)
                 {
-                    string pawnT;
-
-                    switch (pawn)
-                    {
-                        case 2:
-                            pawnT = "Queen";
-                            break;
-                        case 3:
-                            pawnT = "Rook";
-                            break;
-                        case 4:
-                            pawnT = "Bishop";
-                            break;
-                        case 5:
-                            pawnT = "Knight";
-                            break;
-                        default:
-                            pawnT = null;
-                            break;
-                    }
-
-                    pieceArray[xMove, yMove].job = pawnT;
+                    pieceArray[xMove, yMove].job = (Job)pawn;
                     displayArray[xMove, yMove].top.Source = matchPicture(pieceArray[xMove, yMove]);
                 }
             }
@@ -2240,11 +2226,11 @@ namespace Chess
             if (lastMove == true)
             {
                 clearToAndFrom();
-                displayArray[m.pieceSpot.x, m.pieceSpot.y].bottom.Source = bmpFrom;
+                displayArray[m.start.x, m.start.y].bottom.Source = bmpFrom;
                 displayArray[xMove, yMove].bottom.Source = bmpTo;
             }
             //check for castling
-            if (pieceArray[xMove, yMove].job == "King")
+            if (pieceArray[xMove, yMove].job == Job.King)
             {
                 castling(m);
             }
@@ -2253,17 +2239,17 @@ namespace Chess
             ready = true;
         }
 
-        public string switchTeam(string input)
+        public Color switchTeam(Color input)
         {
             //Returns opposite of team given
 
-            if(input == "light")
+            if(input == Color.Light)
             {
-                return "dark";
+                return Color.Dark;
             }
             else
             {
-                return "light";
+                return Color.Light;
             }
         }
 
@@ -2278,8 +2264,8 @@ namespace Chess
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate(); //when found possible move, put in this variable to add to list
-            string pieceColor = pArray[current.x, current.y].color;
-            string oppositeColor = switchTeam(pieceColor);
+            Color pieceColor = pArray[current.x, current.y].color;
+            Color oppositeColor = switchTeam(pieceColor);
 
             //search up
             availableY++;
@@ -2408,7 +2394,7 @@ namespace Chess
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate();
-            string pieceColor = pArray[current.x, current.y].color;
+            Color pieceColor = pArray[current.x, current.y].color;
 
             //search up.right
             availableY += 2;
@@ -2545,8 +2531,8 @@ namespace Chess
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate();
-            string pieceColor = pArray[current.x, current.y].color;
-            string oppositeColor = switchTeam(pieceColor);
+            Color pieceColor = pArray[current.x, current.y].color;
+            Color oppositeColor = switchTeam(pieceColor);
 
             //search upper right
             availableX++;
@@ -2683,7 +2669,7 @@ namespace Chess
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate();
-            string pieceColor = pArray[current.x, current.y].color;
+            Color pieceColor = pArray[current.x, current.y].color;
 
             //search up
             availableY++;
@@ -2810,12 +2796,12 @@ namespace Chess
             //search for castleing opportunity
             if (pArray[current.x, current.y].virgin == true)//if king's first move
             {
-                if (pieceColor == "dark")
+                if (pieceColor == Color.Dark)
                 {
                     if (pArray[0, 7].virgin == true)//if left rook's first move
                     {
                         //if clear path from rook to king
-                        if (pArray[1, 7].job == null && pArray[2, 7].job == null && pArray[3, 7].job == null)
+                        if (pArray[1, 7].job == Job.None && pArray[2, 7].job == Job.None && pArray[3, 7].job == Job.None)
                         {
                             moveCoor.x = 2;
                             moveCoor.y = 7;
@@ -2826,7 +2812,7 @@ namespace Chess
 
                     if (pArray[7, 7].virgin == true)//if right rook's first move
                     {
-                        if (pArray[6, 7].job == null && pArray[5, 7].job == null)
+                        if (pArray[6, 7].job == Job.None && pArray[5, 7].job == Job.None)
                         {
                             moveCoor.x = 6;
                             moveCoor.y = 7;
@@ -2840,7 +2826,7 @@ namespace Chess
                 {
                     if (pArray[0, 0].virgin == true)//if left rook's first move
                     {
-                        if (pArray[1, 0].job == null && pArray[2, 0].job == null && pArray[3, 0].job == null)
+                        if (pArray[1, 0].job == Job.None && pArray[2, 0].job == Job.None && pArray[3, 0].job == Job.None)
                         {
                             moveCoor.x = 2;
                             moveCoor.y = 0;
@@ -2851,7 +2837,7 @@ namespace Chess
 
                     if (pArray[7, 0].virgin == true)//if right rook's first move
                     {
-                        if (pArray[6, 0].job == null && pArray[5, 0].job == null)
+                        if (pArray[6, 0].job == Job.None && pArray[5, 0].job == Job.None)
                         {
                             moveCoor.x = 6;
                             moveCoor.y = 0;
@@ -2871,23 +2857,23 @@ namespace Chess
             int availableY = current.y;
             List<move> availableList = new List<move>();
             coordinate moveCoor = new coordinate();
-            string pieceColor = pArray[current.x, current.y].color;
-            string oppositeColor = switchTeam(pieceColor);
+            Color pieceColor = pArray[current.x, current.y].color;
+            Color oppositeColor = switchTeam(pieceColor);
 
-            if (pieceColor == "dark")
+            if (pieceColor == Color.Dark)
             {
                 availableY--;
                 //search first move
                 if (pArray[current.x, current.y].virgin == true)
                 {
-                    if (pArray[availableX, 5].color == null)
+                    if (pArray[availableX, 5].color == Color.None)
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = 5;
                         availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
 
-                        if (pArray[availableX, 4].color == null)
+                        if (pArray[availableX, 4].color == Color.None)
                         {
                             moveCoor.x = availableX;
                             moveCoor.y = 4;
@@ -2900,7 +2886,7 @@ namespace Chess
                 //search down
                 else if (availableY >= 0)
                 {
-                    if (pArray[availableX, availableY].color == null)
+                    if (pArray[availableX, availableY].color == Color.None)
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;
@@ -2942,14 +2928,14 @@ namespace Chess
                 //search first move
                 if (pArray[current.x, current.y].virgin == true)
                 {
-                    if (pArray[availableX, 2].color == null)
+                    if (pArray[availableX, 2].color == Color.None)
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = 2;
                         availableMove = new move(current, moveCoor);
                         availableList.Add(availableMove);
 
-                        if (pArray[availableX, 3].color == null)
+                        if (pArray[availableX, 3].color == Color.None)
                         {
                             moveCoor.x = availableX;
                             moveCoor.y = 3;
@@ -2962,7 +2948,7 @@ namespace Chess
                 //search up
                 else if (availableY < 8)
                 {
-                    if (pArray[availableX, availableY].color == null)
+                    if (pArray[availableX, availableY].color == Color.None)
                     {
                         moveCoor.x = availableX;
                         moveCoor.y = availableY;

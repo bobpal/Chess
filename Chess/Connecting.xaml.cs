@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using static Chess.Logic;
 
 namespace Chess
 {
@@ -48,11 +49,11 @@ namespace Chess
                 game.setBoardForNewGame();
                 if (bArray[0] == 1)
                 {
-                    game.opponent = "dark";
+                    game.opponent = Color.Dark;
                 }
                 else if (bArray[0] == 2)
                 {
-                    game.opponent = "light";
+                    game.opponent = Color.Light;
                 }
                 this.Close();
             }

@@ -2,16 +2,16 @@
 using System.Globalization;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using static Chess.Logic;
 
 namespace Chess
 {
     public partial class NewGame : Window
     {
         private Logic game;
-        private string colorChecked;
+        private Color colorChecked;
 
         public NewGame(Logic l)
         {
@@ -73,18 +73,18 @@ namespace Chess
             {
                 if (lightBtn.IsChecked == true)
                 {
-                    colorChecked = "light";
+                    colorChecked = Chess.Color.Light;
                 }
                 else
                 {
-                    colorChecked = "dark";
+                    colorChecked = Chess.Color.Dark;
                 }
 
                 game.onePlayer = onePlayerBtn.IsChecked.Value;
                 game.twoPlayer = twoPlayerBtn.IsChecked.Value;
                 game.networkGame = networkBtn.IsChecked.Value;
                 game.difficulty = (int)AI.Value;
-                game.offensiveTeam = "light";
+                game.offensiveTeam = Chess.Color.Light;
                 game.mWindow.undoMenu.IsEnabled = false;
                 game.history.Clear();
                 game.clearToAndFrom();
@@ -93,14 +93,14 @@ namespace Chess
                 opponentAndRotate();
                 game.onBottom = game.switchTeam(game.opponent);
 
-                if (game.opponent == "dark")
+                if (game.opponent == Chess.Color.Dark)
                 {
                     game.ready = true;
                 }
                 else if(game.onePlayer == true)
                 {
                     await game.compTurn();
-                    game.offensiveTeam = "dark";
+                    game.offensiveTeam = Chess.Color.Dark;
                 }
                 this.Close();
             }
@@ -119,7 +119,7 @@ namespace Chess
 
                 if (game.onBottom == game.opponent)
                 {
-                    if (game.onBottom == "light")
+                    if (game.onBottom == Chess.Color.Light)
                     {
                         game.rotateBoard(true, 0);
                     }
@@ -131,9 +131,9 @@ namespace Chess
             }
             else if (game.twoPlayer == true)
             {
-                game.opponent = "dark";
+                game.opponent = Chess.Color.Dark;
 
-                if (game.onBottom != "light")
+                if (game.onBottom != Chess.Color.Light)
                 {
                     game.rotateBoard(false, 0);
                 }
@@ -142,7 +142,7 @@ namespace Chess
             {
                 if (game.onBottom == game.opponent)
                 {
-                    if (game.onBottom == "light")
+                    if (game.onBottom == Chess.Color.Light)
                     {
                         game.rotateBoard(true, 0);
                     }
