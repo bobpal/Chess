@@ -19,7 +19,7 @@ namespace Chess
 
         private void QueenBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == Color.Light)
+            if (game.offensiveColor == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lQueen;
             }
@@ -33,7 +33,7 @@ namespace Chess
 
         private void RookBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == Color.Light)
+            if (game.offensiveColor == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lRook;
             }
@@ -47,7 +47,7 @@ namespace Chess
 
         private void BishopBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == Color.Light)
+            if (game.offensiveColor == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lBishop;
             }
@@ -61,7 +61,7 @@ namespace Chess
 
         private void KnightBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (game.offensiveTeam == Color.Light)
+            if (game.offensiveColor == Color.Light)
             {
                 game.displayArray[spot.x, 7].top.Source = game.lKnight;
             }

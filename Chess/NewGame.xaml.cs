@@ -84,23 +84,23 @@ namespace Chess
                 game.twoPlayer = twoPlayerBtn.IsChecked.Value;
                 game.networkGame = networkBtn.IsChecked.Value;
                 game.difficulty = (int)AI.Value;
-                game.offensiveTeam = Chess.Color.Light;
+                game.offensiveColor = Chess.Color.Light;
                 game.mWindow.undoMenu.IsEnabled = false;
                 game.history.Clear();
                 game.clearToAndFrom();
                 game.clearSelectedAndPossible();
                 game.movablePieceSelected = false;
                 opponentAndRotate();
-                game.onBottom = game.switchTeam(game.opponent);
+                game.onBottomColor = game.switchTeam(game.opponentColor);
 
-                if (game.opponent == Chess.Color.Dark)
+                if (game.opponentColor == Chess.Color.Dark)
                 {
                     game.ready = true;
                 }
                 else if(game.onePlayer == true)
                 {
                     await game.compTurn();
-                    game.offensiveTeam = Chess.Color.Dark;
+                    game.offensiveColor = Chess.Color.Dark;
                 }
                 this.Close();
             }
@@ -115,11 +115,11 @@ namespace Chess
 
             if (game.onePlayer == true)
             {
-                game.opponent = game.switchTeam(colorChecked);
+                game.opponentColor = game.switchTeam(colorChecked);
 
-                if (game.onBottom == game.opponent)
+                if (game.onBottomColor == game.opponentColor)
                 {
-                    if (game.onBottom == Chess.Color.Light)
+                    if (game.onBottomColor == Chess.Color.Light)
                     {
                         game.rotateBoard(true, 0);
                     }
@@ -131,18 +131,18 @@ namespace Chess
             }
             else if (game.twoPlayer == true)
             {
-                game.opponent = Chess.Color.Dark;
+                game.opponentColor = Chess.Color.Dark;
 
-                if (game.onBottom != Chess.Color.Light)
+                if (game.onBottomColor != Chess.Color.Light)
                 {
                     game.rotateBoard(false, 0);
                 }
             }
             else //Network Game
             {
-                if (game.onBottom == game.opponent)
+                if (game.onBottomColor == game.opponentColor)
                 {
-                    if (game.onBottom == Chess.Color.Light)
+                    if (game.onBottomColor == Chess.Color.Light)
                     {
                         game.rotateBoard(true, 0);
                     }

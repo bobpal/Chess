@@ -38,21 +38,21 @@ namespace Chess
     public class Logic
     {
         [NonSerialized]
-        public MainWindow mWindow;              //window with chess board on it
-        public piece[,] pieceArray;             //8x8 array of pieces
-        public display[,] displayArray;         //8x8 array of display objects
-        public bool onePlayer;                  //versus computer
-        public bool twoPlayer;                  //2 player local
-        public bool networkGame;                //playing over a network
-        public Color opponent;                  //color of computer or 2nd player
-        public Color offensiveTeam;             //which side is on the offense
-        public Color onBottom = Color.Light;    //which team is on the bottom of the screen
-        public int difficulty;                  //difficulty level
-        public bool ready;                      //blocks functionality for unwanted circumstances
-        private coordinate prevSelected;        //where the cursor clicked previously
-        public List<string> themeList;          //list of themes
-        public int themeIndex;                  //which theme is currently in use
-        private List<string> ignore;            //list of which dll files to ignore
+        public MainWindow mWindow;                  //window with chess board on it
+        public piece[,] pieceArray;                 //8x8 array of pieces
+        public display[,] displayArray;             //8x8 array of display objects
+        public bool onePlayer;                      //versus computer
+        public bool twoPlayer;                      //2 player local
+        public bool networkGame;                    //playing over a network
+        public Color opponentColor;                 //color of computer or 2nd player
+        public Color offensiveColor;                //which side is on the offense
+        public Color onBottomColor = Color.Light;   //which team is on the bottom of the screen
+        public int difficulty;                      //difficulty level
+        public bool ready;                          //blocks functionality for unwanted circumstances
+        private coordinate prevSelected;            //where the cursor clicked previously
+        public List<string> themeList;              //list of themes
+        public int themeIndex;                      //which theme is currently in use
+        private List<string> ignore;                //list of which dll files to ignore
         [NonSerialized] public BitmapImage lKing;
         [NonSerialized] public BitmapImage lQueen;
         [NonSerialized] public BitmapImage lBishop;
@@ -613,48 +613,26 @@ namespace Chess
             displayArray[7, 7].top.Source = dRook;
         }
 
-        private List<coordinate> getDarkPieces(piece[,] board)
+        private List<coordinate> getPieces(piece[,] board, Color color)
         {
-            //searches through pieceArray and returns list of coordinates where all dark pieces are located
+            //searches through pieceArray and returns list of coordinates where all color specified pieces are located
 
             coordinate temp = new coordinate();
-            List<coordinate> darkPieces = new List<coordinate>();
+            List<coordinate> foundPieces = new List<coordinate>();
 
             for (int y = 0; y < 8; y++)
             {
                 for (int x = 0; x < 8; x++)
                 {
-                    if (board[x, y].color == Color.Dark)
+                    if (board[x, y].color == color)
                     {
                         temp.x = x;
                         temp.y = y;
-                        darkPieces.Add(temp);
+                        foundPieces.Add(temp);
                     }
                 }
             }
-            return darkPieces;
-        }
-
-        private List<coordinate> getLightPieces(piece[,] board)
-        {
-            //searches through pieceArray and returns list of coordinates where all light pieces are located
-
-            coordinate temp = new coordinate();
-            List<coordinate> lightPieces = new List<coordinate>();
-
-            for (int y = 0; y < 8; y++)
-            {
-                for (int x = 0; x < 8; x++)
-                {
-                    if (board[x, y].color == Color.Light)
-                    {
-                        temp.x = x;
-                        temp.y = y;
-                        lightPieces.Add(temp);
-                    }
-                }
-            }
-            return lightPieces;
+            return foundPieces;
         }
 
         private List<coordinate> getAllPieces(piece[,] board)
@@ -707,10 +685,16 @@ namespace Chess
             }
         }
 
-        public int minimax(
-            piece[,] board, Color attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
+        public int minimax(piece[,] board, Color attacking, int level, bool computerTurn, int alpha, int beta, IProgress<int> progress)
         {
             //is called recursively for comp to look ahead and return the best move
+            //initial call parameters:
+            //board = current board
+            //attacking = computer color
+            //level = -1
+            //computerTurn = true
+            //alpha = -99
+            //beta = 99
 
             int bestVal;
             List<move> offensiveMoves = new List<move>();
@@ -725,31 +709,21 @@ namespace Chess
 
                 Color nextTurn = switchTeam(attacking);
 
-                if (attacking == Color.Dark)
+                foreach (coordinate cell in getPieces(board, attacking))
                 {
-                    foreach (coordinate cell in getDarkPieces(board))
-                    {
-                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell, board));
-                    }
-                }
-                else
-                {
-                    foreach (coordinate cell in getLightPieces(board))
-                    {
-                        offensiveMoves.AddRange(getCheckRestrictedMoves(cell, board));
-                    }
+                    offensiveMoves.AddRange(getCheckRestrictedMoves(cell, board));
                 }
 
                 if (computerTurn == true)
                 {
                     bestVal = -99;
 
-                    //if checkmate
-                    if (offensiveMoves.Count == 0){}
-                    else
+                    //if not checkmate
+                    if (offensiveMoves.Count > 0)
                     {
                         if (level == 0)
                         {
+                            //the only difference from the else statement is the progress updates
                             for (int i = 0; i < offensiveMoves.Count; i++)
                             {
                                 newBoard = deepCopy(board);
@@ -902,7 +876,7 @@ namespace Chess
 
             int total = 0;
 
-            if (opponent == Color.Light)
+            if (opponentColor == Color.Light)
             {
                 for (int y = 0; y < 8; y++)
                 {
@@ -990,19 +964,9 @@ namespace Chess
             //get possible moves of opposing team,
             //doesn't matter if opposing team move gets them in check,
             //still a valid move for current team
-            if (teamInQuestion == Color.Dark)
+            foreach (coordinate c in getPieces(board, teamInQuestion))
             {
-                foreach (coordinate c in getLightPieces(board))
-                {
-                    poss.AddRange(getMoves(c, board));
-                }
-            }
-            else
-            {
-                foreach (coordinate c in getDarkPieces(board))
-                {
-                    poss.AddRange(getMoves(c, board));
-                }
+                poss.AddRange(getMoves(c, board));
             }
 
             foreach (move m in poss)
@@ -1034,7 +998,7 @@ namespace Chess
             bool toVirgin;
             bool inCheck;
 
-            if (offensiveTeam == Color.Dark)
+            if (offensiveColor == Color.Dark)
             {
                 castleY = 7;
             }
@@ -1144,7 +1108,7 @@ namespace Chess
             bool toVirgin;
             bool inCheck;
 
-            if (offensiveTeam == Color.Dark)
+            if (offensiveColor == Color.Dark)
             {
                 castleY = 7;
             }
@@ -1266,7 +1230,7 @@ namespace Chess
 
                 else
                 {
-                    if (teamInQuestion == opponent)
+                    if (teamInQuestion == opponentColor)
                     {
                         message = "Congratulations!\n\nYou have slain the evil king\nand saved the princess!";
                     }
@@ -1293,7 +1257,7 @@ namespace Chess
             move castleMove = new move();
             int yCoor;                              //which row the move is being conducted in
 
-            if (offensiveTeam == Color.Dark)
+            if (offensiveColor == Color.Dark)
             {
                 yCoor = 7;
             }
@@ -1348,7 +1312,7 @@ namespace Chess
                     clearSelectedAndPossible();
                 }
                 //if selected own piece
-                else if (currentPiece.color == offensiveTeam)
+                else if (currentPiece.color == offensiveColor)
                 {
                     ownCellSelected(currentCell);
                 }
@@ -1378,7 +1342,7 @@ namespace Chess
             prevSelected = cCell;
             possible.Clear();
             possible.AddRange(getCheckRestrictedMoves(cCell, pieceArray));
-            Color defensiveTeam = switchTeam(offensiveTeam);
+            Color defensiveTeam = switchTeam(offensiveColor);
 
             foreach (move m in possible)
             {
@@ -1450,7 +1414,7 @@ namespace Chess
                 {
                     buffer[0] = 7;
 
-                    if(opponent == Color.Light)
+                    if(opponentColor == Color.Light)
                     {
                         buffer[1] = (byte)(curTurn.start.x);
                         buffer[2] = (byte)(curTurn.start.y);
@@ -1500,32 +1464,18 @@ namespace Chess
             bool endOfGame;
 
             //change teams
-            if (offensiveTeam == Color.Light)
-            {
-                offensiveTeam = Color.Dark;
-                endOfGame = isInCheckmate(offensiveTeam, getDarkPieces(pieceArray));  //did previous turn put other team in checkmate?
+            offensiveColor = switchTeam(offensiveColor);
+            endOfGame = isInCheckmate(offensiveColor, getPieces(pieceArray, offensiveColor));  //did previous turn put other team in checkmate?
 
-                if (endOfGame == false && onePlayer == true)
-                {
-                    await compTurn();
-                    endOfGame = isInCheckmate(Color.Light, getLightPieces(pieceArray)); //did computer turn put player in checkmate?
-                    offensiveTeam = Color.Light;
-                }
-            }
-            else
+            if (endOfGame == false && onePlayer == true)
             {
-                offensiveTeam = Color.Light;
-                endOfGame = isInCheckmate(offensiveTeam, getLightPieces(pieceArray)); //did previous turn put other team in checkmate?
-
-                if (endOfGame == false && onePlayer == true)
-                {
-                    await compTurn();
-                    endOfGame = isInCheckmate(Color.Dark, getDarkPieces(pieceArray)); //did computer turn put player in checkmate?
-                    offensiveTeam = Color.Dark;
-                }
+                await compTurn();
+                var oppositeColor = switchTeam(offensiveColor);
+                endOfGame = isInCheckmate(oppositeColor, getPieces(pieceArray, oppositeColor)); //did computer turn put player in checkmate?
+                offensiveColor = oppositeColor;
             }
 
-            if(networkGame == true && endOfGame == false)
+            if (networkGame == true && endOfGame == false)
             {
                 ready = false;
                 //wait for response move
@@ -1533,7 +1483,7 @@ namespace Chess
             //if 2Player local, rotate is on, and didn't end game
             else if (twoPlayer == true && rotate == true && endOfGame == false)
             {
-                if(offensiveTeam == Color.Dark)
+                if(offensiveColor == Color.Dark)
                 {
                     rotateBoard(true, rotationDuration);
                 }
@@ -1541,7 +1491,7 @@ namespace Chess
                 {
                     rotateBoard(false, rotationDuration);
                 }
-                onBottom = offensiveTeam;
+                onBottomColor = offensiveColor;
             }
         }
 
@@ -1560,7 +1510,7 @@ namespace Chess
             }
             else
             {
-                await Task.Run(() => minimax(pieceArray, offensiveTeam, -1, true, -99, 99, null));
+                await Task.Run(() => minimax(pieceArray, offensiveColor, -1, true, -99, 99, null));
             }
 
             ready = true;
@@ -1723,11 +1673,11 @@ namespace Chess
 
             to = pieceArray[xEnd, yEnd];
             from = pieceArray[xStart, yStart];
-            offensiveTeam = to.color;
+            offensiveColor = to.color;
 
             if (rotate == true && twoPlayer == true)
             {
-                if(offensiveTeam == Color.Dark)
+                if(offensiveColor == Color.Dark)
                 {
                     rotateBoard(true, rotationDuration);
                 }
@@ -1971,7 +1921,7 @@ namespace Chess
             }
 
             string theme = themeList[themeIndex];
-            saveData sData = new saveData(pieceArray, offensiveTeam, opponent, onBottom, theme, onePlayer, twoPlayer, networkGame, difficulty,
+            saveData sData = new saveData(pieceArray, offensiveColor, opponentColor, onBottomColor, theme, onePlayer, twoPlayer, networkGame, difficulty,
                 lastMove, saveGame, ready, rotate, rotationDuration, sizeX, sizeY);
 
             System.IO.Directory.CreateDirectory(dirPath);
@@ -2009,14 +1959,14 @@ namespace Chess
                         pieceArray = new piece[8, 8];
                         movablePieceSelected = false;
                         pieceArray = lData.sBoard;
-                        offensiveTeam = lData.sOffensiveTeam;
-                        opponent = lData.sOpponent;
-                        onBottom = lData.sOnBottom;
+                        offensiveColor = lData.sOffensiveTeam;
+                        opponentColor = lData.sOpponent;
+                        onBottomColor = lData.sOnBottom;
                         onePlayer = lData.sOnePlayer;
                         twoPlayer = lData.sTwoPlayer;
                         difficulty = lData.sDifficulty;
 
-                        if (onBottom == Color.Dark)
+                        if (onBottomColor == Color.Dark)
                         {
                             rotateBoard(true, 0);
                         }
@@ -2057,13 +2007,13 @@ namespace Chess
         {
             //when rotate option is toggled
 
-            if (offensiveTeam == opponent)  //if opponent's turn
+            if (offensiveColor == opponentColor)  //if opponent's turn
             {
                 clearSelectedAndPossible();
                 //if toggled on
                 if(rotate == false)
                 {
-                    if(offensiveTeam == Color.Dark)
+                    if(offensiveColor == Color.Dark)
                     {
                         rotateBoard(true, 0);
                     }
@@ -2075,7 +2025,7 @@ namespace Chess
                 //toggled off
                 else
                 {
-                    if (offensiveTeam == Color.Dark)
+                    if (offensiveColor == Color.Dark)
                     {
                         rotateBoard(false, 0);
                     }
@@ -2171,7 +2121,7 @@ namespace Chess
                     coordinate p;
                     coordinate m;
 
-                    if(opponent == Color.Light)
+                    if(opponentColor == Color.Light)
                     {
                         p = new coordinate(buffer[1], 7 - buffer[2]);
                         m = new coordinate(buffer[3], 7 - buffer[4]);
@@ -2235,7 +2185,7 @@ namespace Chess
                 castling(m);
             }
 
-            offensiveTeam = switchTeam(offensiveTeam);
+            offensiveColor = switchTeam(offensiveColor);
             ready = true;
         }
 

@@ -111,7 +111,7 @@ namespace Chess
                     cell.Cursor = Cursors.Hand;
                 }
 
-                else if (game.pieceArray[col, row].color == game.offensiveTeam)
+                else if (game.pieceArray[col, row].color == game.offensiveColor)
                 {
                     cell.Cursor = Cursors.Hand;
                 }

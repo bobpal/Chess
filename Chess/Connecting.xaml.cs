@@ -49,11 +49,11 @@ namespace Chess
                 game.setBoardForNewGame();
                 if (bArray[0] == 1)
                 {
-                    game.opponent = Color.Dark;
+                    game.opponentColor = Color.Dark;
                 }
                 else if (bArray[0] == 2)
                 {
-                    game.opponent = Color.Light;
+                    game.opponentColor = Color.Light;
                 }
                 this.Close();
             }
