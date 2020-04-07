@@ -773,9 +773,8 @@ namespace Chess
                 {
                     bestVal = 99;
 
-                    //if checkmate
-                    if (offensiveMoves.Count == 0){}
-                    else
+                    //if not checkmate
+                    if (offensiveMoves.Count > 0)
                     {
                         for (int i = 0; i < offensiveMoves.Count; i++)
                         {
@@ -960,11 +959,13 @@ namespace Chess
 
             List<move> poss = new List<move>();
 
+            var opposingTeam = switchTeam(teamInQuestion);
+
             //get all of opposing team's pieces
             //get possible moves of opposing team,
             //doesn't matter if opposing team move gets them in check,
             //still a valid move for current team
-            foreach (coordinate c in getPieces(board, teamInQuestion))
+            foreach (coordinate c in getPieces(board, opposingTeam))
             {
                 poss.AddRange(getMoves(c, board));
             }
@@ -1091,116 +1092,18 @@ namespace Chess
             return possibleWithoutCheck;
         }
 
-        private bool isInCheckmate(Color teamInQuestion, List<coordinate> availablePieces)
+        private bool isInCheckmate(Color teamInQuestion, piece[,] board)
         {
             //takes list of pieces and returns whether or not player is in checkmate
 
-            List<move> allPossible = new List<move>();
             List<move> possibleWithoutCheck = new List<move>();
-            move rookMove = null;
-            coordinate rookStart = new coordinate();
-            coordinate rookEnd = new coordinate();
-            int castleY;
-            Color fromColor;
-            bool fromVirgin;
-            Color toColor;
-            Job toJob;
-            bool toVirgin;
-            bool inCheck;
 
-            if (offensiveColor == Color.Dark)
-            {
-                castleY = 7;
-            }
-            else
-            {
-                castleY = 0;
-            }
+            var availablePieces = getPieces(board, teamInQuestion);
 
             //find all moves that can be done without going into check
             foreach (coordinate aPiece in availablePieces)
             {
-                allPossible = getMoves(aPiece, pieceArray);
-
-                foreach (move m in allPossible)
-                {
-                    toColor = pieceArray[m.end.x, m.end.y].color;
-                    toJob = pieceArray[m.end.x, m.end.y].job;
-                    toVirgin = pieceArray[m.end.x, m.end.y].virgin;
-                    fromColor = pieceArray[m.start.x, m.start.y].color;
-                    fromVirgin = pieceArray[m.start.x, m.start.y].virgin;
-
-                    if (pieceArray[m.start.x, m.start.y].job == Job.King)
-                    {
-                        if (m.start.x == 4 && m.start.y == castleY)  //if moving from King default position
-                        {
-                            if (m.end.x == 2 && m.end.y == castleY)  //if moving two spaces to the left
-                            {
-                                rookStart.x = 0;
-                                rookStart.y = castleY;
-                                rookEnd.x = 3;
-                                rookEnd.y = castleY;
-                                rookMove = new move(rookStart, rookEnd);
-                            }
-
-                            else if (m.end.x == 6 && m.end.y == castleY) //if moving two spaces to the right
-                            {
-                                rookStart.x = 7;
-                                rookStart.y = castleY;
-                                rookEnd.x = 5;
-                                rookEnd.y = castleY;
-                                rookMove = new move(rookStart, rookEnd);
-                            }
-                        }
-                    }
-
-                    //do moves
-                    //main
-                    pieceArray[m.end.x, m.end.y].color = fromColor;
-                    pieceArray[m.end.x, m.end.y].job = pieceArray[m.start.x, m.start.y].job;
-                    pieceArray[m.end.x, m.end.y].virgin = false;
-                    pieceArray[m.start.x, m.start.y].color = Color.None;
-                    pieceArray[m.start.x, m.start.y].job = Job.None;
-                    pieceArray[m.start.x, m.start.y].virgin = false;
-                    //rook
-                    if (rookMove != null)
-                    {
-                        pieceArray[rookEnd.x, rookEnd.y].color = pieceArray[rookStart.x, rookStart.y].color;
-                        pieceArray[rookEnd.x, rookEnd.y].job = Job.Rook;
-                        pieceArray[rookEnd.x, rookEnd.y].virgin = false;
-                        pieceArray[rookStart.x, rookStart.y].color = Color.None;
-                        pieceArray[rookStart.x, rookStart.y].job = Job.None;
-                        pieceArray[rookStart.x, rookStart.y].virgin = false;
-                    }
-
-                    //see if in check
-                    inCheck = isInCheck(teamInQuestion, pieceArray);
-
-                    if (inCheck == false)//if not in check
-                    {
-                        possibleWithoutCheck.Add(m);
-                    }
-
-                    //reset pieces
-                    //main
-                    pieceArray[m.start.x, m.start.y].color = fromColor;
-                    pieceArray[m.start.x, m.start.y].job = pieceArray[m.end.x, m.end.y].job;
-                    pieceArray[m.start.x, m.start.y].virgin = fromVirgin;
-                    pieceArray[m.end.x, m.end.y].color = toColor;
-                    pieceArray[m.end.x, m.end.y].job = toJob;
-                    pieceArray[m.end.x, m.end.y].virgin = toVirgin;
-                    //rook
-                    if (rookMove != null)
-                    {
-                        pieceArray[rookStart.x, rookStart.y].color = pieceArray[rookEnd.x, rookEnd.y].color;
-                        pieceArray[rookStart.x, rookStart.y].job = Job.Rook;
-                        pieceArray[rookStart.x, rookStart.y].virgin = true;
-                        pieceArray[rookEnd.x, rookEnd.y].color = Color.None;
-                        pieceArray[rookEnd.x, rookEnd.y].job = Job.None;
-                        pieceArray[rookEnd.x, rookEnd.y].virgin = false;
-                    }
-                    rookMove = null;
-                }
+                possibleWithoutCheck.AddRange(getCheckRestrictedMoves(aPiece, board));
             }
 
             if (possibleWithoutCheck.Count == 0)//if no moves available that don't go into check
@@ -1241,8 +1144,7 @@ namespace Chess
                     }
                 }
 
-                MessageBoxResult result = MessageBox.Show(message, "Game Over",
-                        MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
+                MessageBoxResult result = MessageBox.Show(message, "Game Over", MessageBoxButton.OK, MessageBoxImage.None, MessageBoxResult.OK);
 
                 return true;
             }
@@ -1465,14 +1367,13 @@ namespace Chess
 
             //change teams
             offensiveColor = switchTeam(offensiveColor);
-            endOfGame = isInCheckmate(offensiveColor, getPieces(pieceArray, offensiveColor));  //did previous turn put other team in checkmate?
+            endOfGame = isInCheckmate(offensiveColor, pieceArray);  //did previous turn put other team in checkmate?
 
             if (endOfGame == false && onePlayer == true)
             {
                 await compTurn();
-                var oppositeColor = switchTeam(offensiveColor);
-                endOfGame = isInCheckmate(oppositeColor, getPieces(pieceArray, oppositeColor)); //did computer turn put player in checkmate?
-                offensiveColor = oppositeColor;
+                offensiveColor = switchTeam(offensiveColor);
+                endOfGame = isInCheckmate(offensiveColor, pieceArray); //did computer turn put player in checkmate?
             }
 
             if (networkGame == true && endOfGame == false)
